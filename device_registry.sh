@@ -28,6 +28,11 @@ events=events
 # 	--registry=$registry \
 # 	--public-key path=ec_public.pem,type=es256
 
-# gcloud beta pubsub subscriptions create projects/$project/subscriptions/$mysub --topic=$events
+# sudgcloud beta pubsub subscriptions create projects/$project/subscriptions/$mysub --topic=$events
+# gcloud beta pubsub subscriptions create projects/klutzer-iot/subscriptions/my-sub --topic=my-sub
+# gcloud beta pubsub subscriptions pull --auto-ack projects/klutzer-iot/subscriptions/my-sub
+
+gcloud beta pubsub subscriptions create projects/$project/subscriptions/$mysub --topic=$events
+gcloud beta pubsub subscriptions pull --auto-ack projects/$project/subscriptions/$mysub
 
 # wget https://pki.google.com/roots.pem
