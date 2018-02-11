@@ -8,8 +8,8 @@
     "node": ">=6.0.0"
   },
   "scripts": {
-    "build": "tsc",
-    "deploy": "run ( gcloud beta functions deploy RaspberryPiRoomMonitoringPubSubHandler --trigger-topic raspberry-pi-environment-monitoring-topic }"
+    "build": "rm -rf build && tsc",
+    "deploy": "run(){ gcloud beta functions deploy RaspberryPiRoomMonitoringPubSubHandler --trigger-topic raspberry-pi-environment-monitoring-topic; }; tsc && run"
   },
   "dependencies": {
     "@google-cloud/datastore": "1.1.0",
