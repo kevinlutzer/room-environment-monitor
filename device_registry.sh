@@ -32,7 +32,12 @@ events=events
 # gcloud beta pubsub subscriptions create projects/klutzer-iot/subscriptions/my-sub --topic=my-sub
 # gcloud beta pubsub subscriptions pull --auto-ack projects/klutzer-iot/subscriptions/my-sub
 
-gcloud beta pubsub subscriptions create projects/$project/subscriptions/$mysub --topic=$events
-gcloud beta pubsub subscriptions pull --auto-ack projects/$project/subscriptions/$mysub
+pi_cpu_temp_mqtt.py \
+    --project_id=$project \
+    --registry_id=$registry \
+    --device_id=$device \
+
+# gcloud beta pubsub subscriptions create projects/$project/subscriptions/$mysub --topic=$events
+# gcloud beta pubsub subscriptions pull --auto-ack projects/$project/subscriptions/$mysub
 
 # wget https://pki.google.com/roots.pem

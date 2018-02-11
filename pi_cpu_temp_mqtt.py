@@ -96,12 +96,12 @@ def parse_command_line_args():
             help='Cloud IoT Core device id')
     parser.add_argument(
             '--private_key_file',
-            required=True,
+            default="rsa_private.pem"
             help='Path to private key file.')
     parser.add_argument(
             '--algorithm',
+            default = 'RS256'
             choices=('RS256', 'ES256'),
-            required=True,
             help='Which encryption algorithm to use to generate the JWT.')
     parser.add_argument(
             '--cloud_region', default='us-central1', help='GCP cloud region')
