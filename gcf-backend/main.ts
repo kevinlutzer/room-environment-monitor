@@ -1,14 +1,14 @@
 const Datastore = require('@google-cloud/datastore');
 const datastore = Datastore();
-const kind = '';
+const kind = 'RoomDataPoint';
 
-export interface DataPoint {
+export interface RoomDataPoint {
     temperature: number,
     humidity: number,
     ambientLight: number
 }
 
-export interface RaspberryPiEnvironmentMonitoringPubSubMessage {
+export interface RaspberryPiRoomMonitoringPubSubMessage {
     timestamp: string,
     data: {  
        attributes: {  
@@ -19,9 +19,7 @@ export interface RaspberryPiEnvironmentMonitoringPubSubMessage {
     }
 }
 
-
-
-export function RaspberryPiEnvironmentMonitoringPubSubHandler(req: RaspberryPiEnvironmentMonitoringPubSubMessage, callback: Function) {
+export function RaspberryPiRoomMonitoringPubSubHandler(req: RaspberryPiRoomMonitoringPubSubMessage, callback: Function) {
 
     let dateKey = (new Date(req.timestamp)).getTime().toString()
     const key = datastore.key([kind, dateKey])
@@ -31,14 +29,11 @@ export function RaspberryPiEnvironmentMonitoringPubSubHandler(req: RaspberryPiEn
           temperature: req.data && req.data.attributes ? req.data.attributes.temperature : null,
           humidity: req.data && req.data.attributes ? req.data.attributes.humidity : null,
           ambientLight: req.data && req.data.attributes ? req.data.attributes.ambientLight : null
-        } as DataPoint
+        } as RoomDataPoint
     };
     datastore.save(entity)
-        .then((a: any) => console.log(a))
-        .catch((err: Error) => {
-            console.error(err);
-            return Promise.reject(err);
-        });
+        .then()
+        .catch((err: Error) => console.error(err));
 
     callback();
 }
