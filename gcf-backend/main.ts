@@ -1,32 +1,44 @@
-// const Datastore = require('@google-cloud/datastore');
-// const datastore = Datastore();
+const Datastore = require('@google-cloud/datastore');
+const datastore = Datastore();
+const kind = '';
 
-export interface RaspberryPiEnvironmentMonitoringPubSubMessage {}
+export interface DataPoint {
+    temperature: number,
+    humidity: number,
+    ambientLight: number
+}
+
+export interface RaspberryPiEnvironmentMonitoringPubSubMessage {
+    timestamp: string,
+    data: {  
+       attributes: {  
+          temperature: number,
+          humidity: number,
+          ambientLight: number
+       }
+    }
+}
+
+
 
 export function RaspberryPiEnvironmentMonitoringPubSubHandler(req: RaspberryPiEnvironmentMonitoringPubSubMessage, callback: Function) {
-    console.log(req)
+
+    let dateKey = (new Date(req.timestamp)).getTime().toString()
+    const key = datastore.key([kind, dateKey])
+    const entity = {
+        key: key,
+        data: {
+          temperature: req.data && req.data.attributes ? req.data.attributes.temperature : null,
+          humidity: req.data && req.data.attributes ? req.data.attributes.humidity : null,
+          ambientLight: req.data && req.data.attributes ? req.data.attributes.ambientLight : null
+        } as DataPoint
+    };
+    datastore.save(entity)
+        .then((a: any) => console.log(a))
+        .catch((err: Error) => {
+            console.error(err);
+            return Promise.reject(err);
+        });
+
     callback();
-    // if ( req.method !== 'GET' ) {
-    //     res.status(405).send(req.method + ' is not allowed');
-    // }
-
-    // const query = datastore
-    //     .createQuery([projectKind])
-    //     .start();
-
-    // datastore
-    //     .runQuery(query, (err: Error, entities: any, nextQuery: any) => {
-    //         if( err ) {
-    //             res.status(500).send(err);
-    //         }
-
-    //         let hasMore = nextQuery.moreResults !== Datastore.NO_MORE_RESULTS ? nextQuery.endCursor : false;
-
-    //         res.header('Access-Control-Allow-Origin', '*');
-    //         res.header('Access-Control-Allow-Headers', 'Content-Type');
-    //         res.status(200).send({
-    //             projects: entities,
-    //             hasMore: hasMore
-    //         });
-    //     });
 }
