@@ -32,7 +32,7 @@ events=events
 # gcloud beta pubsub subscriptions create projects/klutzer-iot/subscriptions/my-sub --topic=my-sub
 # gcloud beta pubsub subscriptions pull --auto-ack projects/klutzer-iot/subscriptions/my-sub
 
-pi_cpu_temp_mqtt.py \
+python pi_cpu_temp_mqtt.py \
     --project_id=$project \
     --registry_id=$registry \
     --device_id=$device \
