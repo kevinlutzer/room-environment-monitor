@@ -104,7 +104,9 @@ def parse_command_line_args():
             choices=('RS256', 'ES256'),
             help='Which encryption algorithm to use to generate the JWT.')
     parser.add_argument(
-            '--cloud_region', default='us-central1', help='GCP cloud region')
+            '--cloud_region',
+            default='us-central1',
+            help='GCP cloud region')
     parser.add_argument(
             '--ca_certs',
             default='roots.pem',
@@ -114,7 +116,9 @@ def parse_command_line_args():
             default='mqtt.googleapis.com',
             help='MQTT bridge hostname.')
     parser.add_argument(
-            '--mqtt_bridge_port', default=8883, help='MQTT bridge port.')
+            '--mqtt_bridge_port',
+            default=8883,
+            help='MQTT bridge port.')
 
     return parser.parse_args()
 
