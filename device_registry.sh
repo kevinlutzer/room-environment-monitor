@@ -36,6 +36,8 @@ python pi_cpu_temp_mqtt.py \
     --project_id=$project \
     --registry_id=$registry \
     --device_id=$device \
+    --private_key_file=rsa_private.pem \
+    --algorithm=RS256
 
 # gcloud beta pubsub subscriptions create projects/$project/subscriptions/$mysub --topic=$events
 # gcloud beta pubsub subscriptions pull --auto-ack projects/$project/subscriptions/$mysub
