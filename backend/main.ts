@@ -21,7 +21,7 @@ export interface RaspberryPiRoomMonitoringPubSubMessage {
 }
 
 export function RaspberryPiRoomMonitoringPubSubHandler(req: RaspberryPiRoomMonitoringPubSubMessage, callback: Function) {
-
+    console.log(req);
     let timestamp = new Date(req.timestamp);
 
     let dateKey = timestamp.getTime().toString()

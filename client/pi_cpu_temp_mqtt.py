@@ -18,29 +18,19 @@ import time
 from time import gmtime, strftime
 import subprocess
 
+import json
 import jwt
 import paho.mqtt.client as mqtt
 
+MQTT_TOPIC = '/devices/{}/events'.format(args.device_id)
+
 def create_jwt(project_id, private_key_file, algorithm):
-    """Creates a JWT (https://jwt.io) to establish an MQTT connection.
-    Args:
-     project_id: The cloud project ID this device belongs to
-     private_key_file: A path to a file containing either an RSA256 or ES256
-         private key.
-     algorithm: The encryption algorithm to use. Either 'RS256' or 'ES256'
-    Returns:
-      An MQTT generated from the given project_id and private key, which
-      expires in 20 minutes. After 20 minutes, your client will be
-      disconnected, and a new JWT will have to be generated.
-    Raises:
-      ValueError: If the private_key_file does not contain a known key.
-    """
+    """Create JWT, will throw ValueError if private key file doesn't exist or is invalid"""
 
     token = {
         # The time that the token was issued at
         'iat': datetime.datetime.utcnow(),
-        # When this token expires. The device will be disconnected after the
-        # token expires, and will have to reconnect.
+        # Expiry of the token
         'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
         # The audience field should always be set to the GCP project id.
         'aud': project_id
@@ -96,7 +86,7 @@ def parse_command_line_args():
             help='Cloud IoT Core device id')
     parser.add_argument(
             '--private_key_file',
-            default="rsa_private.pem",
+            default="auth-files/rsa_private.pem",
             help='Path to private key file.')
     parser.add_argument(
             '--algorithm',
@@ -109,7 +99,7 @@ def parse_command_line_args():
             help='GCP cloud region')
     parser.add_argument(
             '--ca_certs',
-            default='roots.pem',
+            default='auth-files/roots.pem',
             help=('CA root certificate from https://pki.google.com/roots.pem'))
     parser.add_argument(
             '--mqtt_bridge_hostname',
@@ -122,43 +112,7 @@ def parse_command_line_args():
 
     return parser.parse_args()
 
-
-def main():
-    args = parse_command_line_args()
-
-    # Create our MQTT client. The client_id is a unique string that identifies
-    # this device. For Google Cloud IoT Core, it must be in the format below.
-    client = mqtt.Client(
-            client_id=(
-                    'projects/{}/locations/{}/registries/{}/devices/{}'
-                    .format(
-                            args.project_id, args.cloud_region,
-                            args.registry_id, args.device_id)))
-
-    # With Google Cloud IoT Core, the username field is ignored, and the
-    # password field is used to transmit a JWT to authorize the device.
-    client.username_pw_set(
-            username='unused',
-            password=create_jwt(
-                    args.project_id, args.private_key_file, args.algorithm))
-
-    # Enable SSL/TLS support.
-    client.tls_set(ca_certs=args.ca_certs)
-
-    # Register message callbacks. https://eclipse.org/paho/clients/python/docs/
-    # describes additional callbacks that Paho supports. In this example, the
-    # callbacks just print to standard out.
-    client.on_connect = on_connect
-    client.on_publish = on_publish
-    client.on_disconnect = on_disconnect
-
-    # Connect to the Google MQTT bridge.
-    client.connect(args.mqtt_bridge_hostname, args.mqtt_bridge_port)
-
-    # Start the network loop.
-    client.loop_start()
-
-    mqtt_topic = '/devices/{}/events'.format(args.device_id)
+def collect_data():
 
     # Get the Raspberry Pi's processor temperature. 
     if subprocess.call(["which", "/opt/vc/bin/vcgencmd"]) == 0:
@@ -170,17 +124,59 @@ def main():
     else:
         temp = 40
 
-    payload = '{}/{} Time {} temperature {}'.format(
-            args.registry_id, args.device_id, strftime("%Y-%m-%d %H:%M:%S", gmtime()), temp)
-    print(
-            'Publishing message {}'.format(payload))
-    # Publish "payload" to the MQTT topic. qos=1 means at least once
-    # delivery. Cloud IoT Core also supports qos=0 for at most once
-    # delivery.
-    client.publish(mqtt_topic, payload, qos=1)
+    result = {
+        "temperature": 0,
+        "ambientLight": 4000,
+        "humidity": 3000,
+        "cpuTemp": temp
+        "timestamp": gmtime()
+    }
+
+    return json.dumps(result)
+
+def publish_data(client, payload):
+    # Start the network loop.
+    client.loop_start()
+
+    print('Publishing message {}'.format(payload))
+    
+    # Publish "payload" to the MQTT topic. qos=1 means 'at least one delivery'.  
+    client.publish(MQTT_TOPIC, payload, qos=1)
 
     # End the network loop and finish.
     client.loop_stop()
+
+
+def create_client(args):
+    # Create client
+    client = mqtt.Client(client_id=('projects/{}/locations/{}/registries/{}/devices/{}'.format(args.project_id, args.cloud_region, args.registry_id, args.device_id)))
+
+    # Username fied is not used since jwt is used crendentials
+    client.username_pw_set(
+            username='unused',
+            password=create_jwt(
+                    args.project_id, args.private_key_file, args.algorithm))
+
+    # Enable SSL/TLS support.
+    client.tls_set(ca_certs=args.ca_certs)
+
+    # Register message callbacks.
+    client.on_connect = on_connect
+    client.on_publish = on_publish
+    client.on_disconnect = on_disconnect
+
+    return client
+
+def main():
+    args = parse_command_line_args()
+
+    # Connect to the Google MQTT bridge.
+    client.connect(args.mqtt_bridge_hostname, args.mqtt_bridge_port)
+
+    # Collect and publish the data
+    payload = collect_data()
+    publish_data(client, payload)
+
     print('Finished.')
 
 

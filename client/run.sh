@@ -41,6 +41,7 @@ function execute_data_collection {
         --device_id=$device \
         --private_key_file=$configDirName/rsa_private.pem \
         --algorithm=RS256
+        --ca_certs=roots.pem
 }
 
 # entry point into application
