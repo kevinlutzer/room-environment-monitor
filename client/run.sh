@@ -35,7 +35,7 @@ function create_iot_device {
 
 # run only on the iot device 
 function execute_data_collection {
-    python pi_cpu_temp_mqtt.py \
+    python main.py \
         --project_id=$project \
         --registry_id=$registry \
         --device_id=$device \
