@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "rm -rf build && tsc",
-    "deploy": "build && gcloud beta functions deploy RaspberryPiRoomMonitoringPubSubHandler --trigger-topic raspberry-pi-environment-monitoring-topic"
+    "deploy": "npm run build && gcloud beta functions deploy RaspberryPiRoomMonitoringPubSubHandler --trigger-topic raspberry-pi-environment-monitoring-topic"
   },
   "dependencies": {
     "@google-cloud/datastore": "1.1.0",
