@@ -22,8 +22,6 @@ import json
 import jwt
 import paho.mqtt.client as mqtt
 
-MQTT_TOPIC = '/devices/{}/events'.format(args.device_id)
-
 def create_jwt(project_id, private_key_file, algorithm):
     """Create JWT, will throw ValueError if private key file doesn't exist or is invalid"""
 
@@ -125,23 +123,23 @@ def collect_data():
         temp = 40
 
     result = {
-        "temperature": 0,
+        'temperature': 0,
         "ambientLight": 4000,
         "humidity": 3000,
-        "cpuTemp": temp
-        "timestamp": gmtime()
+        "cpuTemp": temp,
+        "timestamp": strftime("%Y-%m-%d %H:%M:%S", gmtime())
     }
 
     return json.dumps(result)
 
-def publish_data(client, payload):
+def publish_data(client, payload, args):
     # Start the network loop.
     client.loop_start()
 
     print('Publishing message {}'.format(payload))
     
     # Publish "payload" to the MQTT topic. qos=1 means 'at least one delivery'.  
-    client.publish(MQTT_TOPIC, payload, qos=1)
+    client.publish('/devices/{}/events'.format(args.device_id), payload, qos=1)
 
     # End the network loop and finish.
     client.loop_stop()
@@ -170,12 +168,14 @@ def create_client(args):
 def main():
     args = parse_command_line_args()
 
+    client = create_client(args)
+
     # Connect to the Google MQTT bridge.
     client.connect(args.mqtt_bridge_hostname, args.mqtt_bridge_port)
 
     # Collect and publish the data
     payload = collect_data()
-    publish_data(client, payload)
+    publish_data(client, payload, args)
 
     print('Finished.')
 
