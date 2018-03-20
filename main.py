@@ -8,6 +8,10 @@ import json
 import jwt
 import paho.mqtt.client as mqtt
 
+from Adafruit_CCS811 import Adafruit_CCS811
+
+ccs =  Adafruit_CCS811()
+
 def create_jwt(project_id, private_key_file, algorithm):
     """Create JWT, will throw ValueError if private key file doesn't exist or is invalid"""
 
@@ -96,6 +100,17 @@ def parse_command_line_args():
 
     return parser.parse_args()
 
+def ccs811(): 
+	if ccs.available():
+	    temp = ccs.calculateTemperature()
+	    if not ccs.readData():
+	        print "CO2: ", ccs.geteCO2(), "ppm, TVOC: ", ccs.getTVOC(), " temp: ", temp
+            return {
+                "co2": ccs.geteCO2(),
+                "tvoc": ccs.getTVOC(),
+                "temp": temp
+            }
+
 def collect_data():
 
     # Get the Raspberry Pi's processor temperature. 
@@ -108,11 +123,15 @@ def collect_data():
     else:
         temp = 40
 
+    css811_data = ccs811()
+
     result = {
         'temperature': 0,
         "ambientLight": 4000,
         "humidity": 3000,
-        "cpuTemp": temp,
+        "cpuTemp": css811_data.get("temp"),
+        "tvoc": css811_data.get("tvoc"),
+        "co2": css811_data.get("co2"),
         "timestamp": strftime("%Y-%m-%d %H:%M:%S", gmtime())
     }
 
@@ -154,6 +173,11 @@ def create_client(args):
 def main():
     args = parse_command_line_args()
 
+    while not ccs.available():
+    	pass
+    temp = ccs.calculateTemperature()
+    ccs.tempOffset = temp - 25.0
+
     client = create_client(args)
 
     # Connect to the Google MQTT bridge.
@@ -162,6 +186,8 @@ def main():
     # Collect and publish the data
     payload = collect_data()
     publish_data(client, payload, args)
+
+
 
     print('Finished.')
 
