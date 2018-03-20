@@ -1,6 +1,6 @@
 project=klutzer-iot
 region=us-central1
-registry=raspberry-pi-room-monitoring-registry
+registry=klutzer-devices
 device=raspberry-pi-room-monitoring-rs256-device
 events=raspberry-pi-environment-monitoring-topic	
 configDirName=auth-files
