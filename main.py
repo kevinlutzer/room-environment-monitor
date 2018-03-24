@@ -3,31 +3,31 @@ import time
 from time import gmtime, strftime
 import subprocess
 import json
-import jwt
-import paho.mqtt.client as mqtt
-from Adafruit_CCS811 import Adafruit_CCS811
-from app.command_line_args import parse_command_line_args
-from app.google_iot import GoogleIotClient
+# import jwt
+# import paho.mqtt.client as mqtt
+# from Adafruit_CCS811 import Adafruit_CCS811
+# from app.command_line_args import parse_command_line_args
+# from app.google_iot import GoogleIotClient
 
-ccs =  Adafruit_CCS811()
+# ccs =  Adafruit_CCS811()
 
-def ccs811():
-    if debug:
-        return {
-            "co2": 400,
-            "tvoc": 0,
-            "temp": 25
-        }
+# def ccs811():
+#     if debug:
+#         return {
+#             "co2": 400,
+#             "tvoc": 0,
+#             "temp": 25
+#         }
 
-	if ccs.available():
-	    temp = ccs.calculateTemperature()
-	    if not ccs.readData():
-	        print "CO2: ", ccs.geteCO2(), "ppm, TVOC: ", ccs.getTVOC(), " temp: ", temp
-            return {
-                "co2": ccs.geteCO2(),
-                "tvoc": ccs.getTVOC(),
-                "temp": temp
-            }
+# 	if ccs.available():
+# 	    temp = ccs.calculateTemperature()
+# 	    if not ccs.readData():
+# 	        print "CO2: ", ccs.geteCO2(), "ppm, TVOC: ", ccs.getTVOC(), " temp: ", temp
+#             return {
+#                 "co2": ccs.geteCO2(),
+#                 "tvoc": ccs.getTVOC(),
+#                 "temp": temp
+#             }
         
 
 def collect_data():

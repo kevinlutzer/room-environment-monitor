@@ -10,18 +10,22 @@ data_fields = {
     'ambientLight': fields.Float,
     'timestamp': fields.String,
     'cpuTemp': fields.Float,
+    'tvoc': fields.Float,
+    'co2': fields.Float,
 }
 
 
 class GetRoomEnvironmentData(Resource):
     @marshal_with(data_fields)
-    def get(self): 
+    def get(self):
         data = {
             "temperature": 25,
             "humidity": 334,
             "ambientLight": 345,
             "timestamp": "time",
             "cpuTemp": 43,
+            "tvoc": 0,
+            "co2": 0,
         }
         return data
 

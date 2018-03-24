@@ -7,6 +7,7 @@ import subprocess
 import json
 import jwt
 import paho.mqtt.client as mqtt
+from urlfetch import get, UrlfetchException
 
 
 # MQTT Callback functions for success and failure
@@ -90,3 +91,16 @@ class GoogleIotClient():
         googleIotClient._client.on_disconnect = on_disconnect
 
         return googleIotClient
+
+    @classmethod
+    def fetch_data(cls):
+        try: 
+            response = get('localhost:5000')
+            
+            if response.status != 200:
+                raise ValueError('Reponse from api fetch was not a 200')
+            
+            return response.content
+
+        except UrlfetchException: 
+            raise         
