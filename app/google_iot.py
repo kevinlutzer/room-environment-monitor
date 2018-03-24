@@ -33,9 +33,6 @@ class GoogleIotClient():
 
     _client = None
 
-    __init__(self, *args, **kwargs):
-        raise ValueError("Use the class method create_client")
-
     @classmethod
     def create_jwt(self, project_id, private_key_file, algorithm):
         """Create JWT, will throw ValueError if private key file doesn't exist or is invalid"""

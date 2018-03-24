@@ -1,3 +1,5 @@
+import argparse
+
 def parse_command_line_args():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(

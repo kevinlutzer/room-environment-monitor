@@ -44,5 +44,9 @@ function execute_data_collection {
         --ca_certs=$configDirName/roots.pem
 }
 
+# starts up the flask server
+function server {
+    python server/main.py
+}
 # entry point into application
 "$@"

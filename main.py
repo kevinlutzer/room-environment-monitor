@@ -1,4 +1,3 @@
-import argparse
 import datetime
 import time
 from time import gmtime, strftime
@@ -7,6 +6,8 @@ import json
 import jwt
 import paho.mqtt.client as mqtt
 from Adafruit_CCS811 import Adafruit_CCS811
+from app.command_line_args import parse_command_line_args
+from app.google_iot import GoogleIotClient
 
 ccs =  Adafruit_CCS811()
 

@@ -4,3 +4,5 @@ google-auth==1.0.2
 google-cloud==0.27.0
 logging==0.4.9.6
 Adafruit_CCS811==0.1.0
+Flask==0.12.2
+flask-restful==0.3.6
