@@ -10,19 +10,21 @@ api = Api(app)
 css811_client = Adafruit_CCS811()
 
 ROOM_ENVIRONMENT_DATA_FIELDS = {
-    'temp':   fields.Float,
-    'humidty':    fields.Float,
-    'ambient_light': fields.Float,
-    'timestamp': fields.String,
-    'cpu_temp': fields.Float,
-    'tvoc': fields.Float,
-    'co2': fields.Float,
+    "ambient_light": fields.Float,
+    "humidity": fields.Float,
+    "temp": fields.Float,
+    "cpu_temp": fields.Float,
+    "tvoc": fields.Integer,
+    "co2": fields.Float,
+    "timestamp": fields.String
 }
 
 class GetRoomEnvironmentData(Resource):
     @marshal_with(ROOM_ENVIRONMENT_DATA_FIELDS)
     def get(self):
-        return self.collect_data()
+        data = self.collect_data()
+        print data
+        return data
 
     def collect_data(self):
 
@@ -48,7 +50,9 @@ class GetRoomEnvironmentData(Resource):
             "timestamp": strftime("%Y-%m-%d %H:%M:%S", gmtime())
         }
 
-        return json.dumps(result)
+        print result
+
+        return result
 
     def ccs811(self):
 
