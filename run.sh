@@ -35,7 +35,7 @@ function create_iot_device {
 
 # run only on the iot device 
 function execute_data_collection {
-    python main.py \
+    python iot/main.py \
         --project_id=$project \
         --registry_id=$registry \
         --device_id=$device \

@@ -7,3 +7,4 @@ Adafruit_CCS811==0.1.0
 Flask==0.12.2
 flask-restful==0.3.6
 urlfetch==1.0.3
+jwt
