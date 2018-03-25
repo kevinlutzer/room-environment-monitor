@@ -20,7 +20,7 @@ ROOM_ENVIRONMENT_DATA_FIELDS = {
 }
 
 class GetRoomEnvironmentData(Resource):
-    @marshal_with(ROOM_ENVIRONMENT_DATA_FIELDS)
+    # @marshal_with(ROOM_ENVIRONMENT_DATA_FIELDS)
     def get(self):
         data = self.collect_data()
         print data
