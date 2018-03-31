@@ -22,7 +22,6 @@ args definition
     'ca_certs': 'roots.pem',
     'mqtt_bridge_hostname': 'mqtt.googleapis.com',
     'mqtt_bridge_port': 8883,
-
 """
 
 # MQTT Callback functions for success and failure

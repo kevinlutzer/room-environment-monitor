@@ -8,7 +8,8 @@ import paho.mqtt.client as mqtt
 from google_iot import GoogleIotClient
 from urlfetch import get, UrlfetchException
 
-LOCAL_SERVER_HOST = 'localhost:5000'
+LOCAL_SERVER_HOST = 'localhost'
+LOCAL_SERVER_PORT = '5000'
 
 PROJECT_CONFIG = {
     'project_id': 'personal-website-klutzer',
@@ -25,18 +26,18 @@ PROJECT_CONFIG = {
 def main():
 
     iot_client = GoogleIotClient.create_client(PROJECT_CONFIG)
-    content = None
+    data = None
 
     try: 
-        response = get(LOCAL_SERVER_HOST)
+        response = get(LOCAL_SERVER_HOST + ':' + LOCAL_SERVER_PORT)
         if response.status_code != 200: 
             raise ValueError('Was not able to fetch the data correctly')
-        content = response.content
+        data = json.load(response.content)
     except UrlfetchException:
-        return 
+        return
 
     # Collect and publish the data
-    iot_client.publish_data(content)
+    iot_client.publish_data(data)
 
 
 if __name__ == '__main__':
