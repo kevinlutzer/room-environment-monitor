@@ -48,5 +48,11 @@ function execute_data_collection {
 function server {
     python server/main.py
 }
+
+# starts up the flask stub server
+function server_stub {
+    python server/main.py --stub true
+}
+
 # entry point into application
 "$@"
