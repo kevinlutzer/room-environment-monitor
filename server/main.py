@@ -1,13 +1,10 @@
 from flask import Flask
 from flask_restful import Api
-from api import GetRoomEnvironmentData
-from api_stub import GetRoomEnvironmentDataStub
-from sensors import RoomMonitorSensors
+
 import argparse
 
 app = Flask(__name__)
 api = Api(app)
-sensor_client = RoomMonitorSensors() 
 
 def main():
 
@@ -18,8 +15,11 @@ def main():
 
     # Setup flask app
     if args.stub:
+        from api_stub import GetRoomEnvironmentDataStub
         api.add_resource(GetRoomEnvironmentDataStub, '/')
+
     else:
+        from api import GetRoomEnvironmentData, sensor_client
         sensor_client.init_sensors()
         api.add_resource(GetRoomEnvironmentData, '/')    
 
