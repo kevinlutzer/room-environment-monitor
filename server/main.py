@@ -23,7 +23,11 @@ def main():
         sensor_client.init_sensors()
         api.add_resource(GetRoomEnvironmentData, '/')    
 
-    app.run(debug=False)
+    app.run(
+        debug=False,
+        port=5000,
+        host='0.0.0.0'
+    )
 
 if __name__ == '__main__':
     main()

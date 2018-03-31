@@ -50,7 +50,7 @@ function server {
 }
 
 # starts up the flask stub server
-function server_stub {
+function stub_server {
     python server/main.py --stub true
 }
 
