@@ -10,50 +10,20 @@ import paho.mqtt.client as mqtt
 from urlfetch import get, UrlfetchException
 import argparse
 
-def parse_command_line_args():
-    """Parse command line arguments."""
-    parser = argparse.ArgumentParser(
-        description=(
-                'Example Google Cloud IoT Core MQTT device connection code.'))
-    parser.add_argument(
-            '--project_id',
-            required=True,
-            help='GCP cloud project name')
-    parser.add_argument(
-            '--registry_id',
-            required=True,
-            help='Cloud IoT Core registry id')
-    parser.add_argument(
-            '--device_id',
-            required=True,
-            help='Cloud IoT Core device id')
-    parser.add_argument(
-            '--private_key_file',
-            default="auth-files/rsa_private.pem",
-            help='Path to private key file.')
-    parser.add_argument(
-            '--algorithm',
-            default = 'RS256',
-            choices=('RS256', 'ES256'),
-            help='Which encryption algorithm to use to generate the JWT.')
-    parser.add_argument(
-            '--cloud_region',
-            default='us-central1',
-            help='GCP cloud region')
-    parser.add_argument(
-            '--ca_certs',
-            default='auth-files/roots.pem',
-            help=('CA root certificate from https://pki.google.com/roots.pem'))
-    parser.add_argument(
-            '--mqtt_bridge_hostname',
-            default='mqtt.googleapis.com',
-            help='MQTT bridge hostname.')
-    parser.add_argument(
-            '--mqtt_bridge_port',
-            default=8883,
-            help='MQTT bridge port.')
+"""
+args definition
 
-    return parser.parse_args()
+    'project_id': 'personal-website-klutzer',
+    'cloud_region': 'us-central1',
+    'registry_id': 'klutzer-devices',
+    'device_id': 'raspberry-pi-room-monitor-rs256-device',
+    'private_key_file': 'rsa_private.pem',
+    'algorithm': 'RS256',
+    'ca_certs': 'roots.pem',
+    'mqtt_bridge_hostname': 'mqtt.googleapis.com',
+    'mqtt_bridge_port': 8883,
+
+"""
 
 # MQTT Callback functions for success and failure
 def error_str(rc):
@@ -77,8 +47,8 @@ def on_publish(unused_client, unused_userdata, unused_mid):
 
 class GoogleIotClient(): 
 
-    _client = None
-    _args = None
+    client = None
+    args = None
 
     def create_jwt(self, project_id, private_key_file, algorithm):
         """Create JWT, will throw ValueError if private key file doesn't exist or is invalid"""
@@ -102,7 +72,7 @@ class GoogleIotClient():
 
         return jwt.encode(token, private_key, algorithm=algorithm)
 
-    def publish_data(self, payload, args):
+    def publish_data(self, payload):
 
         # Start the network loop.
         self._client.loop_start()
@@ -110,36 +80,58 @@ class GoogleIotClient():
         print('Publishing message {}'.format(payload))
         
         # Publish "payload" to the MQTT topic. qos=1 means 'at least one delivery'.  
-        self._client.publish('/devices/{}/events'.format(args.device_id), payload, qos=1)
+        self._client.publish('/devices/{}/events'.format(self._args.device_id), payload, qos=1)
 
         # End the network loop and finish.
         self._client.loop_stop()
+    
+    @classmethod
+    def verify_args(cls, args):
+        """ Raises a value error if required params are missing """
+        if not args.get('project_id'):
+            ValueError('project_id is required')
+        if not args.get('cloud_region'):
+            ValueError('project_id is required')
+        if not args.get('device_id'):
+            ValueError('device_id is required')
+        if not args.get('private_key_file'):
+            ValueError('private_key_file is required')
+        if not args.get('algorithm'):
+            ValueError('algorithm is required')
+        if not args.get('ca_certs'):
+            ValueError('ca_certs is required')
+        if not args.get('mqtt_bridge_hostname'):
+            ValueError('mqtt_bridge_hostname is required')
+        if not args.get('mqtt_bridge_port'):
+            ValueError('mqtt_bridge_port is required')
 
     @classmethod
     def create_client(cls, args):
 
         # Create client
-        googleIotClient = GoogleIotClient()
+        client = GoogleIotClient()
 
         # Set arguements on class
-        GoogleIotClient._args = args
+        cls.verify_args(args)
+        client.args = args
 
         # Creat mqtt connection
-        googleIotClient._client = mqtt.Client(client_id=('projects/{}/locations/{}/registries/{}/devices/{}'.format(args.project_id, args.cloud_region, args.registry_id, args.device_id)))
-        googleIotClient._client.connect(args.mqtt_bridge_hostname, args.mqtt_bridge_port)
+        client.client = mqtt.Client(client_id=('projects/{}/locations/{}/registries/{}/devices/{}'.format(client.args.get('project_id'), 
+        client.args.get('cloud_region'), client.args.get('registry_id'), client.args.get('device_id')))
+        client.client.connect(client.args.get('mqtt_bridge_hostname'), client.args.get('mqtt_bridge_port'))
         
         # Username fied is not used since jwt is used crendentials
-        googleIotClient._client.username_pw_set(
+        client.client.username_pw_set(
                 username='unused',
-                password=googleIotClient.create_jwt(
-                        args.project_id, args.private_key_file, args.algorithm))
+                password=client.create_jwt(
+                        client._args.get('project_id'), client.args.get('private_key_file'), client.args.get('algorithm'))
 
         # Enable SSL/TLS support.
-        googleIotClient._client.tls_set(ca_certs=args.ca_certs)
+        client.client.tls_set(ca_certs=args.get('ca_certs'))
 
         # Register message callbacks.
-        googleIotClient._client.on_connect = on_connect
-        googleIotClient._client.on_publish = on_publish
-        googleIotClient._client.on_disconnect = on_disconnect
+        client.client.on_connect = on_connect
+        client.client.on_publish = on_publish
+        client.client.on_disconnect = on_disconnect
 
-        return googleIotClient
+        return client

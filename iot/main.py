@@ -5,19 +5,30 @@ import subprocess
 import json
 import jwt
 import paho.mqtt.client as mqtt
-from .google_iot import GoogleIotClient, parse_command_line_args
+from google_iot import GoogleIotClient
 from urlfetch import get, UrlfetchException
 
-HOST = 'localhost:5000'
+LOCAL_SERVER_HOST = 'localhost:5000'
+
+PROJECT_CONFIG = {
+    'project_id': 'personal-website-klutzer',
+    'cloud_region': 'us-central1',
+    'registry_id': 'klutzer-devices',
+    'device_id': 'raspberry-pi-room-monitor-rs256-device',
+    'private_key_file': 'rsa_private.pem',
+    'algorithm': 'RS256',
+    'ca_certs': 'roots.pem',
+    'mqtt_bridge_hostname': 'mqtt.googleapis.com',
+    'mqtt_bridge_port': 8883,
+}
 
 def main():
 
-    args = parse_command_line_args()
-    iot_client = GoogleIotClient.create_client(args)
+    iot_client = GoogleIotClient.create_client(PROJECT_CONFIG)
     content = None
 
     try: 
-        response = get(HOST)
+        response = get(LOCAL_SERVER_HOST)
         if response.status_code != 200: 
             raise ValueError('Was not able to fetch the data correctly')
         content = response.content
@@ -25,7 +36,7 @@ def main():
         return 
 
     # Collect and publish the data
-    iot_client.publish_data(content, args)
+    iot_client.publish_data(content)
 
 
 if __name__ == '__main__':

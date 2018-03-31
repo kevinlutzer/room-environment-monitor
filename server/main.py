@@ -10,7 +10,8 @@ api = Api(app)
 css811_client = Adafruit_CCS811()
 
 ROOM_ENVIRONMENT_DATA_FIELDS = {
-    "ambient_light": fields.Float,
+    "ambient_visible_light": fields.Float,
+    "ambient_ir_light": fields.Float,
     "humidity": fields.Float,
     "temp": fields.Float,
     "cpu_temp": fields.Float,
@@ -41,7 +42,8 @@ class GetRoomEnvironmentData(Resource):
             cpu_temp = 40
 
         result = {
-            "ambient_light": 4000,
+            "ambient_visible_light": 4000,
+            "ambient_ir_light": 3405,
             "humidity": 3000,
             "temp": ccs811_data.get("temp"),
             "cpu_temp": cpu_temp,
@@ -74,7 +76,7 @@ def init_sensors():
 def main():
     # Setup flask app
     api.add_resource(GetRoomEnvironmentData, '/')
-    app.run(debug=True)
+    app.run(debug=False)
 
     init_sensors()
 
