@@ -13,7 +13,7 @@ def main():
     parser.add_argument("--stub", help="use the stub server")
     args = parser.parse_args()
 
-    # Setup flask app
+    # Setup flask app, use stub if the required argument is passed
     if args.stub:
         from api_stub import GetRoomEnvironmentDataStub
         api.add_resource(GetRoomEnvironmentDataStub, '/')
