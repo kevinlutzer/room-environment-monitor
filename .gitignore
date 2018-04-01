@@ -1,8 +1,13 @@
+
+# certs and key files
 auth-files
+
+# compiled pi files
 *.pyc
-index.html*
-*.pem
-.idea
-server/*pem
 iot/*.pyc
-iot/*.pem
+sever/*.pyc
+
+# index files from wget
+
+# ide config files
+.idea

@@ -16,4 +16,5 @@ logging==0.4.9.6
 urlfetch==1.0.3
 
 # Sensors
-#Adafruit_CCS811==0.1.0
+# tsl2561
+# Adafruit_CCS811==0.1.0
