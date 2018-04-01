@@ -1,4 +1,5 @@
 from Adafruit_CCS811 import Adafruit_CCS811
+from tsl2561 import TSL2561
 import subprocess
 from time import gmtime, strftime
 import json
@@ -7,15 +8,16 @@ import time
 class RoomMonitorSensors(object):
 
     _ccs811_client = Adafruit_CCS811()
+    _tsl1261_client = TSL2561(debug=False)
     _initialized_sensors = False
-
-    def __init__(self, *args, **kwargs):
-        self._ccs811_client = Adafruit_CCS811()
-
 
     def collect_data(self):
 
         ccs811_data = self.ccs811()
+        tsl2561_data = self.tsl2561()
+
+        if not tsl2561_data:
+            RuntimeError('Data is not reliable from the light sensor')
 
         if not ccs811_data:
             return ccs811_data
@@ -23,6 +25,7 @@ class RoomMonitorSensors(object):
         cpu_temp = subprocess.check_output(["sudo", "/opt/vc/bin/vcgencmd", "measure_temp"]).split('=', 1)[-1].rstrip()
 
         base_data = {
+            "lux": tsl2561_data,
             "cpu_temp": cpu_temp,
             "timestamp": strftime("%Y-%m-%d %H:%M:%S", gmtime())
         }
@@ -30,6 +33,9 @@ class RoomMonitorSensors(object):
         base_data.update(ccs811_data)
 
         return base_data
+    
+    def tsl2561(self):
+        return self._tsl1261_client.lux()
 
     def ccs811(self):
 
