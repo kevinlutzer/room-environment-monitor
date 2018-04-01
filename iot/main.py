@@ -3,21 +3,6 @@ from google_iot import GoogleIotClient
 from urlfetch import get, UrlfetchException
 import argparse
 
-LOCAL_SERVER_HOST = 'localhost'
-LOCAL_SERVER_PORT = '5000'
-
-# PROJECT_CONFIG = {
-#     'project_id': 'personal-website-klutzer',
-#     'cloud_region': 'us-central1',
-#     'registry_id': 'klutzer-devices',
-#     'device_id': 'raspberry-pi-room-monitor-rs256-device',
-#     'private_key_file': 'rsa_private.pem',
-#     'algorithm': 'RS256',
-#     'ca_certs': 'roots.pem',
-#     'mqtt_bridge_hostname': 'mqtt.googleapis.com',
-#     'mqtt_bridge_port': 8883,
-# }
-
 def parse_command_line_args():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
@@ -79,10 +64,9 @@ def main():
     
     data = None
     try: 
-        response = get(LOCAL_SERVER_HOST + ':' + LOCAL_SERVER_PORT)
+        response = get(args.local_server_host + ':' + args.local_server_port)
         if response.status_code != 200: 
             raise ValueError('Was not able to fetch the data correctly')
-        print response.content
         data = json.loads(response.content)
     except UrlfetchException:
         return

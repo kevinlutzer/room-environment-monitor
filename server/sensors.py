@@ -38,19 +38,19 @@ class RoomMonitorSensors(object):
 
         temp = self._ccs811_client.calculateTemperature()
         if not self._ccs811_client.readData():
-            a = {
+            return {
                 "co2": self._ccs811_client.geteCO2(),
                 "tvoc": self._ccs811_client.getTVOC(),
                 "temp": temp
             }
-            print a
-            return a
         else:
             raise ValueError('Was not able to read air quality from the ccs811.')
 
     def init_sensors(self):
         while not self._ccs811_client.available():
             pass
+        
+        # Calibrate temperature
         temp = self._ccs811_client.calculateTemperature()
         self._ccs811_client.tempOffset = temp - 25.0
         self._initialized_sensors = True

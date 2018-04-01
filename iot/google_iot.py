@@ -107,7 +107,7 @@ class GoogleIotClient():
         # Connect to the Google MQTT bridge.
         client.connect(args.mqtt_bridge_hostname, args.mqtt_bridge_port)
 
-        # Create client
+        # Create google iot client instance
         google_client = GoogleIotClient()
         google_client.client = client
         google_client.args = args
