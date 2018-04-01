@@ -1,3 +1,5 @@
 auth-files
 *.pyc
 index.html*
+*.pem
+.idea

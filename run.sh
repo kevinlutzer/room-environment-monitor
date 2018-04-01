@@ -39,9 +39,11 @@ function execute_data_collection {
         --project_id=$project \
         --registry_id=$registry \
         --device_id=$device \
-        --private_key_file=rsa_private.pem \
-        --algorithm=RS256
-        --ca_certs=roots.pem
+        --private_key_file=$configDirName/rsa_private.pem \
+        --algorithm=RS256 \
+        --ca_certs=$configDirName/roots.pem \
+        --local_server_host=localhost \
+        --local_server_port=5000
 }
 
 # starts up the flask server

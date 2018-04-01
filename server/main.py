@@ -6,12 +6,27 @@ import argparse
 app = Flask(__name__)
 api = Api(app)
 
-def main():
-
-    # Setup argparser
+def parse_command_line_args():
+    """Parse command line arguments."""
     parser = argparse.ArgumentParser()
-    parser.add_argument("--stub", help="use the stub server")
-    args = parser.parse_args()
+    parser.add_argument(
+        "--stub",
+        default=False,
+        help="use the stub server")
+    parser.add_argument(
+        '--local_server_host',
+        default='localhost',
+        help='Local server host name')
+    parser.add_argument(
+        '--local_server_port',
+        default=5000,
+        help='Local server port')
+    return parser.parse_args()
+
+def main():
+    """Entry point in app."""
+    # Setup argparser
+    args = parse_command_line_args()
 
     # Setup flask app, use stub if the required argument is passed
     if args.stub:
@@ -25,8 +40,8 @@ def main():
 
     app.run(
         debug=False,
-        port=5000,
-        host='0.0.0.0'
+        port=args.local_server_port,
+        host=args.local_server_host
     )
 
 if __name__ == '__main__':

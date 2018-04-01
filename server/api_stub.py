@@ -1,6 +1,4 @@
-from flask import request
-from flask_restful import Resource, fields, marshal_with
-import json
+from flask_restful import Resource, marshal_with
 from room_monitor_data import ROOM_ENVIRONMENT_DATA_FIELDS
 
 class GetRoomEnvironmentDataStub(Resource):
