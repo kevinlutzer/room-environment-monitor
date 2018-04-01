@@ -3,3 +3,6 @@ auth-files
 index.html*
 *.pem
 .idea
+server/*pem
+iot/*.pyc
+iot/*.pem
