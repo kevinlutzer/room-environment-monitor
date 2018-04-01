@@ -34,8 +34,10 @@ def main():
         api.add_resource(GetRoomEnvironmentDataStub, '/')
 
     else:
+        print 'Not using stub'
         from api import GetRoomEnvironmentData, sensor_client
         sensor_client.init_sensors()
+        print sensor_client.collect_data()
         api.add_resource(GetRoomEnvironmentData, '/')    
 
     app.run(

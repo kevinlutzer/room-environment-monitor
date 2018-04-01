@@ -22,15 +22,14 @@ class RoomMonitorSensors(object):
 
         cpu_temp = subprocess.check_output(["sudo", "/opt/vc/bin/vcgencmd", "measure_temp"]).split('=', 1)[-1].rstrip()
 
-        result = {
-            "ambient_visible_light": 4000,
-            "ambient_ir_light": 3405,
-            "humidity": 3000,
+        base_data = {
             "cpu_temp": cpu_temp,
             "timestamp": strftime("%Y-%m-%d %H:%M:%S", gmtime())
-        }.update(ccs811_data)
+        }
 
-        return result
+        base_data.update(ccs811_data)
+
+        return base_data
 
     def ccs811(self):
 
@@ -39,11 +38,13 @@ class RoomMonitorSensors(object):
 
         temp = self._ccs811_client.calculateTemperature()
         if not self._ccs811_client.readData():
-            return {
+            a = {
                 "co2": self._ccs811_client.geteCO2(),
                 "tvoc": self._ccs811_client.getTVOC(),
                 "temp": temp
             }
+            print a
+            return a
         else:
             raise ValueError('Was not able to read air quality from the ccs811.')
 

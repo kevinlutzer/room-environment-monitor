@@ -8,4 +8,6 @@ class GetRoomEnvironmentData(Resource):
 
     @marshal_with(ROOM_ENVIRONMENT_DATA_FIELDS)
     def get(self):
-        return sensor_client.collect_data()
+        a = sensor_client.collect_data()
+        print a
+        return a
