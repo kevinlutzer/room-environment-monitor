@@ -2,13 +2,12 @@ from flask_restful import Resource, marshal_with
 from room_monitor_data import ROOM_ENVIRONMENT_DATA_FIELDS
 
 class GetRoomEnvironmentDataStub(Resource):
-
+    """ Get Room Environment Data Flask Resource"""
     @marshal_with(ROOM_ENVIRONMENT_DATA_FIELDS)
     def get(self):
+        """ get handler """
         return {
-            "ambient_visible_light": 4000,
-            "ambient_ir_light": 3405,
-            "humidity": 3000,
+            "lux": 41,
             "temp": 34,
             "cpu_temp": 34,
             "tvoc": 1,

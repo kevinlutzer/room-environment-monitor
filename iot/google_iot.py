@@ -97,9 +97,7 @@ class GoogleIotClient():
         # Enable SSL/TLS support.
         client.tls_set(ca_certs=args.ca_certs)
 
-        # Register message callbacks. https://eclipse.org/paho/clients/python/docs/
-        # describes additional callbacks that Paho supports. In this example, the
-        # callbacks just print to standard out.
+        # Setup callbacks
         client.on_connect = on_connect
         client.on_publish = on_publish
         client.on_disconnect = on_disconnect

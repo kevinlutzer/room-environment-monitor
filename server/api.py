@@ -5,9 +5,8 @@ from sensors import RoomMonitorSensors
 sensor_client = RoomMonitorSensors()
 
 class GetRoomEnvironmentData(Resource):
-
+    """ Get Room Environment Data Flask Resource"""
     @marshal_with(ROOM_ENVIRONMENT_DATA_FIELDS)
     def get(self):
-        a = sensor_client.collect_data()
-        print a
-        return a
+        """ get handler """
+        return sensor_client.collect_data()
