@@ -1,19 +1,13 @@
 package main
 
 import (
-	"net/http"
 	"os"
 
-	r "github.com/kml183/room_environment_monitor/go_server/internal/room-environment-monitor"
+	r "github.com/kml183/room-environment-monitor/go-server/internal/room-environment-monitor"
 )
 
 func main() {
-
-}
-
-func setupHTTPServer() {
-	http.HandleFunc("/room-environment-data", r.Handle)
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	if err := r.NewHTTPServer(); err != nil {
 		os.Exit(2)
 	}
 }
