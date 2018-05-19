@@ -1,9 +1,13 @@
 package server
 
 import (
+	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+
+	"github.com/kml183/room-environment-monitor/go-server/internal/sensors"
 )
 
 const (
@@ -11,14 +15,17 @@ const (
 	HTTPPort = ":8080"
 )
 
-type server struct{}
+type server struct {
+	sensorsService sensors.Service
+}
 
 // NewHTTPServer returns a instance of the http server
 func NewHTTPServer() error {
 	s := server{}
 
 	//Setup Handlers
-	http.HandleFunc("/", s.GetSnapshotHandler)
+	http.HandleFunc("/get-sensor-data", s.GetSnapshotHandler)
+	http.HandleFunc("/initialize-sensors", s.InitializeSensorsHandler)
 
 	fmt.Printf("Started HTTP handler on port %s", HTTPPort)
 	if err := http.ListenAndServe(HTTPPort, nil); err != nil {
@@ -30,13 +37,26 @@ func NewHTTPServer() error {
 
 // Handler is the main http handler for the room environment monitor app
 func (s *server) GetSnapshotHandler(wr http.ResponseWriter, r *http.Request) {
-	isStub := r.URL.Query().Get("is_stub")
-	if isStub == "" {
-		s.setResponse(wr, "is_stub is required", 500)
+	d, err := s.sensorsService.FetchSensorData(context.Background())
+	if err != nil {
+		s.setResponse(wr, fmt.Sprintf("could't fetch the sensor data > %s", err.Error()), 500)
+	}
+
+	md, err := json.Marshal(d)
+	if err != nil {
+		s.setResponse(wr, fmt.Sprintf("couldn't marshal the data > %s", err.Error()), 500)
+	}
+
+	s.setResponse(wr, string(md), 200)
+	return
+}
+
+func (s *server) InitializeSensorsHandler(wr http.ResponseWriter, r *http.Request) {
+	if err := s.sensorsService.IntializeSensors(); err != nil {
+		s.setResponse(wr, fmt.Sprintf("can't initialize the sensors > %s", err.Error()), 500)
 		return
 	}
 	s.setResponse(wr, "Hello World", 200)
-	return
 }
 
 func (s *server) setResponse(wr http.ResponseWriter, message string, statusCode int) {
