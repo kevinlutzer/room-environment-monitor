@@ -1,7 +1,6 @@
 package server
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -16,12 +15,17 @@ const (
 )
 
 type server struct {
-	sensorsService sensors.Service
+	SensorsService sensors.Service
 }
 
 // NewHTTPServer returns a instance of the http server
 func NewHTTPServer() error {
-	s := server{}
+
+	// Setup Sensors Service
+	ss := sensors.NewSensorService()
+	s := &server{
+		SensorsService: ss,
+	}
 
 	//Setup Handlers
 	http.HandleFunc("/get-sensor-data", s.GetSnapshotHandler)
@@ -37,7 +41,8 @@ func NewHTTPServer() error {
 
 // Handler is the main http handler for the room environment monitor app
 func (s *server) GetSnapshotHandler(wr http.ResponseWriter, r *http.Request) {
-	d, err := s.sensorsService.FetchSensorData(context.Background())
+
+	d, err := s.SensorsService.FetchSensorData()
 	if err != nil {
 		s.setResponse(wr, fmt.Sprintf("could't fetch the sensor data > %s", err.Error()), 500)
 	}
@@ -52,7 +57,7 @@ func (s *server) GetSnapshotHandler(wr http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) InitializeSensorsHandler(wr http.ResponseWriter, r *http.Request) {
-	if err := s.sensorsService.IntializeSensors(); err != nil {
+	if err := s.SensorsService.IntializeSensors(); err != nil {
 		s.setResponse(wr, fmt.Sprintf("can't initialize the sensors > %s", err.Error()), 500)
 		return
 	}

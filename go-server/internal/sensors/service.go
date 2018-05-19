@@ -1,17 +1,14 @@
 package sensors
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
-
-	"golang.org/x/sync/errgroup"
 )
 
 //Service represents the structure of the service layer
 type Service interface {
 	//FetchSensorData fetches sensors data
-	FetchSensorData(ctx context.Context) (*SensorData, error)
+	FetchSensorData() (*SensorData, error)
 	//IntializeSensors initializes the sensors
 	IntializeSensors() error
 }
@@ -19,26 +16,24 @@ type Service interface {
 type service struct{}
 
 func NewSensorService() Service {
-	s := service{}
-	return s
+	return &service{}
 }
 
-func (s service) FetchSensorData(ctx context.Context) (*SensorData, error) {
+func (s *service) FetchSensorData() (*SensorData, error) {
+	// g, ctx := errgroup.WithContext(ctx)
 
-	g, ctx := errgroup.WithContext(ctx)
+	// g.Go(s.fetchGasData)
+	// g.Go(s.fetchLightData)
 
-	g.Go(s.fetchGasData)
-	g.Go(s.fetchLightData)
+	// err := g.Wait()
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	err := g.Wait()
-	if err != nil {
-		return nil, err
-	}
-
-	return &SensorData{}, err
+	return &SensorData{}, nil
 }
 
-func (s service) fetchGasData() error {
+func (s *service) fetchGasData() error {
 	m := "{temp: \"32.6\", tvoc: 2000, co2: 23.5}"
 
 	d := &GasData{}
@@ -49,7 +44,7 @@ func (s service) fetchGasData() error {
 	return nil
 }
 
-func (s service) fetchLightData() error {
+func (s *service) fetchLightData() error {
 	t := "{lux: 3000}"
 
 	res := &LightData{}
@@ -60,6 +55,6 @@ func (s service) fetchLightData() error {
 	return nil
 }
 
-func (s service) IntializeSensors() error {
+func (s *service) IntializeSensors() error {
 	return errors.New("Not yet implemented")
 }
