@@ -1,4 +1,4 @@
-package roomenvironmentmonitor
+package server
 
 import (
 	"errors"
@@ -32,14 +32,15 @@ func NewHTTPServer() error {
 func (s *server) GetSnapshotHandler(wr http.ResponseWriter, r *http.Request) {
 	isStub := r.URL.Query().Get("is_stub")
 	if isStub == "" {
-		s.setResponse(wr, "is_stub is required", 400)
+		s.setResponse(wr, "is_stub is required", 500)
 		return
 	}
 	s.setResponse(wr, "Hello World", 200)
 	return
 }
 
-func (s *server) setResponse(wr http.ResponseWriter, message string, statusCode int64) {
+func (s *server) setResponse(wr http.ResponseWriter, message string, statusCode int) {
 	wr.Write([]byte(message))
+	wr.WriteHeader(statusCode)
 	return
 }

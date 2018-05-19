@@ -3,11 +3,11 @@ package main
 import (
 	"os"
 
-	r "github.com/kml183/room-environment-monitor/go-server/internal/room-environment-monitor"
+	s "github.com/kml183/room-environment-monitor/go-server/internal/server"
 )
 
 func main() {
-	if err := r.NewHTTPServer(); err != nil {
+	if err := s.NewHTTPServer(); err != nil {
 		os.Exit(2)
 	}
 }
