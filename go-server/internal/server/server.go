@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -31,6 +32,7 @@ func NewHTTPServer() error {
 	http.HandleFunc("/get-sensor-data", s.GetSnapshotHandler)
 	http.HandleFunc("/initialize-sensors", s.InitializeSensorsHandler)
 
+	//Start the http server
 	fmt.Printf("Started HTTP handler on port %s", HTTPPort)
 	if err := http.ListenAndServe(HTTPPort, nil); err != nil {
 		return errors.New("Couldn't start http server")
@@ -42,7 +44,9 @@ func NewHTTPServer() error {
 // Handler is the main http handler for the room environment monitor app
 func (s *server) GetSnapshotHandler(wr http.ResponseWriter, r *http.Request) {
 
-	d, err := s.SensorsService.FetchSensorData()
+	ctx := context.TODO()
+
+	d, err := s.SensorsService.FetchSensorData(ctx)
 	if err != nil {
 		s.setResponse(wr, fmt.Sprintf("could't fetch the sensor data > %s", err.Error()), 500)
 	}

@@ -15,12 +15,12 @@ type GasData struct {
 }
 
 type SensorData struct {
-	Lux         int32
-	CO2         float32
-	TVOC        int32
-	Temperature string
-	CPUTemp     string
-	TimeStamp   time.Time
+	Lux         int32     `json:"lux"`
+	CO2         float32   `json:"co2"`
+	TVOC        int32     `json:"tvoc"`
+	Temperature string    `json:"temp"`
+	CPUTemp     string    `json:"cpu_temp"`
+	TimeStamp   time.Time `json:"timestamp"`
 }
 
 func (s *SensorData) convertFromLightAndGasData(g *GasData, l *LightData, t time.Time, cpuTemp string) {
