@@ -1,9 +1,11 @@
 package sensors
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
+	"os/exec"
 	"time"
 
 	"golang.org/x/sync/errgroup"
@@ -36,11 +38,9 @@ func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 		return s.fetchLightData(ld)
 	})
 
-	var cpuTemp string
+	cpuTemp := &TempData{}
 	g.Go(func() error {
-		s, err := s.fetchCpuTemp()
-		cpuTemp = s
-		return err
+		return s.fetchCpuTemp(cpuTemp)
 	})
 
 	err := g.Wait()
@@ -49,13 +49,25 @@ func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 	}
 
 	sd := &SensorData{}
-	sd.convertFromLightAndGasData(gd, ld, time.Now(), cpuTemp)
+	sd.convertFromLightAndGasData(gd, ld, time.Now(), cpuTemp.Temp)
 
 	return sd, nil
 }
 
-func (s *service) fetchCpuTemp() (string, error) {
-	return "45.2 C", nil
+func (s *service) fetchCpuTemp(cpuTemp *TempData) error {
+	cmd := exec.Command("python", "../../../server/main.py", "--sensor=temp")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Run()
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal([]byte(out.String()), cpuTemp)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *service) fetchGasData(gd *GasData) error {

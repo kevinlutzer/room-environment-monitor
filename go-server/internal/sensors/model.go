@@ -8,6 +8,10 @@ type LightData struct {
 	Lux int32 `json:"lux"`
 }
 
+type TempData struct {
+	Temp string `json:"temp"`
+}
+
 type GasData struct {
 	CO2         float32 `json:"co2"`
 	TVOC        int32   `json:"tvoc"`
