@@ -1,6 +1,7 @@
 
 # certs and key files
 auth-files
+certs
 
 # compiled pi files
 *.pyc

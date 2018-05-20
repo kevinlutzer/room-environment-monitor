@@ -3,7 +3,7 @@ region=us-central1
 registry=klutzer-devices
 device=raspberry-pi-room-monitor-rs256-device
 events=room-monitor-telemetry		
-configDirName=auth-files
+configDirName=go-server/certs/internal/server
 
 # run on any device
 function create_iot_registry {
