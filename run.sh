@@ -33,28 +33,5 @@ function create_iot_device {
     wget https://pki.google.com/roots.pem -P $configDirName
 }
 
-# run only on the iot device 
-function execute_data_collection {
-    python iot/main.py \
-        --project_id=$project \
-        --registry_id=$registry \
-        --device_id=$device \
-        --private_key_file=$configDirName/rsa_private.pem \
-        --algorithm=RS256 \
-        --ca_certs=$configDirName/roots.pem \
-        --local_server_host=localhost \
-        --local_server_port=5000
-}
-
-# starts up the flask server
-function server {
-    python server/main.py
-}
-
-# starts up the flask stub server
-function stub_server {
-    python server/main.py --stub true
-}
-
 # entry point into application
 "$@"
