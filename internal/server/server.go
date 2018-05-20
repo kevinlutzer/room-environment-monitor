@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/kml183/room-environment-monitor/go-server/internal/config"
-	googleiot "github.com/kml183/room-environment-monitor/go-server/internal/google-iot"
-	"github.com/kml183/room-environment-monitor/go-server/internal/sensors"
+	"github.com/kml183/room-environment-monitor/internal/config"
+	googleiot "github.com/kml183/room-environment-monitor/internal/google-iot"
+	"github.com/kml183/room-environment-monitor/internal/sensors"
 )
 
 const (

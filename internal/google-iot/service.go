@@ -10,9 +10,9 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
-	"github.com/kml183/room-environment-monitor/go-server/internal/config"
+	"github.com/kml183/room-environment-monitor/internal/config"
 
-	"github.com/kml183/room-environment-monitor/go-server/internal/sensors"
+	"github.com/kml183/room-environment-monitor/internal/sensors"
 )
 
 //Service represents the structure of the service layer

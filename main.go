@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	s "github.com/kml183/room-environment-monitor/go-server/internal/server"
+	s "github.com/kml183/room-environment-monitor/internal/server"
 )
 
 func main() {
