@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 
+	googleiot "github.com/kml183/room-environment-monitor/go-server/internal/google-iot"
 	"github.com/kml183/room-environment-monitor/go-server/internal/sensors"
 )
 
@@ -16,21 +17,25 @@ const (
 )
 
 type server struct {
-	SensorsService sensors.Service
+	SensorsService   sensors.Service
+	GoogleIOTService googleiot.Service
 }
 
 // NewHTTPServer returns a instance of the http server
 func NewHTTPServer() error {
 
-	// Setup Sensors Service
+	// Setup Servers
 	ss := sensors.NewSensorService()
+	gs := googleiot.NewGoogleIOTService(ss)
 	s := &server{
-		SensorsService: ss,
+		SensorsService:   ss,
+		GoogleIOTService: gs,
 	}
 
 	//Setup Handlers
-	http.HandleFunc("/get-sensor-data", s.GetSnapshotHandler)
+	http.HandleFunc("/get-sensor-data", s.GetSensorDataHandler)
 	http.HandleFunc("/initialize-sensors", s.InitializeSensorsHandler)
+	http.HandleFunc("/publish-sensor-data", s.PublishSensorData)
 
 	//Start the http server
 	fmt.Printf("Started HTTP handler on port %s", HTTPPort)
@@ -42,7 +47,7 @@ func NewHTTPServer() error {
 }
 
 // Handler is the main http handler for the room environment monitor app
-func (s *server) GetSnapshotHandler(wr http.ResponseWriter, r *http.Request) {
+func (s *server) GetSensorDataHandler(wr http.ResponseWriter, r *http.Request) {
 
 	ctx := context.TODO()
 
@@ -65,7 +70,18 @@ func (s *server) InitializeSensorsHandler(wr http.ResponseWriter, r *http.Reques
 		s.setResponse(wr, fmt.Sprintf("can't initialize the sensors > %s", err.Error()), 500)
 		return
 	}
-	s.setResponse(wr, "Hello World", 200)
+	s.setResponse(wr, "Successfully intialized the sensors", 200)
+}
+
+func (s *server) PublishSensorData(wr http.ResponseWriter, r *http.Request) {
+
+	ctx := context.TODO()
+
+	if err := s.GoogleIOTService.PublishSensorData(ctx); err != nil {
+		s.setResponse(wr, fmt.Sprintf("can't publish the sensor data > %s", err.Error()), 500)
+		return
+	}
+	s.setResponse(wr, "Successfully published the sensor data", 200)
 }
 
 func (s *server) setResponse(wr http.ResponseWriter, message string, statusCode int) {
