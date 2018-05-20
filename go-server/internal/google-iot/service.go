@@ -104,7 +104,7 @@ func (s *service) PublishSensorData(ctx context.Context, data string) error {
 		"klutzer-devices",
 		"raspberry-pi-room-monitor-rs256-device",
 	)
-	fmt.Printf("client id --> %s \n", clientID)
+	fmt.Printf("Client id > %s\n", clientID)
 
 	opts, err := s.getMQTTOptions(clientID, tlsConfig)
 	if err != nil {
@@ -124,8 +124,6 @@ func (s *service) PublishSensorData(ctx context.Context, data string) error {
 		telemetry: fmt.Sprintf("/devices/%v/events", s.GoogleIOTConfig.DeviceID),
 	}
 
-	client.Subscribe(topic.config, 0, nil)
-
 	token := client.Publish(
 		topic.telemetry,
 		0,
@@ -137,9 +135,9 @@ func (s *service) PublishSensorData(ctx context.Context, data string) error {
 	err = token.Error()
 	if err != nil {
 		fmt.Printf("Error with publishing ---> %s \n", token.Error().Error())
+		return err
 	}
-	fmt.Println(fmt.Printf("err from publishing ---> %s", err))
-	client.Disconnect(250)
 
+	client.Disconnect(250)
 	return nil
 }

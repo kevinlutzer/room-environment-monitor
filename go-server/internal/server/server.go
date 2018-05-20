@@ -45,7 +45,7 @@ func NewHTTPServer() error {
 	//Setup Handlers
 	http.HandleFunc("/get-sensor-data", s.GetSensorDataHandler)
 	http.HandleFunc("/initialize-sensors", s.InitializeSensorsHandler)
-	http.HandleFunc("/publish-sensor-data", s.PublishSensorData)
+	http.HandleFunc("/publish-sensor-data-snapshot", s.PublishSensorDataSnapshot)
 
 	//Start the http server
 	fmt.Printf("Started HTTP handler on port %s", HTTPPort)

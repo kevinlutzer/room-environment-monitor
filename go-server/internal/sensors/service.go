@@ -55,7 +55,7 @@ func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 }
 
 func (s *service) fetchCpuTemp() (string, error) {
-	return "temperature", nil
+	return "45.2 C", nil
 }
 
 func (s *service) fetchGasData(gd *GasData) error {
