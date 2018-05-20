@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/kml183/room-environment-monitor/go-server/internal/config"
 	googleiot "github.com/kml183/room-environment-monitor/go-server/internal/google-iot"
 	"github.com/kml183/room-environment-monitor/go-server/internal/sensors"
 )
@@ -24,9 +25,15 @@ type server struct {
 // NewHTTPServer returns a instance of the http server
 func NewHTTPServer() error {
 
-	// Setup Servers
+	// Create SSL Certs
+	certs, err := config.GetSSLCerts()
+	if err != nil {
+		return err
+	}
+
+	// Setup Services and Server
 	ss := sensors.NewSensorService()
-	gs := googleiot.NewGoogleIOTService(ss)
+	gs := googleiot.NewGoogleIOTService(ss, certs)
 	s := &server{
 		SensorsService:   ss,
 		GoogleIOTService: gs,

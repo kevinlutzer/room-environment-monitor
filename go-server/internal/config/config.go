@@ -1,11 +1,13 @@
 package config
 
-import "io/ioutil"
+import (
+	"io/ioutil"
+)
 
 var (
-	rootsPath  = "./certs/roots.pem"
-	rsaCert    = "./certs/rsa_cert.pem"
-	rsaPrivate = "./certs/rsa_private.pem"
+	rootsPath      = "certs/roots.pem"
+	rsaCertPath    = "certs/rsa_cert.pem"
+	rsaPrivatePath = "certs/rsa_private.pem"
 )
 
 type SSLCerts struct {
@@ -21,19 +23,19 @@ func GetSSLCerts() (*SSLCerts, error) {
 		return nil, err
 	}
 
-	rc, err := ioutil.ReadFile(rsaCert)
+	rsc, err := ioutil.ReadFile(rsaCertPath)
 	if err != nil {
 		return nil, err
 	}
 
-	rp, err := ioutil.ReadFile(rsaPrivate)
+	rscp, err := ioutil.ReadFile(rsaPrivatePath)
 	if err != nil {
 		return nil, err
 	}
 
 	return &SSLCerts{
 		Roots:      string(rs),
-		RsaCert:    string(rc),
-		RSAPrivate: string(rp),
+		RsaCert:    string(rsc),
+		RSAPrivate: string(rscp),
 	}, nil
 }
