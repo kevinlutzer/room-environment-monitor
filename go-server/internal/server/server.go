@@ -31,9 +31,12 @@ func NewHTTPServer() error {
 		return err
 	}
 
+	// Fetch Google IOT Config
+	iotConfig := config.GetGoogleIOTConfig()
+
 	// Setup Services and Server
 	ss := sensors.NewSensorService()
-	gs := googleiot.NewGoogleIOTService(ss, certs)
+	gs := googleiot.NewGoogleIOTService(certs, iotConfig)
 	s := &server{
 		SensorsService:   ss,
 		GoogleIOTService: gs,
@@ -80,11 +83,23 @@ func (s *server) InitializeSensorsHandler(wr http.ResponseWriter, r *http.Reques
 	s.setResponse(wr, "Successfully intialized the sensors", 200)
 }
 
-func (s *server) PublishSensorData(wr http.ResponseWriter, r *http.Request) {
+func (s *server) PublishSensorDataSnapshot(wr http.ResponseWriter, r *http.Request) {
 
 	ctx := context.TODO()
 
-	if err := s.GoogleIOTService.PublishSensorData(ctx); err != nil {
+	data, err := s.SensorsService.FetchSensorData(ctx)
+	if err != nil {
+		s.setResponse(wr, fmt.Sprintf("can't get snapshot of sensor data > %s", err.Error()), 500)
+		return
+	}
+
+	mData, err := json.Marshal(data)
+	if err != nil {
+		s.setResponse(wr, fmt.Sprintf("can marshal sensor snapshot data > %s", err.Error()), 500)
+		return
+	}
+
+	if err := s.GoogleIOTService.PublishSensorData(ctx, string(mData)); err != nil {
 		s.setResponse(wr, fmt.Sprintf("can't publish the sensor data > %s", err.Error()), 500)
 		return
 	}
