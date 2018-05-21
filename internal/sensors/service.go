@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"os/exec"
 	"time"
-
-	"golang.org/x/sync/errgroup"
 )
 
 //Service represents the structure of the service layer
@@ -26,27 +24,36 @@ func NewSensorService() Service {
 }
 
 func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
-	g, ctx := errgroup.WithContext(ctx)
+	// g, ctx := errgroup.WithContext(ctx)
 
 	gd := &GasData{}
-	g.Go(func() error {
-		return s.fetchGasData(gd)
-	})
-
-	ld := &LightData{}
-	g.Go(func() error {
-		return s.fetchLightData(ld)
-	})
-
-	cpuTemp := &TempData{}
-	g.Go(func() error {
-		return s.fetchCpuTemp(cpuTemp)
-	})
-
-	err := g.Wait()
-	if err != nil {
+	if err := s.fetchGasData(gd); err != nil {
 		return nil, err
 	}
+	// g.Go(func() error {
+	// 	return s.fetchGasData(gd)
+	// })
+
+	ld := &LightData{}
+	if err := s.fetchLightData(ld); err != nil {
+		return nil, err
+	}
+	// g.Go(func() error {
+	// 	return s.fetchLightData(ld)
+	// })
+
+	cpuTemp := &TempData{}
+	if err := s.fetchCpuTemp(cpuTemp); err != nil {
+		return nil, err
+	}
+	// g.Go(func() error {
+	// 	return s.fetchCpuTemp(cpuTemp)
+	// })
+
+	// err := g.Wait()
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	sd := &SensorData{}
 	sd.convertFromLightAndGasData(gd, ld, time.Now(), cpuTemp.Temp)
