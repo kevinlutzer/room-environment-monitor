@@ -12,16 +12,16 @@
 # from time import gmtime, strftime
 # import json
 # import time
-# import argparse
+import argparse
 
-# def parse_command_line_args():
-#     """Parse command line arguments."""
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument(
-#         "--sensor",
-#         default=False,
-#         help="The sensor to get data for")
-#     return parser.parse_args()
+def parse_command_line_args():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--sensor",
+        default=False,
+        help="The sensor to get data for")
+    return parser.parse_args()
 
 
 # # returns the serialized data for the cpu temp
@@ -68,22 +68,28 @@
 
 def main():
 
-    # args = parse_command_line_args()
+    args = parse_command_line_args()
     
-    # val = args.sensor
-    # if val == "temp":
-    #     print cpu_temp()
-    #     return
-    # elif val == "gas":
-    #     print tsl2561()
-    #     return
-    # elif val == "light":
-    #     init_ccs811()
-    #     print ccs811()
-    #     return
-    # else: 
-    #     raise RuntimeError("Not a valid sensor")
-    print "{\"cpu_temp\": \"246.2 C\"}"
+    val = args.sensor
+    if val == "temp":
+        # print cpu_temp()
+        print "{\"cpu_temp\": \"246.2 C\"}"
+        return
+    elif val == "gas":
+        # print tsl2561()
+        print "{\"temp\": \"python temp\", \"tvoc\": 4000, \"co2\": 4000.5}"
+        return
+    elif val == "initialize_light":
+        # init_ccs811()
+        print "success"
+        return
+    elif val == "light":
+        # print ccs811()
+        print "{\"lux\": 4000}"
+        return
+    else: 
+        raise RuntimeError("Not a valid sensor")
+    
         
 if __name__ == '__main__':
     main()

@@ -1,13 +1,10 @@
 package sensors
 
 import (
-	"bufio"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
-	"log"
 	"os/exec"
 	"time"
 
@@ -58,13 +55,11 @@ func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 }
 
 func (s *service) fetchCpuTemp(cpuTemp *TempData) error {
-	cmd := exec.Command("python", "main.py")
-	val, err := s.execCommand(cmd)
+	cmd := exec.Command("python", "main.py", "--sensor=temp")
+	val, err := s.execPythonCommand(cmd)
 	if err != nil {
 		return err
 	}
-
-	fmt.Println(val)
 
 	err = json.Unmarshal([]byte(val), cpuTemp)
 	if err != nil {
@@ -73,48 +68,27 @@ func (s *service) fetchCpuTemp(cpuTemp *TempData) error {
 	return nil
 }
 
-func (s *service) execCommand(cmd *exec.Cmd) (string, error) {
-	stdout, err := cmd.StdoutPipe()
+func (s *service) execPythonCommand(cmd *exec.Cmd) (string, error) {
+	val, err := cmd.Output()
 	if err != nil {
-		return "", errors.New("Can't setup stdout pipe")
+		return "", errors.New(fmt.Sprintf("Could not execute command with args > %v", cmd.Args))
 	}
 
-	// stderr, err := cmd.StderrPipe()
-	// if err != nil {
-	// 	return "", errors.New("Can't setup stderr pipe")
-	// }
-	err = cmd.Start()
-	if err != nil {
-		return "", errors.New("Can't start the command")
+	if string(val) == "" {
+		return "", errors.New("There was no std output")
 	}
 
-	// if s.getCommandOutput(stderr) != "" {
-	// 	return "", errors.New("The command failed")
-	// }
-
-	err = cmd.Wait()
-	if err != nil {
-		fmt.Printf("%s \n", err.Error())
-		return "", errors.New("The command failed to execute")
-	}
-
-	return s.getCommandOutput(stdout), nil
-}
-
-func (s *service) getCommandOutput(r io.Reader) string {
-	scanner := bufio.NewScanner(r)
-	// Read First Line
-	for scanner.Scan() {
-		log.Fatalf(scanner.Text())
-	}
-
-	return scanner.Text()
+	return string(val), nil
 }
 
 func (s *service) fetchGasData(gd *GasData) error {
-	m := "{\"temp\": \"32.6\", \"tvoc\": 2000, \"co2\": 23.5}"
+	cmd := exec.Command("python", "main.py", "--sensor=gas")
+	val, err := s.execPythonCommand(cmd)
+	if err != nil {
+		return err
+	}
 
-	err := json.Unmarshal([]byte(m), gd)
+	err = json.Unmarshal([]byte(val), gd)
 	if err != nil {
 		return err
 	}
@@ -122,9 +96,13 @@ func (s *service) fetchGasData(gd *GasData) error {
 }
 
 func (s *service) fetchLightData(ld *LightData) error {
-	t := "{\"lux\": 3000}"
+	cmd := exec.Command("python", "main.py", "--sensor=light")
+	val, err := s.execPythonCommand(cmd)
+	if err != nil {
+		return err
+	}
 
-	err := json.Unmarshal([]byte(t), ld)
+	err = json.Unmarshal([]byte(val), ld)
 	if err != nil {
 		return err
 	}
@@ -132,5 +110,11 @@ func (s *service) fetchLightData(ld *LightData) error {
 }
 
 func (s *service) IntializeSensors() error {
-	return errors.New("Not yet implemented")
+	cmd := exec.Command("python", "main.py", "--sensor=initialize_light")
+	_, err := s.execPythonCommand(cmd)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
