@@ -6,7 +6,11 @@ import (
 	"errors"
 	"fmt"
 	"os/exec"
+	"strconv"
+	"strings"
 	"time"
+
+	"golang.org/x/sync/errgroup"
 )
 
 //Service represents the structure of the service layer
@@ -24,54 +28,50 @@ func NewSensorService() Service {
 }
 
 func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
-	// g, ctx := errgroup.WithContext(ctx)
+	g, ctx := errgroup.WithContext(ctx)
 
 	gd := &GasData{}
-	if err := s.fetchGasData(gd); err != nil {
-		return nil, err
-	}
-	// g.Go(func() error {
-	// 	return s.fetchGasData(gd)
-	// })
+	g.Go(func() error {
+		return s.fetchGasData(gd)
+	})
 
 	ld := &LightData{}
-	if err := s.fetchLightData(ld); err != nil {
-		return nil, err
-	}
-	// g.Go(func() error {
-	// 	return s.fetchLightData(ld)
-	// })
+	g.Go(func() error {
+		return s.fetchLightData(ld)
+	})
 
 	cpuTemp := &TempData{}
-	if err := s.fetchCpuTemp(cpuTemp); err != nil {
+	g.Go(func() error {
+		return s.fetchCpuTemp(cpuTemp)
+	})
+
+	err := g.Wait()
+	if err != nil {
 		return nil, err
 	}
-	// g.Go(func() error {
-	// 	return s.fetchCpuTemp(cpuTemp)
-	// })
-
-	// err := g.Wait()
-	// if err != nil {
-	// 	return nil, err
-	// }
 
 	sd := &SensorData{}
-	sd.convertFromLightAndGasData(gd, ld, time.Now(), cpuTemp.Temp)
+	sd.convertFromLightAndGasData(gd, ld, time.Now(), cpuTemp)
 
 	return sd, nil
 }
 
 func (s *service) fetchCpuTemp(cpuTemp *TempData) error {
-	cmd := exec.Command("python", "main.py", "--sensor=temp")
+	cmd := exec.Command("sudo", "/opt/vc/bin/vcgencmd", "measure_temp")
 	val, err := s.execPythonCommand(cmd)
+	if err != nil {
+		panic("Couldn't execute the command")
+	}
+	filteredVal := strings.Replace(val, "temp=", "", -1)
+	temp := strings.Replace(filteredVal, "'C\n", "", -1)
+
+	floatTemp, err := strconv.ParseFloat(temp, 10)
 	if err != nil {
 		return err
 	}
 
-	err = json.Unmarshal([]byte(val), cpuTemp)
-	if err != nil {
-		return err
-	}
+	cpuTemp.Temp = floatTemp
+
 	return nil
 }
 

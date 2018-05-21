@@ -19,6 +19,10 @@ def parse_command_line_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--sensor",
+        default="gas",
+        help="The sensor to get data for")
+    parser.add_argument(
+        "--stub",
         default=False,
         help="The sensor to get data for")
     return parser.parse_args()
@@ -65,30 +69,38 @@ def init_ccs811():
     temp = ccs811_client.calculateTemperature()
     ccs811_client.tempOffset = temp - 25.0
 
+    print "success"
+
+def evaluateStub(sensor):
+    if sensor == "light":
+        print "{\"lux\": 4000}"
+    elif sensor == "initialize_light":
+        print "success"
+    elif sensor == "gas":
+        print "{\"temp\": 43.2, \"tvoc\": 4000, \"co2\": 4000.5}"
+    else:
+        raise RuntimeError("Not a valid sensor")
+
+def evaluateSensors(sensor):
+    if sensor == "light":
+        print tsl2561()
+    elif sensor == "initialize_light":
+        init_ccs811()
+        print "success"
+    elif sensor == "gas":
+        print ccs811()
+    else: 
+        raise RuntimeError("Not a valid sensor")
 
 def main():
 
     args = parse_command_line_args()
-    
+
     val = args.sensor
-    if val == "temp":
-        print cpu_temp()
-        # print "{\"cpu_temp\": \"246.2 C\"}"
-        return
-    elif val == "gas":
-        print tsl2561()
-        # print "{\"temp\": \"python temp\", \"tvoc\": 4000, \"co2\": 4000.5}"
-        return
-    elif val == "initialize_light":
-        init_ccs811()
-        print "success"
-        return
-    elif val == "light":
-        print ccs811()
-        # print "{\"lux\": 4000}"
-        return
-    else: 
-        raise RuntimeError("Not a valid sensor")
+    if args.stub:
+        evaluateStub(val)
+    else:
+        evaluateSensors(val)
     
         
 if __name__ == '__main__':
