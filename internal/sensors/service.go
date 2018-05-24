@@ -6,8 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"os/exec"
-	"strconv"
-	"strings"
 	"time"
 
 	"golang.org/x/sync/errgroup"
@@ -57,20 +55,21 @@ func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 }
 
 func (s *service) fetchCpuTemp(cpuTemp *TempData) error {
-	cmd := exec.Command("sudo", "/opt/vc/bin/vcgencmd", "measure_temp")
-	val, err := s.execPythonCommand(cmd)
-	if err != nil {
-		panic("Couldn't execute the command")
-	}
-	filteredVal := strings.Replace(val, "temp=", "", -1)
-	temp := strings.Replace(filteredVal, "'C\n", "", -1)
+	// cmd := exec.Command("sudo", "/opt/vc/bin/vcgencmd", "measure_temp")
+	// val, err := s.execPythonCommand(cmd)
+	// if err != nil {
+	// 	panic("Couldn't execute the command")
+	// }
+	// filteredVal := strings.Replace(val, "temp=", "", -1)
+	// temp := strings.Replace(filteredVal, "'C\n", "", -1)
 
-	floatTemp, err := strconv.ParseFloat(temp, 10)
-	if err != nil {
-		return err
-	}
+	// floatTemp, err := strconv.ParseFloat(temp, 10)
+	// if err != nil {
+	// 	return err
+	// }
 
-	cpuTemp.Temp = floatTemp
+	// cpuTemp.Temp = floatTemp
+	cpuTemp.Temp = 35.23
 
 	return nil
 }
