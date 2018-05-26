@@ -1,1 +1,35 @@
-<metric-box></metric-box>
+<!-- <div fxLayout
+    fxLayout.xs="column"
+    fxLayoutAlign="space-between"
+    fxLayoutWrap="wrap">
+    <div fxFlex="49%" class="widget"><metric-box ></metric-box></div>
+    <div fxLayout
+        fxLayout.xs="column"
+        fxLayoutWrap="wrap"
+        fxLayoutAlign="space-around"
+        fxFlex="49%">
+        <div class="widget-sm" fxFlex="49%">Small</div>
+        <div class="widget-sm" fxFlex="49%">Small</div>
+        <div class="widget-sm" fxFlex="49%">Small</div>
+        <div class="widget-sm" fxFlex="49%">Small</div>
+    </div>
+</div>
+<div fxLayout
+fxLayoutContainer
+fxLayoutWrap="wrap"
+fxLayoutAlign="space-around"
+>
+<div class="widget-sm" fxFlex="49%"><metric-box ></metric-box></div>
+<div class="widget-sm" fxFlex="49%"><metric-box ></metric-box></div>
+<div class="widget-sm" fxFlex="49%"><metric-box ></metric-box></div>
+<div class="widget-sm" fxFlex="49%"><metric-box ></metric-box></div>
+</div> -->
+
+<mat-grid-list cols="3" rowHeight="2:1">
+  <mat-grid-tile><metric-box></metric-box></mat-grid-tile>
+  <mat-grid-tile><metric-box></metric-box></mat-grid-tile>
+  <mat-grid-tile><metric-box></metric-box></mat-grid-tile>
+  <mat-grid-tile><metric-box></metric-box></mat-grid-tile>
+  <mat-grid-tile><metric-box></metric-box></mat-grid-tile>
+  <mat-grid-tile><metric-box></metric-box></mat-grid-tile>
+</mat-grid-list>
