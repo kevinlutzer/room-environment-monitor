@@ -1,19 +1,19 @@
 export class RoomMonitorData {
-    temp: number;
-    lux: number;
-    timestamp: Date;
-    cpuTemp: number;
-    tvoc: number;
-    co2: number;
+    temp: string;
+    lux: string;
+    timestamp: string;
+    cpuTemp: string;
+    tvoc: string;
+    co2: string;
 
     static fromApi(data: RoomMonitorDataApiInteface): RoomMonitorData {
         const obj = new RoomMonitorData();
-        obj.temp = data.temp;
-        obj.lux = data.lux;
-        obj.timestamp = new Date(obj.timestamp);
-        obj.cpuTemp = obj.cpuTemp;
-        obj.tvoc = obj.tvoc;
-        obj.co2 = obj.co2;
+        obj.temp = String(data.temp);
+        obj.lux = String(data.lux);
+        obj.timestamp = data.timestamp;
+        obj.cpuTemp = String(obj.cpuTemp);
+        obj.tvoc = String(obj.tvoc);
+        obj.co2 = (obj.co2);
         return obj
     }
    
