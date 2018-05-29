@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"runtime"
 
@@ -10,12 +10,13 @@ import (
 
 func main() {
 
+	logger := log.New(os.Stdout, "http: ", log.LstdFlags)
+
 	if val := runtime.GOMAXPROCS(8); val < -1 {
-		os.Exit(4)
+		logger.Fatalf("Could not set the max processes, value recieved > %d \n", val)
 	}
 
-	if err := s.NewHTTPServer(); err != nil {
-		fmt.Printf("Error starting server > %s", err.Error())
-		os.Exit(2)
+	if err := s.NewHTTPServer(logger); err != nil {
+		logger.Fatalf("Could not start the http server > %s \n", err.Error())
 	}
 }
