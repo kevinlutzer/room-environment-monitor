@@ -1,6 +1,6 @@
 
-from Adafruit_CCS811 import Adafruit_CCS811
-from tsl2561 import TSL2561
+# from Adafruit_CCS811 import Adafruit_CCS811
+# from tsl2561 import TSL2561
 import subprocess
 from time import gmtime, strftime
 import json
@@ -56,15 +56,15 @@ def init_ccs811():
 
     print "success"
 
-# def evaluateStub(sensor):
-#     if sensor == "light":
-#         print "{\"lux\": 4000}"
-#     elif sensor == "initialize_light":
-#         print "success"
-#     elif sensor == "gas":
-#         print "{\"temp\": 43.2, \"tvoc\": 4000, \"co2\": 4000.5}"
-#     else:
-#         raise RuntimeError("Not a valid sensor")
+def evaluateStub(sensor):
+    if sensor == "light":
+        print "{\"lux\": 4000}"
+    elif sensor == "initialize_light":
+        print "success"
+    elif sensor == "gas":
+        print "{\"temp\": 43.2, \"tvoc\": 4000, \"co2\": 4000.5}"
+    else:
+        raise RuntimeError("Not a valid sensor")
 
 def evaluateSensors(sensor):
     if sensor == "light":
@@ -82,7 +82,7 @@ def main():
     args = parse_command_line_args()
 
     val = args.sensor
-    evaluateSensors(val)
+    evaluateStub(val)
     
 if __name__ == '__main__':
     main()
