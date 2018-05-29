@@ -37,19 +37,28 @@ func NewHTTPServer(logger *log.Logger, stub bool) error {
 
 	// Setup Services and Server
 	ss := sensors.NewSensorService(stub)
-	gs := googleiot.NewGoogleIOTService(certs, iotConfig)
+	gs := googleiot.NewGoogleIOTService(certs, iotConfig, logger)
 	s := &server{
 		SensorsService:   ss,
 		GoogleIOTService: gs,
 		Logger:           logger,
 	}
 
+	//Init the sensors
+	logger.Printf("Main - Initialize sensors\n")
+	go func() {
+		err = s.SensorsService.IntializeSensors()
+		if err != nil {
+			logger.Printf("Main - Error: failed to initialize the sensors\n, you have to initialize the sensors manually")
+		}
+	}()
+
 	//Setup Handlers
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
-	http.HandleFunc("/get-snapshot-data", s.GetSensorDataSnapshotHandler)
+	http.HandleFunc("/get-sensor-data-snapshot", s.GetSensorDataSnapshotHandler)
+	http.HandleFunc("/publish-sensor-data-snapshot", s.PublishSensorDataSnapshotHandler)
 	http.HandleFunc("/initialize-sensors", s.InitializeSensorsHandler)
-	http.HandleFunc("/publish-sensor-data-snapshot", s.PublishSensorDataSnapshot)
 
 	//Start the http server
 	fmt.Printf("Started HTTP handler on port %s \n", HTTPPort)
@@ -97,10 +106,10 @@ func (s *server) InitializeSensorsHandler(wr http.ResponseWriter, r *http.Reques
 	s.setResponse(wr, "Successfully intialized the sensors", 200)
 }
 
-func (s *server) PublishSensorDataSnapshot(wr http.ResponseWriter, r *http.Request) {
+func (s *server) PublishSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
-	s.Logger.Printf("Request - calling handler: PublishSensorDataSnapshot")
+	s.Logger.Printf("Request - calling handler: PublishSensorDataSnapshotHandler")
 
 	data, err := s.SensorsService.FetchSensorData(ctx)
 	if err != nil {

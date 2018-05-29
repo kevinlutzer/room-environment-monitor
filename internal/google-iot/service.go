@@ -11,8 +11,6 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/kml183/room-environment-monitor/internal/config"
-
-	"github.com/kml183/room-environment-monitor/internal/sensors"
 )
 
 //Service represents the structure of the service layer
@@ -22,15 +20,16 @@ type Service interface {
 }
 
 type service struct {
-	SensorsService  sensors.Service
 	Certs           *config.SSLCerts
 	GoogleIOTConfig *config.GoogleIOTConfig
+	Logger          *log.Logger
 }
 
-func NewGoogleIOTService(certs *config.SSLCerts, iotConfig *config.GoogleIOTConfig) Service {
+func NewGoogleIOTService(certs *config.SSLCerts, iotConfig *config.GoogleIOTConfig, logger *log.Logger) Service {
 	return &service{
 		Certs:           certs,
 		GoogleIOTConfig: iotConfig,
+		Logger:          logger,
 	}
 }
 
@@ -45,6 +44,7 @@ func (s *service) getTokenString() (string, error) {
 
 	key, err := jwt.ParseRSAPrivateKeyFromPEM([]byte(s.Certs.RSAPrivate))
 	if err != nil {
+
 		return "", err
 	}
 
@@ -60,23 +60,19 @@ func (s *service) getMQTTOptions(clientID string, tls *tls.Config) (*MQTT.Client
 	opts := MQTT.NewClientOptions()
 
 	broker := fmt.Sprintf("ssl://%v:%v", s.GoogleIOTConfig.Bridge.Host, s.GoogleIOTConfig.Bridge.Port)
-	fmt.Printf("[main] Broker '%v' \n", broker)
-
 	opts.AddBroker(broker)
 	opts.SetClientID(clientID).SetTLSConfig(tls)
-
 	opts.SetUsername("unused")
 
 	tokenString, err := s.getTokenString()
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("token > '%v'", tokenString)
-	opts.SetPassword(tokenString)
 
+	opts.SetPassword(tokenString)
 	opts.SetDefaultPublishHandler(func(client MQTT.Client, msg MQTT.Message) {
-		fmt.Printf("[handler] Topic: %v\n", msg.Topic())
-		fmt.Printf("[handler] Payload: %v\n", msg.Payload())
+		s.Logger.Printf("GoogleIOT - topic > %s\n", msg.Topic())
+		s.Logger.Printf("GoogleIOT - payload > %s\n", msg.Payload())
 	})
 
 	return opts, nil
@@ -86,8 +82,6 @@ func (s *service) PublishSensorData(ctx context.Context, data string) error {
 
 	certpool := x509.NewCertPool()
 	certpool.AppendCertsFromPEM([]byte(s.Certs.Roots))
-
-	fmt.Println("Creating TLS Config")
 
 	tlsConfig := &tls.Config{
 		RootCAs:            certpool,
@@ -104,7 +98,6 @@ func (s *service) PublishSensorData(ctx context.Context, data string) error {
 		"klutzer-devices",
 		"raspberry-pi-room-monitor-rs256-device",
 	)
-	fmt.Printf("Client id > %s\n", clientID)
 
 	opts, err := s.getMQTTOptions(clientID, tlsConfig)
 	if err != nil {
@@ -134,7 +127,7 @@ func (s *service) PublishSensorData(ctx context.Context, data string) error {
 
 	err = token.Error()
 	if err != nil {
-		fmt.Printf("Error with publishing ---> %s \n", token.Error().Error())
+		s.Logger.Println("GoogleIOT - ERROR: failed to publish the payload")
 		return err
 	}
 
