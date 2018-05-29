@@ -43,7 +43,9 @@ func NewHTTPServer() error {
 	}
 
 	//Setup Handlers
-	http.HandleFunc("/get-sensor-data", s.GetSensorDataHandler)
+	fs := http.FileServer(http.Dir("static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	http.HandleFunc("/get-snapshot-data", s.GetSensorDataSnapshotHandler)
 	http.HandleFunc("/initialize-sensors", s.InitializeSensorsHandler)
 	http.HandleFunc("/publish-sensor-data-snapshot", s.PublishSensorDataSnapshot)
 
@@ -57,7 +59,7 @@ func NewHTTPServer() error {
 }
 
 // Handler is the main http handler for the room environment monitor app
-func (s *server) GetSensorDataHandler(wr http.ResponseWriter, r *http.Request) {
+func (s *server) GetSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Request) {
 
 	ctx := context.TODO()
 

@@ -1,1 +1,51 @@
-<metric-box></metric-box>
+<ng-container *ngIf="data$ | async as data">
+    <div 
+    fxLayout
+    fxLayoutContainer
+    fxLayoutWrap="wrap"
+    fxLayoutAlign="space-around">
+        <div fxFlex="30%">
+            <metric-box
+                [name]="'Time Stamp'"
+                [value]="data.timestamp">
+            </metric-box>
+        </div>
+        <div fxFlex="30%">
+            <metric-box
+                [name]="'Room Temperature (Celcius)'"
+                [value]="data.temperature">
+            </metric-box>
+        </div>
+        <div fxFlex="30%">
+            <metric-box
+                [name]="'CPU Temperature (Celcius)'"
+                [value]="data.cpuTemp">
+            </metric-box>
+        </div>
+    </div>
+    
+    <div 
+        fxLayout
+        fxLayoutContainer
+        fxLayoutWrap="wrap"
+        fxLayoutAlign="space-around">
+        <div fxFlex="30%">
+            <metric-box
+                [name]="'Total Volatile Organic Compounds - TVOC (PPM)'"
+                [value]="data.tvoc">
+            </metric-box>
+        </div>
+        <div fxFlex="30%">
+            <metric-box
+                [name]="'Light Intensity (LUX)'"
+                [value]="data.lux">
+            </metric-box>
+        </div>
+        <div fxFlex="30%">
+            <metric-box
+                [name]="'Carbon Dioxide (PPM)'"
+                [value]="data.co2">
+            </metric-box>
+        </div>
+    </div>    
+</ng-container>
