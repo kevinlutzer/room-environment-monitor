@@ -52,7 +52,7 @@ func NewHTTPServer(logger *log.Logger) error {
 	http.HandleFunc("/publish-sensor-data-snapshot", s.PublishSensorDataSnapshot)
 
 	//Start the http server
-	fmt.Printf("Started HTTP handler on port %s", HTTPPort)
+	fmt.Printf("Started HTTP handler on port %s \n", HTTPPort)
 	if err := http.ListenAndServe(HTTPPort, nil); err != nil {
 		return errors.New("Couldn't start http server")
 	}
@@ -78,14 +78,14 @@ func (s *server) GetSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Re
 		s.setResponse(wr, fmt.Sprintf("couldn't marshal the data > %s", err.Error()), 500)
 	}
 
-	s.Logger.Printf("Response - resulting data: %s", string(md))
+	s.Logger.Printf("Request - resulting data: %s", string(md))
 	s.setResponse(wr, string(md), 200)
 	return
 }
 
 func (s *server) InitializeSensorsHandler(wr http.ResponseWriter, r *http.Request) {
 
-	s.Logger.Printf("Response - calling handler: InitializeSensorsHandler")
+	s.Logger.Printf("Request - calling handler: InitializeSensorsHandler")
 
 	if err := s.SensorsService.IntializeSensors(); err != nil {
 		s.Logger.Printf("Request - ERROR: failed to intialize the sensors > %s \n", err.Error())
@@ -127,7 +127,7 @@ func (s *server) PublishSensorDataSnapshot(wr http.ResponseWriter, r *http.Reque
 }
 
 func (s *server) setResponse(wr http.ResponseWriter, message string, statusCode int) {
-	wr.Write([]byte(message))
 	wr.WriteHeader(statusCode)
+	wr.Write([]byte(message))
 	return
 }
