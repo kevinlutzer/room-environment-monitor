@@ -56,16 +56,6 @@ def init_ccs811():
 
     print "success"
 
-def evaluateStub(sensor):
-    if sensor == "light":
-        print "{\"lux\": 4000}"
-    elif sensor == "initialize_light":
-        print "success"
-    elif sensor == "gas":
-        print "{\"temp\": 43.2, \"tvoc\": 4000, \"co2\": 4000.5}"
-    else:
-        raise RuntimeError("Not a valid sensor")
-
 def evaluateSensors(sensor):
     if sensor == "light":
         print tsl2561()

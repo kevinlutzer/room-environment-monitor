@@ -24,7 +24,7 @@ type server struct {
 }
 
 // NewHTTPServer returns a instance of the http server
-func NewHTTPServer(logger *log.Logger) error {
+func NewHTTPServer(logger *log.Logger, stub bool) error {
 
 	// Create SSL Certs
 	certs, err := config.GetSSLCerts()
@@ -36,7 +36,7 @@ func NewHTTPServer(logger *log.Logger) error {
 	iotConfig := config.GetGoogleIOTConfig()
 
 	// Setup Services and Server
-	ss := sensors.NewSensorService()
+	ss := sensors.NewSensorService(stub)
 	gs := googleiot.NewGoogleIOTService(certs, iotConfig)
 	s := &server{
 		SensorsService:   ss,

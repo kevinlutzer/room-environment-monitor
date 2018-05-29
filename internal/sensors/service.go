@@ -6,6 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"os/exec"
+	"strconv"
+	"strings"
 	"time"
 
 	"golang.org/x/sync/errgroup"
@@ -19,10 +21,22 @@ type Service interface {
 	IntializeSensors() error
 }
 
-type service struct{}
+type service struct {
+	Stub   bool
+	PyFile string
+}
 
-func NewSensorService() Service {
-	return &service{}
+func NewSensorService(stub bool) Service {
+	s := &service{
+		Stub:   stub,
+		PyFile: "main.py",
+	}
+
+	if stub {
+		s.PyFile = "main-stub.py"
+	}
+
+	return s
 }
 
 func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
@@ -55,22 +69,25 @@ func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 }
 
 func (s *service) fetchCpuTemp(cpuTemp *TempData) error {
-	// cmd := exec.Command("sudo", "/opt/vc/bin/vcgencmd", "measure_temp")
-	// val, err := s.execPythonCommand(cmd)
-	// if err != nil {
-	// 	panic("Couldn't execute the command")
-	// }
-	// filteredVal := strings.Replace(val, "temp=", "", -1)
-	// temp := strings.Replace(filteredVal, "'C\n", "", -1)
+	if !s.Stub {
+		cmd := exec.Command("sudo", "/opt/vc/bin/vcgencmd", "measure_temp")
+		val, err := s.execPythonCommand(cmd)
+		if err != nil {
+			panic("Couldn't execute the command")
+		}
+		filteredVal := strings.Replace(val, "temp=", "", -1)
+		temp := strings.Replace(filteredVal, "'C\n", "", -1)
 
-	// floatTemp, err := strconv.ParseFloat(temp, 10)
-	// if err != nil {
-	// 	return err
-	// }
+		floatTemp, err := strconv.ParseFloat(temp, 10)
+		if err != nil {
+			return err
+		}
 
-	// cpuTemp.Temp = floatTemp
+		cpuTemp.Temp = floatTemp
+		return nil
+	}
+
 	cpuTemp.Temp = 35.23
-
 	return nil
 }
 
@@ -88,7 +105,7 @@ func (s *service) execPythonCommand(cmd *exec.Cmd) (string, error) {
 }
 
 func (s *service) fetchGasData(gd *GasData) error {
-	cmd := exec.Command("python", "main.py", "--sensor=gas")
+	cmd := exec.Command("python", s.PyFile, "--sensor=gas")
 	val, err := s.execPythonCommand(cmd)
 	if err != nil {
 		return err
@@ -102,7 +119,7 @@ func (s *service) fetchGasData(gd *GasData) error {
 }
 
 func (s *service) fetchLightData(ld *LightData) error {
-	cmd := exec.Command("python", "main.py", "--sensor=light")
+	cmd := exec.Command("python", s.PyFile, "--sensor=light")
 	val, err := s.execPythonCommand(cmd)
 	if err != nil {
 		return err
@@ -116,7 +133,7 @@ func (s *service) fetchLightData(ld *LightData) error {
 }
 
 func (s *service) IntializeSensors() error {
-	cmd := exec.Command("python", "main.py", "--sensor=initialize_light")
+	cmd := exec.Command("python", s.PyFile, "--sensor=initialize_light")
 	_, err := s.execPythonCommand(cmd)
 	if err != nil {
 		return err
