@@ -1,6 +1,6 @@
 
-# from Adafruit_CCS811 import Adafruit_CCS811
-# from tsl2561 import TSL2561
+from Adafruit_CCS811 import Adafruit_CCS811
+from tsl2561 import TSL2561
 import subprocess
 from time import gmtime, strftime
 import json
@@ -72,7 +72,7 @@ def main():
     args = parse_command_line_args()
 
     val = args.sensor
-    evaluateStub(val)
+    evaluateSensors(val)
     
 if __name__ == '__main__':
     main()
