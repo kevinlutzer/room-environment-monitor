@@ -29,6 +29,7 @@ type service struct {
 	td     *i2c.TSL2561Driver
 }
 
+// NewSensorService returns a new instance of the Service interface
 func NewSensorService(tsl2561Driver *i2c.TSL2561Driver) Service {
 	s := &service{
 		PyFile: "main.py",
@@ -38,6 +39,7 @@ func NewSensorService(tsl2561Driver *i2c.TSL2561Driver) Service {
 	return s
 }
 
+// FetchSensorData returns an object representing all of the sensor data
 func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 	g, ctx := errgroup.WithContext(ctx)
 
