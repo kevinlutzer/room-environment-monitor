@@ -75,8 +75,6 @@ func NewHTTPServer(logger *log.Logger, tsl2561Driver *i2c.TSL2561Driver) error {
 // Handler is the main http handler for the room environment monitor app
 func (s *server) GetSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Request) {
 
-	fmt.Println("YES")
-
 	ctx := r.Context()
 	s.Logger.Printf("Request - calling handler: GetSensorDataSnapshotHandler")
 

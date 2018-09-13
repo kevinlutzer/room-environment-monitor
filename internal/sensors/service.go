@@ -42,9 +42,9 @@ func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 	g, ctx := errgroup.WithContext(ctx)
 
 	gd := &GasData{}
-	// g.Go(func() error {
-	// 	return s.fetchGasData(gd)
-	// })
+	g.Go(func() error {
+		return s.fetchGasData(gd)
+	})
 
 	ld := &LightData{}
 	g.Go(func() error {
@@ -53,7 +53,7 @@ func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 
 	cpuTemp := &TempData{}
 	g.Go(func() error {
-		return s.fetchCpuTemp(cpuTemp)
+		return s.fetchCPUTemp(cpuTemp)
 	})
 
 	err := g.Wait()
@@ -67,7 +67,7 @@ func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 	return sd, nil
 }
 
-func (s *service) fetchCpuTemp(cpuTemp *TempData) error {
+func (s *service) fetchCPUTemp(cpuTemp *TempData) error {
 	cmd := exec.Command("sudo", "/opt/vc/bin/vcgencmd", "measure_temp")
 	val, err := s.execPythonCommand(cmd)
 	if err != nil {
