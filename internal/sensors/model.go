@@ -5,7 +5,7 @@ import (
 )
 
 type LightData struct {
-	Lux int32 `json:"lux"`
+	Lux uint32 `json:"lux"`
 }
 
 type TempData struct {
@@ -19,7 +19,7 @@ type GasData struct {
 }
 
 type SensorData struct {
-	Lux         int32     `json:"lux"`
+	Lux         uint32    `json:"lux"`
 	CO2         float32   `json:"co2"`
 	TVOC        int32     `json:"tvoc"`
 	Temperature float64   `json:"temp"`

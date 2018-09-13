@@ -8,6 +8,9 @@ import (
 	"net/http"
 
 	"github.com/kml183/room-environment-monitor/internal/config"
+
+	"gobot.io/x/gobot/drivers/i2c"
+
 	googleiot "github.com/kml183/room-environment-monitor/internal/google-iot"
 	"github.com/kml183/room-environment-monitor/internal/sensors"
 )
@@ -24,7 +27,7 @@ type server struct {
 }
 
 // NewHTTPServer returns a instance of the http server
-func NewHTTPServer(logger *log.Logger, stub bool) error {
+func NewHTTPServer(logger *log.Logger, tsl2561Driver *i2c.TSL2561Driver) error {
 
 	// Create SSL Certs
 	certs, err := config.GetSSLCerts()
@@ -36,7 +39,7 @@ func NewHTTPServer(logger *log.Logger, stub bool) error {
 	iotConfig := config.GetGoogleIOTConfig()
 
 	// Setup Services and Server
-	ss := sensors.NewSensorService(stub)
+	ss := sensors.NewSensorService(tsl2561Driver)
 	gs := googleiot.NewGoogleIOTService(certs, iotConfig, logger)
 	s := &server{
 		SensorsService:   ss,
@@ -71,6 +74,8 @@ func NewHTTPServer(logger *log.Logger, stub bool) error {
 
 // Handler is the main http handler for the room environment monitor app
 func (s *server) GetSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Request) {
+
+	fmt.Println("YES")
 
 	ctx := r.Context()
 	s.Logger.Printf("Request - calling handler: GetSensorDataSnapshotHandler")
