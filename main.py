@@ -1,6 +1,5 @@
 
 from Adafruit_CCS811 import Adafruit_CCS811
-from tsl2561 import TSL2561
 import subprocess
 from time import gmtime, strftime
 import json
@@ -19,14 +18,6 @@ def parse_command_line_args():
         default=False,
         help="The sensor to get data for")
     return parser.parse_args()
-
-# Returns serialized data from the tsl2561 sensor
-def tsl2561():
-    tsl1261_client = TSL2561(debug=False)
-    data = tsl1261_client.lux()
-    return json.dumps({
-        "lux": data
-    })
 
 # Returns serialized data from the ccs811 sensor
 def ccs811():
@@ -57,9 +48,7 @@ def init_ccs811():
     print "success"
 
 def evaluateSensors(sensor):
-    if sensor == "light":
-        print tsl2561()
-    elif sensor == "initialize_light":
+    if sensor == "initialize_gas":
         init_ccs811()
         print "success"
     elif sensor == "gas":

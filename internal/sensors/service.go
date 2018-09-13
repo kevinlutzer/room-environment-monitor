@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
+	"gobot.io/x/gobot/drivers/i2c"
+
 	"os/exec"
 	"strconv"
 	"strings"
@@ -22,23 +25,21 @@ type Service interface {
 }
 
 type service struct {
-	Stub   bool
 	PyFile string
+	td     *i2c.TSL2561Driver
 }
 
-func NewSensorService(stub bool) Service {
+// NewSensorService returns a new instance of the Service interface
+func NewSensorService(tsl2561Driver *i2c.TSL2561Driver) Service {
 	s := &service{
-		Stub:   stub,
 		PyFile: "main.py",
-	}
-
-	if stub {
-		s.PyFile = "main-stub.py"
+		td:     tsl2561Driver,
 	}
 
 	return s
 }
 
+// FetchSensorData returns an object representing all of the sensor data
 func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 	g, ctx := errgroup.WithContext(ctx)
 
@@ -54,7 +55,7 @@ func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 
 	cpuTemp := &TempData{}
 	g.Go(func() error {
-		return s.fetchCpuTemp(cpuTemp)
+		return s.fetchCPUTemp(cpuTemp)
 	})
 
 	err := g.Wait()
@@ -68,26 +69,21 @@ func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 	return sd, nil
 }
 
-func (s *service) fetchCpuTemp(cpuTemp *TempData) error {
-	if !s.Stub {
-		cmd := exec.Command("sudo", "/opt/vc/bin/vcgencmd", "measure_temp")
-		val, err := s.execPythonCommand(cmd)
-		if err != nil {
-			panic("Couldn't execute the command")
-		}
-		filteredVal := strings.Replace(val, "temp=", "", -1)
-		temp := strings.Replace(filteredVal, "'C\n", "", -1)
+func (s *service) fetchCPUTemp(cpuTemp *TempData) error {
+	cmd := exec.Command("sudo", "/opt/vc/bin/vcgencmd", "measure_temp")
+	val, err := s.execPythonCommand(cmd)
+	if err != nil {
+		panic("Couldn't execute the command")
+	}
+	filteredVal := strings.Replace(val, "temp=", "", -1)
+	temp := strings.Replace(filteredVal, "'C\n", "", -1)
 
-		floatTemp, err := strconv.ParseFloat(temp, 10)
-		if err != nil {
-			return err
-		}
-
-		cpuTemp.Temp = floatTemp
-		return nil
+	floatTemp, err := strconv.ParseFloat(temp, 10)
+	if err != nil {
+		return err
 	}
 
-	cpuTemp.Temp = 35.23
+	cpuTemp.Temp = floatTemp
 	return nil
 }
 
@@ -119,16 +115,12 @@ func (s *service) fetchGasData(gd *GasData) error {
 }
 
 func (s *service) fetchLightData(ld *LightData) error {
-	cmd := exec.Command("python", s.PyFile, "--sensor=light")
-	val, err := s.execPythonCommand(cmd)
+	b, ir, err := s.td.GetLuminocity()
 	if err != nil {
 		return err
 	}
+	ld.Lux = s.td.CalculateLux(b, ir)
 
-	err = json.Unmarshal([]byte(val), ld)
-	if err != nil {
-		return err
-	}
 	return nil
 }
 
