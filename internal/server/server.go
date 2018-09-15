@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -24,6 +25,7 @@ type server struct {
 	SensorsService   sensors.Service
 	GoogleIOTService googleiot.Service
 	Logger           *log.Logger
+	apiKey           string
 }
 
 // NewHTTPServer returns a instance of the http server
@@ -47,6 +49,14 @@ func NewHTTPServer(logger *log.Logger, tsl2561Driver *i2c.TSL2561Driver, ccs811D
 		Logger:           logger,
 	}
 
+	//Load The api key from file
+	val, err := ioutil.ReadFile("api_key.txt")
+	if err != nil {
+		return err
+	}
+
+	s.apiKey = string(val)
+
 	//Setup Handlers
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
@@ -68,21 +78,29 @@ func (s *server) GetSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Re
 	ctx := r.Context()
 	s.Logger.Printf("Request - calling handler: GetSensorDataSnapshotHandler")
 
+	p := r.URL.Query().Get("api_key")
+	if p != s.apiKey {
+		s.Logger.Printf("Request - WARNING: api key \"%s\" does not match known key \"%s\"", p, s.apiKey)
+		s.setResponse(wr, "api key is incorrect or was not passed", 403)
+		return
+	}
+
 	d, err := s.SensorsService.FetchSensorData(ctx)
 	if err != nil {
 		s.Logger.Printf("Request - ERROR: failed to fetch sensor data > %s\n", err.Error())
 		s.setResponse(wr, fmt.Sprintf("could't fetch the sensor data > %s", err.Error()), 500)
+		return
 	}
 
 	md, err := json.Marshal(d)
 	if err != nil {
 		s.Logger.Printf("Request - ERROR: failed to marshal sensor data > %s \n", err.Error())
 		s.setResponse(wr, fmt.Sprintf("couldn't marshal the data > %s", err.Error()), 500)
+		return
 	}
 
 	s.Logger.Printf("Request - resulting data: %s", string(md))
 	s.setResponse(wr, string(md), 200)
-	return
 }
 
 func (s *server) PublishSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Request) {
