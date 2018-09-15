@@ -17,7 +17,7 @@ import (
 
 const (
 	// HTTPPort is the port to run the server on
-	HTTPPort = ":8080"
+	HTTPPort = "192.168.1.111:8080"
 )
 
 type server struct {
@@ -47,21 +47,11 @@ func NewHTTPServer(logger *log.Logger, tsl2561Driver *i2c.TSL2561Driver, ccs811D
 		Logger:           logger,
 	}
 
-	//Init the sensors
-	logger.Printf("Main - Initialize sensors\n")
-	go func() {
-		err = s.SensorsService.IntializeSensors()
-		if err != nil {
-			logger.Printf("Main - Error: failed to initialize the sensors\n, you have to initialize the sensors manually")
-		}
-	}()
-
 	//Setup Handlers
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 	http.HandleFunc("/get-sensor-data-snapshot", s.GetSensorDataSnapshotHandler)
 	http.HandleFunc("/publish-sensor-data-snapshot", s.PublishSensorDataSnapshotHandler)
-	http.HandleFunc("/initialize-sensors", s.InitializeSensorsHandler)
 
 	//Start the http server
 	fmt.Printf("Started HTTP handler on port %s \n", HTTPPort)
@@ -93,20 +83,6 @@ func (s *server) GetSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Re
 	s.Logger.Printf("Request - resulting data: %s", string(md))
 	s.setResponse(wr, string(md), 200)
 	return
-}
-
-func (s *server) InitializeSensorsHandler(wr http.ResponseWriter, r *http.Request) {
-
-	s.Logger.Printf("Request - calling handler: InitializeSensorsHandler")
-
-	if err := s.SensorsService.IntializeSensors(); err != nil {
-		s.Logger.Printf("Request - ERROR: failed to intialize the sensors > %s \n", err.Error())
-		s.setResponse(wr, fmt.Sprintf("can't initialize the sensors > %s", err.Error()), 500)
-		return
-	}
-
-	s.Logger.Println("Request - successfully intialized the sensors")
-	s.setResponse(wr, "Successfully intialized the sensors", 200)
 }
 
 func (s *server) PublishSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Request) {

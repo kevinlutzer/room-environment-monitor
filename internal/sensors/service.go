@@ -19,8 +19,6 @@ import (
 type Service interface {
 	//FetchSensorData fetches sensors data
 	FetchSensorData(ctx context.Context) (*SensorData, error)
-	//IntializeSensors initializes the sensors
-	IntializeSensors() error
 }
 
 type service struct {
@@ -72,11 +70,16 @@ func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 
 func (s *service) fetchCPUTemp(cpuTemp *TempData) error {
 	cmd := exec.Command("sudo", "/opt/vc/bin/vcgencmd", "measure_temp")
-	val, err := s.execPythonCommand(cmd)
+	val, err := cmd.Output()
 	if err != nil {
-		panic("Couldn't execute the command")
+		return errors.New(fmt.Sprintf("Could not execute command with args > %v", cmd.Args))
 	}
-	filteredVal := strings.Replace(val, "temp=", "", -1)
+
+	if string(val) == "" {
+		return errors.New("There was no std output")
+	}
+
+	filteredVal := strings.Replace(string(val), "temp=", "", -1)
 	temp := strings.Replace(filteredVal, "'C\n", "", -1)
 
 	floatTemp, err := strconv.ParseFloat(temp, 10)
@@ -86,19 +89,6 @@ func (s *service) fetchCPUTemp(cpuTemp *TempData) error {
 
 	cpuTemp.Temp = floatTemp
 	return nil
-}
-
-func (s *service) execPythonCommand(cmd *exec.Cmd) (string, error) {
-	val, err := cmd.Output()
-	if err != nil {
-		return "", errors.New(fmt.Sprintf("Could not execute command with args > %v", cmd.Args))
-	}
-
-	if string(val) == "" {
-		return "", errors.New("There was no std output")
-	}
-
-	return string(val), nil
 }
 
 func (s *service) fetchGasData(gd *GasData) error {
@@ -125,16 +115,6 @@ func (s *service) fetchLightData(ld *LightData) error {
 		return err
 	}
 	ld.Lux = s.td.CalculateLux(b, ir)
-
-	return nil
-}
-
-func (s *service) IntializeSensors() error {
-	cmd := exec.Command("python", s.PyFile, "--sensor=initialize_light")
-	_, err := s.execPythonCommand(cmd)
-	if err != nil {
-		return err
-	}
 
 	return nil
 }
