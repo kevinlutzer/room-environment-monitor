@@ -13,16 +13,16 @@ type TempData struct {
 }
 
 type GasData struct {
-	CO2         float32 `json:"co2"`
-	TVOC        int32   `json:"tvoc"`
-	Temperature float64 `json:"temp"`
+	CO2         uint16  `json:"co2"`
+	TVOC        uint16  `json:"tvoc"`
+	Temperature float32 `json:"temp"`
 }
 
 type SensorData struct {
 	Lux         uint32    `json:"lux"`
-	CO2         float32   `json:"co2"`
-	TVOC        int32     `json:"tvoc"`
-	Temperature float64   `json:"temp"`
+	CO2         uint16    `json:"co2"`
+	TVOC        uint16    `json:"tvoc"`
+	Temperature float32   `json:"temp"`
 	CPUTemp     float64   `json:"cpu_temp"`
 	TimeStamp   time.Time `json:"timestamp"`
 }

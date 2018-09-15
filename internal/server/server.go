@@ -27,7 +27,7 @@ type server struct {
 }
 
 // NewHTTPServer returns a instance of the http server
-func NewHTTPServer(logger *log.Logger, tsl2561Driver *i2c.TSL2561Driver) error {
+func NewHTTPServer(logger *log.Logger, tsl2561Driver *i2c.TSL2561Driver, ccs811Driver *i2c.CCS811Driver) error {
 
 	// Create SSL Certs
 	certs, err := config.GetSSLCerts()
@@ -39,7 +39,7 @@ func NewHTTPServer(logger *log.Logger, tsl2561Driver *i2c.TSL2561Driver) error {
 	iotConfig := config.GetGoogleIOTConfig()
 
 	// Setup Services and Server
-	ss := sensors.NewSensorService(tsl2561Driver)
+	ss := sensors.NewSensorService(tsl2561Driver, ccs811Driver)
 	gs := googleiot.NewGoogleIOTService(certs, iotConfig, logger)
 	s := &server{
 		SensorsService:   ss,

@@ -2,7 +2,6 @@ package sensors
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -27,13 +26,15 @@ type Service interface {
 type service struct {
 	PyFile string
 	td     *i2c.TSL2561Driver
+	cd     *i2c.CCS811Driver
 }
 
 // NewSensorService returns a new instance of the Service interface
-func NewSensorService(tsl2561Driver *i2c.TSL2561Driver) Service {
+func NewSensorService(tsl2561Driver *i2c.TSL2561Driver, ccs811Driver *i2c.CCS811Driver) Service {
 	s := &service{
 		PyFile: "main.py",
 		td:     tsl2561Driver,
+		cd:     ccs811Driver,
 	}
 
 	return s
@@ -101,16 +102,20 @@ func (s *service) execPythonCommand(cmd *exec.Cmd) (string, error) {
 }
 
 func (s *service) fetchGasData(gd *GasData) error {
-	cmd := exec.Command("python", s.PyFile, "--sensor=gas")
-	val, err := s.execPythonCommand(cmd)
+	co2, tvoc, err := s.cd.GetData()
 	if err != nil {
 		return err
 	}
 
-	err = json.Unmarshal([]byte(val), gd)
+	temp, err := s.cd.GetTemperature()
 	if err != nil {
 		return err
 	}
+
+	gd.CO2 = co2
+	gd.TVOC = tvoc
+	gd.Temperature = temp
+
 	return nil
 }
 

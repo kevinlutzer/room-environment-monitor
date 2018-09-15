@@ -20,19 +20,20 @@ func main() {
 		logger.Fatalf("Could not set the max processes, value recieved > %d \n", val)
 	}
 
-	// Initialize Gobot
+	// Initialize Gobot and I2C drivers
 	r := raspi.NewAdaptor()
-	d := i2c.NewTSL2561Driver(r)
+	dl := i2c.NewTSL2561Driver(r)
+	dg := i2c.NewCCS811Driver(r)
 
 	work := func() {
-		if err := s.NewHTTPServer(logger, d); err != nil {
+		if err := s.NewHTTPServer(logger, dl, dg); err != nil {
 			logger.Fatalf("Could not start the http server > %s \n", err.Error())
 		}
 	}
 
 	robot := gobot.NewRobot("room-environment-monitor",
 		[]gobot.Connection{r},
-		[]gobot.Device{d},
+		[]gobot.Device{dl, dg},
 		work,
 	)
 
