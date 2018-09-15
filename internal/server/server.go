@@ -108,6 +108,13 @@ func (s *server) PublishSensorDataSnapshotHandler(wr http.ResponseWriter, r *htt
 	ctx := r.Context()
 	s.Logger.Printf("Request - calling handler: PublishSensorDataSnapshotHandler")
 
+	p := r.URL.Query().Get("api_key")
+	if p != s.apiKey {
+		s.Logger.Printf("Request - WARNING: api key \"%s\" does not match known key \"%s\"", p, s.apiKey)
+		s.setResponse(wr, "api key is incorrect or was not passed", 403)
+		return
+	}
+
 	data, err := s.SensorsService.FetchSensorData(ctx)
 	if err != nil {
 		s.Logger.Printf("Request - ERROR to fetch sensor data > %s \n", err.Error())
