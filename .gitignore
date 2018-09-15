@@ -4,6 +4,7 @@ auth-files
 certs
 main
 api_key.txt
+setup.sh
 
 # compiled pi files
 *.pyc

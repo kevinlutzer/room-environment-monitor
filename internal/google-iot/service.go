@@ -19,10 +19,17 @@ type Service interface {
 	PublishSensorData(ctx context.Context, data string) error
 }
 
+type topics struct {
+	config    string
+	telemetry string
+}
+
 type service struct {
 	Certs           *config.SSLCerts
 	GoogleIOTConfig *config.GoogleIOTConfig
 	Logger          *log.Logger
+	topics          topics
+	clientOptions   *MQTT.ClientOptions
 }
 
 func NewGoogleIOTService(certs *config.SSLCerts, iotConfig *config.GoogleIOTConfig, logger *log.Logger) Service {
@@ -30,6 +37,10 @@ func NewGoogleIOTService(certs *config.SSLCerts, iotConfig *config.GoogleIOTConf
 		Certs:           certs,
 		GoogleIOTConfig: iotConfig,
 		Logger:          logger,
+		topics: topics{
+			telemetry: fmt.Sprintf("/devices/%v/events", iotConfig.DeviceID),
+			config:    fmt.Sprintf("/devices/%v/config", iotConfig.DeviceID),
+		},
 	}
 }
 
@@ -93,9 +104,9 @@ func (s *service) PublishSensorData(ctx context.Context, data string) error {
 	}
 
 	clientID := fmt.Sprintf("projects/%v/locations/%v/registries/%v/devices/%v",
-		"personal-website-klutzer",
+		"room-env-monitor-klutzer",
 		"us-central1",
-		"klutzer-devices",
+		"devices-klutzer",
 		"raspberry-pi-room-monitor-rs256-device",
 	)
 
@@ -109,22 +120,13 @@ func (s *service) PublishSensorData(ctx context.Context, data string) error {
 		log.Fatal(token.Error())
 	}
 
-	topic := struct {
-		config    string
-		telemetry string
-	}{
-		config:    fmt.Sprintf("/devices/%v/config", s.GoogleIOTConfig.DeviceID),
-		telemetry: fmt.Sprintf("/devices/%v/events", s.GoogleIOTConfig.DeviceID),
-	}
-
 	token := client.Publish(
-		topic.telemetry,
+		s.topics.telemetry,
 		0,
 		false,
 		data)
 
 	token.WaitTimeout(5 * time.Second)
-
 	err = token.Error()
 	if err != nil {
 		s.Logger.Println("GoogleIOT - ERROR: failed to publish the payload")

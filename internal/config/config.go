@@ -40,8 +40,8 @@ func GetGoogleIOTConfig() *GoogleIOTConfig {
 			Host: "mqtt.googleapis.com",
 			Port: "8883",
 		},
-		ProjectID:  "personal-website-klutzer",
-		RegistryID: "klutzer-devices",
+		ProjectID:  "room-env-monitor-klutzer",
+		RegistryID: "devices-klutzer",
 		Region:     "us-central1",
 	}
 }
