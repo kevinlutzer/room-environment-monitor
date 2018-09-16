@@ -1,0 +1,156 @@
+[debug] [2018-09-16T02:32:33.485Z] ----------------------------------------------------------------------
+[debug] [2018-09-16T02:32:33.487Z] Command:       /home/kevin/.nvm/versions/node/v8.11.4/bin/node /home/kevin/.nvm/versions/node/v8.11.4/bin/firebase deploy
+[debug] [2018-09-16T02:32:33.487Z] CLI Version:   4.0.0
+[debug] [2018-09-16T02:32:33.487Z] Platform:      linux
+[debug] [2018-09-16T02:32:33.487Z] Node Version:  v8.11.4
+[debug] [2018-09-16T02:32:33.487Z] Time:          Sat Sep 15 2018 20:32:33 GMT-0600 (CST)
+[debug] [2018-09-16T02:32:33.487Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-09-16T02:32:33.493Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-09-16T02:32:33.493Z] > authorizing via signed-in user
+[debug] [2018-09-16T02:32:33.495Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/room-env-monitor-klutzer-1aa3d  
+  
+ Sat Sep 15 2018 20:32:33 GMT-0600 (CST)
+[debug] [2018-09-16T02:32:33.861Z] <<< HTTP RESPONSE 200
+[debug] [2018-09-16T02:32:33.863Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/room-env-monitor-klutzer-1aa3d/tokens  
+  
+ Sat Sep 15 2018 20:32:33 GMT-0600 (CST)
+[debug] [2018-09-16T02:32:34.271Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Deploying to 'room-env-monitor-klutzer-1aa3d'...
+[info] 
+[info] i  deploying firestore, functions
+[info] Running command: npm --prefix "$RESOURCE_DIR" run lint
+[info] Running command: npm --prefix "$RESOURCE_DIR" run build
+[info] ✔  functions: Finished running predeploy script.
+[info] i  firestore: checking firestore.rules for compilation errors...
+[debug] [2018-09-16T02:32:38.650Z] >>> HTTP REQUEST POST https://firebaserules.googleapis.com/v1/projects/room-env-monitor-klutzer-1aa3d:test  
+ { source: { files: [ [Object] ] } } 
+ Sat Sep 15 2018 20:32:38 GMT-0600 (CST)
+[debug] [2018-09-16T02:32:38.906Z] <<< HTTP RESPONSE 200
+[info] ✔  firestore: rules file firestore.rules compiled successfully
+[debug] [2018-09-16T02:32:38.910Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "tslint --project tsconfig.json",
+    "build": "tsc",
+    "serve": "npm run build && firebase serve --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "~5.13.0",
+    "firebase-functions": "^2.0.0"
+  },
+  "devDependencies": {
+    "tslint": "~5.8.0",
+    "typescript": "~2.8.3"
+  },
+  "private": true
+}
+[info] i  functions: ensuring necessary APIs are enabled...
+[debug] [2018-09-16T02:32:38.911Z] >>> HTTP REQUEST GET https://servicemanagement.googleapis.com/v1/services/cloudfunctions.googleapis.com/projectSettings/room-env-monitor-klutzer-1aa3d?view=CONSUMER_VIEW  
+  
+ Sat Sep 15 2018 20:32:38 GMT-0600 (CST)
+[debug] [2018-09-16T02:32:38.913Z] >>> HTTP REQUEST GET https://servicemanagement.googleapis.com/v1/services/runtimeconfig.googleapis.com/projectSettings/room-env-monitor-klutzer-1aa3d?view=CONSUMER_VIEW  
+  
+ Sat Sep 15 2018 20:32:38 GMT-0600 (CST)
+[debug] [2018-09-16T02:32:39.741Z] <<< HTTP RESPONSE 200
+[debug] [2018-09-16T02:32:39.804Z] <<< HTTP RESPONSE 200
+[info] ✔  functions: all necessary APIs are enabled
+[debug] [2018-09-16T02:32:39.806Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/room-env-monitor-klutzer-1aa3d  
+  
+ Sat Sep 15 2018 20:32:39 GMT-0600 (CST)
+[debug] [2018-09-16T02:32:40.206Z] <<< HTTP RESPONSE 200
+[debug] [2018-09-16T02:32:40.207Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/130524405188:getServerAppConfig  
+  
+ Sat Sep 15 2018 20:32:40 GMT-0600 (CST)
+[debug] [2018-09-16T02:32:40.440Z] <<< HTTP RESPONSE 200
+[info] i  firestore: uploading rules firestore.rules...
+[debug] [2018-09-16T02:32:40.444Z] >>> HTTP REQUEST POST https://firebaserules.googleapis.com/v1/projects/room-env-monitor-klutzer-1aa3d/rulesets  
+ { source: { files: [ [Object] ] } } 
+ Sat Sep 15 2018 20:32:40 GMT-0600 (CST)
+[debug] [2018-09-16T02:32:40.445Z] >>> HTTP REQUEST GET https://firestore.googleapis.com/v1beta1/projects/room-env-monitor-klutzer-1aa3d/databases/(default)/indexes  
+  
+ Sat Sep 15 2018 20:32:40 GMT-0600 (CST)
+[debug] [2018-09-16T02:32:40.687Z] <<< HTTP RESPONSE 200
+[debug] [2018-09-16T02:32:40.687Z] [rules] created ruleset projects/room-env-monitor-klutzer-1aa3d/rulesets/1a3348d8-f0cb-4831-b0c1-7a7d4f2d605b
+[debug] [2018-09-16T02:32:40.897Z] <<< HTTP RESPONSE 200
+[info] i  functions: preparing functions directory for uploading...
+[debug] [2018-09-16T02:32:40.901Z] >>> HTTP REQUEST GET https://runtimeconfig.googleapis.com/v1beta1/projects/room-env-monitor-klutzer-1aa3d/configs  
+  
+ Sat Sep 15 2018 20:32:40 GMT-0600 (CST)
+[debug] [2018-09-16T02:32:41.335Z] <<< HTTP RESPONSE 200
+[info] i  functions: packaged functions (48.82 KB) for uploading
+[debug] [2018-09-16T02:32:41.464Z] >>> HTTP REQUEST POST https://cloudfunctions.googleapis.com/v1/projects/room-env-monitor-klutzer-1aa3d/locations/us-central1/functions:generateUploadUrl  
+  
+ Sat Sep 15 2018 20:32:41 GMT-0600 (CST)
+[debug] [2018-09-16T02:32:41.861Z] <<< HTTP RESPONSE 200
+[debug] [2018-09-16T02:32:41.863Z] >>> HTTP REQUEST PUT https://storage.googleapis.com/gcf-upload-us-central1-bbde116f-599e-4367-b54d-33ea237aad31/1e06c56f-c706-4e4c-8466-3b0af1e5755d.zip?GoogleAccessId=service-130524405188@gcf-admin-robot.iam.gserviceaccount.com&Expires=1537066961&Signature=dHeTFlB%2BCAaf%2FD4BrYGq%2F2BZhOfhKuWkKAjpg6YgvYk4JlZY4C3OfdLSzMNdXjNcT6JSYnKTqSZQ5VkwrdEIBu%2F17Fi9TViPEDJ%2FR68vYrYHYgwwSG6iLW2tpkcFalpCrSB9V1CSrHuIiFdcPReVn5qK1twE0TUccboFKxzurOmvexaf%2FB1Rg3TBwBPB0w1FNS4%2FDJIIJfjYq%2Bp7T73IK1xMPX%2BKwF%2FzYTR6sLrmcU7mPBzNO%2FmODwOY%2BIEPT3k8lnS5mPugBfkU%2BSbdp5C9yFDtXCxNv8W8HENF7Bwg1xMzZSdBugyjgQG2kzUbm678gMDcBbdlwVR%2BpaZS7c1ZFg%3D%3D  
+ ReadStream {
+  _readableState: 
+   ReadableState {
+     objectMode: false,
+     highWaterMark: 65536,
+     buffer: BufferList { head: [Object], tail: [Object], length: 1 },
+     length: 49991,
+     pipes: null,
+     pipesCount: 0,
+     flowing: null,
+     ended: true,
+     endEmitted: false,
+     reading: false,
+     sync: false,
+     needReadable: false,
+     emittedReadable: true,
+     readableListening: false,
+     resumeScheduled: false,
+     destroyed: false,
+     defaultEncoding: 'utf8',
+     awaitDrain: 0,
+     readingMore: false,
+     decoder: null,
+     encoding: null },
+  readable: true,
+  domain: null,
+  _events: { end: [Function] },
+  _eventsCount: 1,
+  _maxListeners: undefined,
+  path: '/tmp/firebase-functions-325036Wl4AI2LrBFh.zip',
+  fd: 15,
+  flags: 'r',
+  mode: 438,
+  start: undefined,
+  end: Infinity,
+  autoClose: true,
+  pos: undefined,
+  bytesRead: 49991 } 
+ Sat Sep 15 2018 20:32:41 GMT-0600 (CST)
+[debug] [2018-09-16T02:32:42.382Z] <<< HTTP RESPONSE 200
+[info] ✔  functions: functions folder uploaded successfully
+[debug] [2018-09-16T02:32:42.385Z] [rules] releasing cloud.firestore with ruleset projects/room-env-monitor-klutzer-1aa3d/rulesets/1a3348d8-f0cb-4831-b0c1-7a7d4f2d605b
+[debug] [2018-09-16T02:32:42.386Z] >>> HTTP REQUEST PATCH https://firebaserules.googleapis.com/v1/projects/room-env-monitor-klutzer-1aa3d/releases/cloud.firestore  
+ { release: 
+   { name: 'projects/room-env-monitor-klutzer-1aa3d/releases/cloud.firestore',
+     rulesetName: 'projects/room-env-monitor-klutzer-1aa3d/rulesets/1a3348d8-f0cb-4831-b0c1-7a7d4f2d605b' } } 
+ Sat Sep 15 2018 20:32:42 GMT-0600 (CST)
+[debug] [2018-09-16T02:32:42.634Z] <<< HTTP RESPONSE 200
+[debug] [2018-09-16T02:32:42.634Z] [rules] updated release projects/room-env-monitor-klutzer-1aa3d/releases/cloud.firestore
+[info] ✔  firestore: released rules firestore.rules to cloud.firestore
+[debug] [2018-09-16T02:32:42.639Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/projects/room-env-monitor-klutzer-1aa3d/locations/-/functions  
+  
+ Sat Sep 15 2018 20:32:42 GMT-0600 (CST)
+[debug] [2018-09-16T02:32:43.030Z] <<< HTTP RESPONSE 200
+[info] i  functions: creating Node.js 6 function RoomEnvironmentMonitorHandler(us-central1)...
+[debug] [2018-09-16T02:32:43.033Z] Trigger is:  {"eventTrigger":{"resource":"projects/room-env-monitor-klutzer-1aa3d/topics/room-monitor-telemetry","eventType":"google.pubsub.topic.publish","service":"pubsub.googleapis.com"}}
+[info] i  functions: updating Node.js 6 function helloWorld(us-central1)...
+[debug] [2018-09-16T02:32:43.035Z] Trigger is:  {"httpsTrigger":{}}
+[info] 
+The following functions are found in your project but do not exist in your local source code:
+	helloPubSub(us-central1)
+
+If you are renaming a function or changing its region, it is recommended that you create the new function first before deleting the old one to prevent event loss. For more info, visit https://firebase.google.com/docs/functions/manage-functions#modify
+
