@@ -29,6 +29,7 @@ type service struct {
 	GoogleIOTConfig *config.GoogleIOTConfig
 	Logger          *log.Logger
 	topics          topics
+	clientID        string
 	clientOptions   *MQTT.ClientOptions
 }
 
@@ -41,6 +42,12 @@ func NewGoogleIOTService(certs *config.SSLCerts, iotConfig *config.GoogleIOTConf
 			telemetry: fmt.Sprintf("/devices/%v/events", iotConfig.DeviceID),
 			config:    fmt.Sprintf("/devices/%v/config", iotConfig.DeviceID),
 		},
+		clientID: fmt.Sprintf("projects/%v/locations/%v/registries/%v/devices/%v",
+			iotConfig.ProjectID,
+			iotConfig.Region,
+			iotConfig.RegistryID,
+			iotConfig.DeviceID,
+		),
 	}
 }
 
@@ -103,14 +110,7 @@ func (s *service) PublishSensorData(ctx context.Context, data string) error {
 		MinVersion:         tls.VersionTLS12,
 	}
 
-	clientID := fmt.Sprintf("projects/%v/locations/%v/registries/%v/devices/%v",
-		"room-env-monitor-klutzer",
-		"us-central1",
-		"devices-klutzer",
-		"raspberry-pi-room-monitor-rs256-device",
-	)
-
-	opts, err := s.getMQTTOptions(clientID, tlsConfig)
+	opts, err := s.getMQTTOptions(s.clientID, tlsConfig)
 	if err != nil {
 		return err
 	}

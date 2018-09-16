@@ -14,6 +14,8 @@ import (
 
 	googleiot "github.com/kml183/room-environment-monitor/internal/google-iot"
 	"github.com/kml183/room-environment-monitor/internal/sensors"
+
+	"github.com/kml183/room-environment-monitor/internal/config"
 )
 
 const (
@@ -50,7 +52,7 @@ func NewHTTPServer(logger *log.Logger, tsl2561Driver *i2c.TSL2561Driver, ccs811D
 	}
 
 	//Load The api key from file
-	val, err := ioutil.ReadFile("api_key.txt")
+	val, err := ioutil.ReadFile(config.ApiKeyFile)
 	if err != nil {
 		return err
 	}

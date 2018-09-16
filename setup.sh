@@ -1,4 +1,4 @@
-project=room-env-monitor-klutzer
+project=room-env-monitor-klutzer-1aa3d
 region=us-central1
 registry=devices-klutzer
 device=raspberry-pi-room-monitor-rs256-device

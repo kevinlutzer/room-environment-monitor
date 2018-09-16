@@ -8,6 +8,9 @@ var (
 	rootsPath      = "certs/roots.pem"
 	rsaCertPath    = "certs/rsa_cert.pem"
 	rsaPrivatePath = "certs/rsa_private.pem"
+
+	// APIKeyFile is the name of the file containing an string to be dynamically loaded when the server starts
+	APIKeyFile = "api_key.txt"
 )
 
 type SSLCerts struct {
@@ -40,7 +43,7 @@ func GetGoogleIOTConfig() *GoogleIOTConfig {
 			Host: "mqtt.googleapis.com",
 			Port: "8883",
 		},
-		ProjectID:  "room-env-monitor-klutzer",
+		ProjectID:  "room-env-monitor-klutzer-1aa3d",
 		RegistryID: "devices-klutzer",
 		Region:     "us-central1",
 	}

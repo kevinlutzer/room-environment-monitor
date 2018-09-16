@@ -104,7 +104,7 @@ func (s *service) fetchGasData(gd *GasData) error {
 
 	gd.CO2 = co2
 	gd.TVOC = tvoc
-	gd.Temperature = temp
+	gd.RoomTemp = temp
 
 	return nil
 }
