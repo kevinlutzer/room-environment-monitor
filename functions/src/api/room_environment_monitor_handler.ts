@@ -1,36 +1,37 @@
 import * as functions from 'firebase-functions';
 import * as admin   from 'firebase-admin';
 
-import {RoomEnvironmentMonitorTelemetry, RoomEnvironmentMonitorTelemetryApiInterface} from '../model/room-environment-monitor-telemetry.api.model';
+import {Request, Response} from 'express';
 
-admin.initializeApp(functions.config().firebase);
+import {RoomEnvironmentMonitorTelemetry, RoomEnvironmentMonitorPubsubMessageInterface, RoomEnvironmentMonitorLookupApiRequestInteface} from '../model/room-environment-telemetry.api.model';
 
-const db = admin.firestore();
-db.settings({timestampsInSnapshots: true});
+export class RoomEnvironmentMonitorHandler {
 
-export const RoomEnvironmentMonitorHandler = functions.pubsub.topic('room-monitor-telemetry').onPublish((message) => {
-    let rawData: RoomEnvironmentMonitorTelemetryApiInterface;
-    try {
-        rawData = JSON.parse(message.data ? Buffer.from(message.data, 'base64').toString() : null);
-    } catch {
-        console.error("Failed to parse the pubsub mesage. The api interface most likely changed");
-        return null;
-    }
+    // Handlers
+    public async Pubsub(message: functions.pubsub.Message, db: FirebaseFirestore.Firestore): Promise<any> {
 
-    // Becasue the id is based on the timestamp, if the timestamp is passed null or undefined the same entity will be updated
-    const sysDate = new Date(rawData.timestamp || "");
-    const id = sysDate.getTime().toString();
+        let rawData: RoomEnvironmentMonitorPubsubMessageInterface;
+        try {
+            rawData = JSON.parse(message.data ? Buffer.from(message.data, 'base64').toString() : null);
+        } catch {
+            console.error("Failed to parse the pubsub mesage. The api interface most likely changed");
+            return null;
+        }
+    
+        // Becasue the id is based on the timestamp, if the timestamp is passed null or undefined the same entity will be updated
+        const sysDate = new Date(rawData.timestamp || "");
+        const id = sysDate.getTime().toString();
+    
+        const data = {
+            lux: rawData.lux || 0,
+            co2: rawData.co2 || 0,
+            tvoc: rawData.tvoc || 0,
+            roomTemp: rawData.room_temp || 0,
+            cpuTemp: rawData.cpu_temp || 0,
+            timestamp: admin.firestore.Timestamp.fromDate(sysDate),
+        } as RoomEnvironmentMonitorTelemetry
 
-    var data = {
-        lux: rawData.lux || 0,
-        co2: rawData.co2 || 0,
-        tvoc: rawData.tvoc || 0,
-        roomTemp: rawData.room_temp || 0,
-        cpuTemp: rawData.cpu_temp || 0,
-        timestamp: admin.firestore.Timestamp.fromDate(sysDate),
-    } as RoomEnvironmentMonitorTelemetry
-
-    return db
+        return db
         .collection('RoomMonitorTeletry')
         .doc(id)
         .set(data)
@@ -38,6 +39,23 @@ export const RoomEnvironmentMonitorHandler = functions.pubsub.topic('room-monito
             resp => console.log("Added new entity with id: ", id, " and resp: ", resp),
             err => console.error("Failed to create entity: ", err)
         );
-});
+    }
 
-(new Date()).toTimeString()
+    public async List(req: Request, res: Response, db: FirebaseFirestore.Firestore) {
+
+        const params = req.query as RoomEnvironmentMonitorLookupApiRequestInteface;
+        const cursor = params.cursor ? parseInt(params.cursor, 10): 0;
+        const pageSize = params.page_size ? parseInt(params.page_size, 10): 1000;
+
+        const results = await db
+            .collection('RoomMonitorTeletry')
+            .offset(cursor)
+            .limit(pageSize)
+            .get()
+
+        const telemetry = results.docs && results.docs.length ? results.docs.map((v) => (v.data())) : [];
+        res.json({
+            telemetry: telemetry})
+        return
+    }
+}
