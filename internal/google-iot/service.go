@@ -25,14 +25,10 @@ type topics struct {
 }
 
 type service struct {
-	Certs           *config.SSLCerts
-	GoogleIOTConfig *config.GoogleIOTConfig
-	Logger          *log.Logger
-	topics          topics
-	clientID        string
-	clientOptions   *MQTT.ClientOptions
-	jwtString       string
-	tlsConfig       *tls.Config
+	Logger    *log.Logger
+	topics    topics
+	certs     *config.SSLCerts
+	iotConfig *config.GoogleIOTConfig
 }
 
 func getTokenString(rsaPrivate string, projectID string) (string, error) {
@@ -71,7 +67,14 @@ func getTLSConfig(rootsCert string) *tls.Config {
 	}
 }
 
-func NewGoogleIOTService(certs *config.SSLCerts, iotConfig *config.GoogleIOTConfig, logger *log.Logger) (Service, error) {
+func getMQTTClient(certs *config.SSLCerts, iotConfig *config.GoogleIOTConfig, logger *log.Logger) (MQTT.Client, error) {
+
+	clientID := fmt.Sprintf("projects/%v/locations/%v/registries/%v/devices/%v",
+		iotConfig.ProjectID,
+		iotConfig.Region,
+		iotConfig.RegistryID,
+		iotConfig.DeviceID,
+	)
 
 	jwtString, err := getTokenString(certs.RSAPrivate, iotConfig.ProjectID)
 	if err != nil {
@@ -80,66 +83,62 @@ func NewGoogleIOTService(certs *config.SSLCerts, iotConfig *config.GoogleIOTConf
 
 	tlsConfig := getTLSConfig(certs.Roots)
 
+	opts := MQTT.NewClientOptions()
+
+	broker := fmt.Sprintf("ssl://%v:%v", iotConfig.Bridge.Host, iotConfig.Bridge.Port)
+	opts.AddBroker(broker)
+	opts.SetClientID(clientID).SetTLSConfig(tlsConfig)
+	opts.SetUsername("unused")
+
+	opts.SetPassword(jwtString)
+	opts.SetDefaultPublishHandler(func(client MQTT.Client, msg MQTT.Message) {
+		logger.Printf("GoogleIOT - topic > %s\n", msg.Topic())
+		logger.Printf("GoogleIOT - payload > %s\n", msg.Payload())
+	})
+
+	return MQTT.NewClient(opts), nil
+
+}
+
+func NewGoogleIOTService(certs *config.SSLCerts, iotConfig *config.GoogleIOTConfig, logger *log.Logger) Service {
+
 	return &service{
-		Certs:           certs,
-		GoogleIOTConfig: iotConfig,
-		Logger:          logger,
+		certs:     certs,
+		iotConfig: iotConfig,
+		Logger:    logger,
 		topics: topics{
 			telemetry: fmt.Sprintf("/devices/%v/events", iotConfig.DeviceID),
 			state:     fmt.Sprintf("/devices/%v/state", iotConfig.DeviceID),
 		},
-		clientID: fmt.Sprintf("projects/%v/locations/%v/registries/%v/devices/%v",
-			iotConfig.ProjectID,
-			iotConfig.Region,
-			iotConfig.RegistryID,
-			iotConfig.DeviceID,
-		),
-		jwtString: jwtString,
-		tlsConfig: tlsConfig,
-	}, nil
-}
-
-func (s *service) getMQTTClient() MQTT.Client {
-
-	opts := MQTT.NewClientOptions()
-
-	broker := fmt.Sprintf("ssl://%v:%v", s.GoogleIOTConfig.Bridge.Host, s.GoogleIOTConfig.Bridge.Port)
-	opts.AddBroker(broker)
-	opts.SetClientID(s.clientID).SetTLSConfig(s.tlsConfig)
-	opts.SetUsername("unused")
-
-	opts.SetPassword(s.jwtString)
-	opts.SetDefaultPublishHandler(func(client MQTT.Client, msg MQTT.Message) {
-		s.Logger.Printf("GoogleIOT - topic > %s\n", msg.Topic())
-		s.Logger.Printf("GoogleIOT - payload > %s\n", msg.Payload())
-	})
-
-	return MQTT.NewClient(opts)
-
+	}
 }
 
 func (s *service) PublishSensorData(ctx context.Context, data string) error {
 
-	client := s.getMQTTClient()
-
-	if token := client.Connect(); token.Wait() && token.Error() != nil {
-		log.Fatal(token.Error())
+	c, err := getMQTTClient(s.certs, s.iotConfig, s.Logger)
+	if err != nil {
+		return err
 	}
 
-	token := client.Publish(
+	if token := c.Connect(); token.Wait() && token.Error() != nil {
+		log.Fatal(token.Error().Error())
+		return token.Error()
+	}
+
+	token := c.Publish(
 		s.topics.telemetry,
 		0,
 		false,
 		data)
 
 	token.WaitTimeout(5 * time.Second)
-	err := token.Error()
+	err = token.Error()
 	if err != nil {
 		s.Logger.Println("GoogleIOT - ERROR: failed to publish the payload")
 		return err
 	}
 
-	client.Disconnect(250)
+	c.Disconnect(250)
 	return nil
 }
 

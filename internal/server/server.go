@@ -42,7 +42,7 @@ func NewHTTPServer(logger *log.Logger, tsl2561Driver *i2c.TSL2561Driver, ccs811D
 
 	// Setup Services and Server
 	ss := sensors.NewSensorService(tsl2561Driver, ccs811Driver)
-	gs, err := googleiot.NewGoogleIOTService(certs, iotConfig, logger)
+	gs := googleiot.NewGoogleIOTService(certs, iotConfig, logger)
 
 	if err != nil {
 		logger.Fatalf("Failed to setup google iot service", err.Error())
