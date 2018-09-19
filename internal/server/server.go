@@ -14,8 +14,6 @@ import (
 
 	googleiot "github.com/kml183/room-environment-monitor/internal/google-iot"
 	"github.com/kml183/room-environment-monitor/internal/sensors"
-
-	"github.com/kml183/room-environment-monitor/internal/config"
 )
 
 const (
@@ -44,7 +42,13 @@ func NewHTTPServer(logger *log.Logger, tsl2561Driver *i2c.TSL2561Driver, ccs811D
 
 	// Setup Services and Server
 	ss := sensors.NewSensorService(tsl2561Driver, ccs811Driver)
-	gs := googleiot.NewGoogleIOTService(certs, iotConfig, logger)
+	gs, err := googleiot.NewGoogleIOTService(certs, iotConfig, logger)
+
+	if err != nil {
+		logger.Fatalf("Failed to setup google iot service", err.Error())
+		return err
+	}
+
 	s := &server{
 		SensorsService:   ss,
 		GoogleIOTService: gs,
@@ -52,8 +56,9 @@ func NewHTTPServer(logger *log.Logger, tsl2561Driver *i2c.TSL2561Driver, ccs811D
 	}
 
 	//Load The api key from file
-	val, err := ioutil.ReadFile(config.ApiKeyFile)
+	val, err := ioutil.ReadFile(config.APIKeyFile)
 	if err != nil {
+		logger.Fatalf("Failed to read api key file", err.Error())
 		return err
 	}
 
