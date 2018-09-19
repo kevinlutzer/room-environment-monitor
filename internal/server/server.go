@@ -65,14 +65,14 @@ func NewHTTPServer(logger *log.Logger, tsl2561Driver *i2c.TSL2561Driver, ccs811D
 	s.apiKey = string(val)
 
 	//Setup Handlers
-	fs := http.FileServer(http.Dir("static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
-	http.HandleFunc("/get-sensor-data-snapshot", s.GetSensorDataSnapshotHandler)
-	http.HandleFunc("/publish-sensor-data-snapshot", s.PublishSensorDataSnapshotHandler)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/get-sensor-data-snapshot", s.GetSensorDataSnapshotHandler)
+	mux.HandleFunc("/publish-sensor-data-snapshot", s.PublishSensorDataSnapshotHandler)
+	mux.HandleFunc("/publish-device-status", s.PublishDeviceStatus)
 
 	//Start the http server
 	fmt.Printf("Started HTTP handler on port %s \n", HTTPPort)
-	if err := http.ListenAndServe(HTTPPort, nil); err != nil {
+	if err := http.ListenAndServe(HTTPPort, mux); err != nil {
 		return errors.New("Couldn't start http server")
 	}
 
@@ -129,14 +129,7 @@ func (s *server) PublishSensorDataSnapshotHandler(wr http.ResponseWriter, r *htt
 		return
 	}
 
-	mData, err := json.Marshal(data)
-	if err != nil {
-		s.Logger.Printf("Request - ERROR: failed to marshal sensor data > %s \n", err.Error())
-		s.setResponse(wr, fmt.Sprintf("can't marshal sensor snapshot data > %s", err.Error()), 500)
-		return
-	}
-
-	if err := s.GoogleIOTService.PublishSensorData(ctx, string(mData)); err != nil {
+	if err := s.GoogleIOTService.PublishSensorData(ctx, data); err != nil {
 		s.Logger.Printf("Request - ERROR: failed to publish the sensor data to cloud iot > %s \n", err.Error())
 		s.setResponse(wr, fmt.Sprintf("can't publish the sensor data > %s", err.Error()), 500)
 		return
@@ -144,6 +137,32 @@ func (s *server) PublishSensorDataSnapshotHandler(wr http.ResponseWriter, r *htt
 
 	s.Logger.Println("Request - successfully published the sensor data")
 	s.setResponse(wr, "Successfully published the sensor data", 200)
+}
+
+func (s *server) PublishDeviceStatus(wr http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+	s.Logger.Printf("Request - calling handler: PublishDeviceStatus")
+
+	p := r.URL.Query().Get("api_key")
+	if p != s.apiKey {
+		s.Logger.Printf("Request - WARNING: api key \"%s\" does not match known key \"%s\"", p, s.apiKey)
+		s.setResponse(wr, "api key is incorrect or was not passed", 403)
+		return
+	}
+
+	data := &googleiot.SensorStatus{
+		Status: "Active",
+	}
+
+	if err := s.GoogleIOTService.PublishDeviceState(ctx, data); err != nil {
+		s.Logger.Printf("Request - ERROR: failed to publish the device status to cloud iot > %s \n", err.Error())
+		s.setResponse(wr, "can't publish the device status ", 500)
+		return
+	}
+
+	s.Logger.Println("Request - successfully published the device status")
+	s.setResponse(wr, "Successfully published the device status", 200)
 }
 
 func (s *server) setResponse(wr http.ResponseWriter, message string, statusCode int) {

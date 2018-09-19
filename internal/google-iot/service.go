@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/json"
 	"fmt"
 	"log"
 	"time"
@@ -11,12 +12,16 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/kml183/room-environment-monitor/internal/config"
+	"github.com/kml183/room-environment-monitor/internal/sensors"
 )
 
 //Service represents the structure of the service layer
 type Service interface {
-	//FetchSensorData fetches sensors data
-	PublishSensorData(ctx context.Context, data string) error
+	//PublishSensorData fetches sensors data
+	PublishSensorData(ctx context.Context, data *sensors.SensorData) error
+
+	//PublishDeviceState fetches sensors data
+	PublishDeviceState(ctx context.Context, status *SensorStatus) error
 }
 
 type topics struct {
@@ -100,6 +105,7 @@ func getMQTTClient(certs *config.SSLCerts, iotConfig *config.GoogleIOTConfig, lo
 
 }
 
+// NewGoogleIOTService reurns a new service
 func NewGoogleIOTService(certs *config.SSLCerts, iotConfig *config.GoogleIOTConfig, logger *log.Logger) Service {
 
 	return &service{
@@ -113,7 +119,7 @@ func NewGoogleIOTService(certs *config.SSLCerts, iotConfig *config.GoogleIOTConf
 	}
 }
 
-func (s *service) PublishSensorData(ctx context.Context, data string) error {
+func (s *service) PublishSensorData(ctx context.Context, d *sensors.SensorData) error {
 
 	c, err := getMQTTClient(s.certs, s.iotConfig, s.Logger)
 	if err != nil {
@@ -123,6 +129,11 @@ func (s *service) PublishSensorData(ctx context.Context, data string) error {
 	if token := c.Connect(); token.Wait() && token.Error() != nil {
 		log.Fatal(token.Error().Error())
 		return token.Error()
+	}
+
+	data, err := json.Marshal(d)
+	if err != nil {
+		return err
 	}
 
 	token := c.Publish(
@@ -142,36 +153,36 @@ func (s *service) PublishSensorData(ctx context.Context, data string) error {
 	return nil
 }
 
-// func (s *service) PublishDeviceState(ctx context.Context, status SensorStatus) error {
+func (s *service) PublishDeviceState(ctx context.Context, status *SensorStatus) error {
 
-// 	str, err := json.Marshal(status)
-// 	if err != nil {
-// 		return err
-// 	}
+	c, err := getMQTTClient(s.certs, s.iotConfig, s.Logger)
+	if err != nil {
+		return err
+	}
 
-// 	opts, err := s.getMQTTOptions(s.clientID, tlsConfig)
-// 	if err != nil {
-// 		return err
-// 	}
+	if token := c.Connect(); token.Wait() && token.Error() != nil {
+		log.Fatal(token.Error().Error())
+		return token.Error()
+	}
 
-// 	client := MQTT.NewClient(opts)
-// 	if token := client.Connect(); token.Wait() && token.Error() != nil {
-// 		log.Fatal(token.Error())
-// 	}
+	data, err := json.Marshal(status)
+	if err != nil {
+		return err
+	}
 
-// 	token := client.Publish(
-// 		s.topics.telemetry,
-// 		0,
-// 		false,
-// 		data)
+	token := c.Publish(
+		s.topics.state,
+		0,
+		false,
+		data)
 
-// 	token.WaitTimeout(5 * time.Second)
-// 	err = token.Error()
-// 	if err != nil {
-// 		s.Logger.Println("GoogleIOT - ERROR: failed to publish the payload")
-// 		return err
-// 	}
+	token.WaitTimeout(5 * time.Second)
+	err = token.Error()
+	if err != nil {
+		s.Logger.Println("GoogleIOT - ERROR: failed to publish the payload")
+		return err
+	}
 
-// 	client.Disconnect(250)
-// 	return nil
-// }
+	c.Disconnect(250)
+	return nil
+}
