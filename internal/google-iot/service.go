@@ -21,11 +21,14 @@ type Service interface {
 	PublishSensorData(ctx context.Context, data *sensors.SensorData) error
 	//PublishDeviceState fetches sensors data
 	PublishDeviceState(ctx context.Context, status *SensorStatus) error
+	//SubsribeToConfigChanges subscribe to any config changes
+	SubsribeToConfigChanges(ctx context.Context) error
 }
 
 type topics struct {
 	state     string
 	telemetry string
+	config    string
 }
 
 type service struct {
@@ -33,6 +36,7 @@ type service struct {
 	topics    topics
 	certs     *config.SSLCerts
 	iotConfig *config.GoogleIOTConfig
+	current   []byte
 }
 
 func getTokenString(rsaPrivate string, projectID string) (string, error) {
@@ -114,6 +118,7 @@ func NewGoogleIOTService(certs *config.SSLCerts, iotConfig *config.GoogleIOTConf
 		topics: topics{
 			telemetry: fmt.Sprintf("/devices/%v/events", iotConfig.DeviceID),
 			state:     fmt.Sprintf("/devices/%v/state", iotConfig.DeviceID),
+			config:    fmt.Sprintf("/devices/%v/config", iotConfig.DeviceID),
 		},
 	}
 }
@@ -149,6 +154,43 @@ func (s *service) PublishSensorData(ctx context.Context, d *sensors.SensorData) 
 	}
 
 	c.Disconnect(250)
+	return nil
+}
+
+func (s *service) HandleMQTTConfigMessage(c MQTT.Client, m MQTT.Message) {
+	s.Logger.Println("Handler config message")
+	s.Logger.Println(string(m.Payload()))
+	s.current = m.Payload()
+}
+
+func (s *service) SubsribeToConfigChanges(ctx context.Context) error {
+
+	s.Logger.Println("Subscribe to config message")
+
+	c, err := getMQTTClient(s.certs, s.iotConfig, s.Logger)
+	if err != nil {
+		return err
+	}
+
+	if token := c.Connect(); token.Wait() && token.Error() != nil {
+		log.Fatal(token.Error().Error())
+		return token.Error()
+	}
+
+	token := c.Subscribe(
+		s.topics.config,
+		0,
+		s.HandleMQTTConfigMessage)
+
+	token.WaitTimeout(5 * time.Second)
+	err = token.Error()
+	if err != nil {
+		s.Logger.Println("GoogleIOT - ERROR: failed to publish the payload")
+		return err
+	}
+
+	c.Disconnect(250)
+	s.Logger.Println(s.current)
 	return nil
 }
 

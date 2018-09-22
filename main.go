@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 	"runtime"
@@ -35,9 +36,6 @@ func main() {
 
 	work := func() {
 		// Setup cpu-fan control system
-		gobot.Every(10*time.Second, func() {
-			fd.On()
-		})
 
 		// Create SSL Certs
 		certs, err := config.GetSSLCerts()
@@ -51,6 +49,12 @@ func main() {
 		// Services
 		ss := sensors.NewSensorService(dl, dg, fd)
 		gs := googleiot.NewGoogleIOTService(certs, iotConfig, logger)
+
+		ctx := context.TODO()
+
+		gobot.Every(1*time.Second, func() {
+			gs.SubsribeToConfigChanges(ctx)
+		})
 
 		if err := server.StartHTTPServer(logger, ss, gs); err != nil {
 			logger.Fatalf("Could not start the http server > %s \n", err.Error())
