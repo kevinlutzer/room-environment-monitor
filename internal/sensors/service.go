@@ -12,30 +12,59 @@ import (
 	"strings"
 	"time"
 
+	"gobot.io/x/gobot/drivers/gpio"
+
 	"golang.org/x/sync/errgroup"
+)
+
+const (
+	CPUTempFanThresh = 35
 )
 
 //Service represents the structure of the service layer
 type Service interface {
 	//FetchSensorData fetches sensors data
 	FetchSensorData(ctx context.Context) (*SensorData, error)
+	//ToggleFan toggles the fan state
+	ToggleFan() error
 }
 
 type service struct {
 	PyFile string
 	td     *i2c.TSL2561Driver
 	cd     *i2c.CCS811Driver
+	fd     *gpio.LedDriver
 }
 
 // NewSensorService returns a new instance of the Service interface
-func NewSensorService(tsl2561Driver *i2c.TSL2561Driver, ccs811Driver *i2c.CCS811Driver) Service {
+func NewSensorService(tsl2561Driver *i2c.TSL2561Driver, ccs811Driver *i2c.CCS811Driver, fanDriver *gpio.LedDriver) Service {
 	s := &service{
 		PyFile: "main.py",
 		td:     tsl2561Driver,
 		cd:     ccs811Driver,
+		fd:     fanDriver,
 	}
 
 	return s
+}
+
+// Change the current state of the fan
+func (s *service) ToggleFan() error {
+	return s.fd.Toggle()
+}
+
+// SetFanFromCPUTemp
+func (s *service) SetFanFromCPUTemp() error {
+	cpuTemp := &TempData{}
+	if err := s.fetchCPUTemp(cpuTemp); err != nil {
+		return err
+	}
+
+	if cpuTemp.Temp >= CPUTempFanThresh {
+		return s.fd.On()
+	}
+
+	return nil
 }
 
 // FetchSensorData returns an object representing all of the sensor data

@@ -19,7 +19,6 @@ import (
 type Service interface {
 	//PublishSensorData fetches sensors data
 	PublishSensorData(ctx context.Context, data *sensors.SensorData) error
-
 	//PublishDeviceState fetches sensors data
 	PublishDeviceState(ctx context.Context, status *SensorStatus) error
 }

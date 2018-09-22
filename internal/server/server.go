@@ -10,8 +10,6 @@ import (
 
 	"github.com/kml183/room-environment-monitor/internal/config"
 
-	"gobot.io/x/gobot/drivers/i2c"
-
 	googleiot "github.com/kml183/room-environment-monitor/internal/google-iot"
 	"github.com/kml183/room-environment-monitor/internal/sensors"
 )
@@ -28,32 +26,8 @@ type server struct {
 	apiKey           string
 }
 
-// NewHTTPServer returns a instance of the http server
-func NewHTTPServer(logger *log.Logger, tsl2561Driver *i2c.TSL2561Driver, ccs811Driver *i2c.CCS811Driver) error {
-
-	// Create SSL Certs
-	certs, err := config.GetSSLCerts()
-	if err != nil {
-		logger.Fatalf("Failed to fetch the ssl cert files > %s ", err.Error())
-	}
-
-	// Fetch Google IOT Config
-	iotConfig := config.GetGoogleIOTConfig()
-
-	// Setup Services and Server
-	ss := sensors.NewSensorService(tsl2561Driver, ccs811Driver)
-	gs := googleiot.NewGoogleIOTService(certs, iotConfig, logger)
-
-	if err != nil {
-		logger.Fatalf("Failed to setup google iot service", err.Error())
-		return err
-	}
-
-	s := &server{
-		SensorsService:   ss,
-		GoogleIOTService: gs,
-		Logger:           logger,
-	}
+// StartHTTPServer returns a instance of the http server
+func StartHTTPServer(logger *log.Logger, ss sensors.Service, gs googleiot.Service) error {
 
 	//Load The api key from file
 	val, err := ioutil.ReadFile(config.APIKeyFile)
@@ -62,21 +36,47 @@ func NewHTTPServer(logger *log.Logger, tsl2561Driver *i2c.TSL2561Driver, ccs811D
 		return err
 	}
 
-	s.apiKey = string(val)
+	s := &server{
+		SensorsService:   ss,
+		GoogleIOTService: gs,
+		Logger:           logger,
+		apiKey:           string(val),
+	}
 
 	//Setup Handlers
 	mux := http.NewServeMux()
 	mux.HandleFunc("/get-sensor-data-snapshot", s.GetSensorDataSnapshotHandler)
 	mux.HandleFunc("/publish-sensor-data-snapshot", s.PublishSensorDataSnapshotHandler)
 	mux.HandleFunc("/publish-device-status", s.PublishDeviceStatus)
+	mux.HandleFunc("/toggle-fan", s.ToggleFanHandler)
 
-	//Start the http server
+	//Start the http server (blocking)
 	fmt.Printf("Started HTTP handler on port %s \n", HTTPPort)
 	if err := http.ListenAndServe(HTTPPort, mux); err != nil {
 		return errors.New("Couldn't start http server")
 	}
 
 	return nil
+}
+
+// Handler is the main http handler for the room environment monitor app
+func (s *server) ToggleFanHandler(wr http.ResponseWriter, r *http.Request) {
+
+	s.Logger.Printf("Request - calling handler: GetSensorDataSnapshotHandler")
+
+	p := r.URL.Query().Get("api_key")
+	if p != s.apiKey {
+		s.Logger.Printf("Request - WARNING: api key \"%s\" does not match known key \"%s\"", p, s.apiKey)
+		s.setResponse(wr, "api key is incorrect or was not passed", 403)
+		return
+	}
+
+	s.SensorsService.ToggleFan()
+
+	str := "Request - successfully toggled the fan"
+	s.Logger.Println(str)
+	s.setResponse(wr, string(str), 200)
+
 }
 
 // Handler is the main http handler for the room environment monitor app
