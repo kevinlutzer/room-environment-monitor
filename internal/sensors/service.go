@@ -75,9 +75,13 @@ func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 		return s.fetchLightData(ld)
 	})
 
-	cpuTemp := &TempData{}
+	temp := &TempData{}
 	g.Go(func() error {
-		return s.fetchCPUTemp(cpuTemp)
+		return s.fetchCPUTemp(temp)
+	})
+
+	g.Go(func() error {
+		return s.fetchRoomTemp(temp)
 	})
 
 	err := g.Wait()
@@ -86,7 +90,7 @@ func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 	}
 
 	sd := &SensorData{}
-	sd.convertFromLightAndGasData(gd, ld, time.Now(), cpuTemp)
+	sd.convertFromLightAndGasData(gd, ld, time.Now(), temp)
 
 	return sd, nil
 }
@@ -110,7 +114,7 @@ func (s *service) fetchCPUTemp(cpuTemp *TempData) error {
 		return err
 	}
 
-	cpuTemp.Temp = floatTemp
+	cpuTemp.CPUTemp = floatTemp
 	return nil
 }
 
@@ -120,13 +124,19 @@ func (s *service) fetchGasData(gd *GasData) error {
 		return err
 	}
 
+	gd.CO2 = co2
+	gd.TVOC = tvoc
+
+	return nil
+}
+
+func (s *service) fetchRoomTemp(gd *TempData) error {
+
 	temp, err := s.cd.GetTemperature()
 	if err != nil {
 		return err
 	}
 
-	gd.CO2 = co2
-	gd.TVOC = tvoc
 	gd.RoomTemp = temp
 
 	return nil
