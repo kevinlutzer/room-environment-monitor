@@ -100,6 +100,8 @@ func (s *server) GetSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Re
 		return
 	}
 
+	s.Logger.Printf("%+v", d)
+
 	md, err := json.Marshal(d)
 	if err != nil {
 		s.Logger.Printf("Request - ERROR: failed to marshal sensor data > %s \n", err.Error())

@@ -90,6 +90,9 @@ func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 	}
 
 	sd := &SensorData{}
+
+	sd.RoomTemp = 0
+
 	sd.convertFromLightAndGasData(gd, ld, time.Now(), temp)
 
 	return sd, nil
