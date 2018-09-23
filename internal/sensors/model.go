@@ -37,3 +37,11 @@ func (s *SensorData) convertFromLightAndGasData(g *GasData, l *LightData, t time
 	s.TimeStamp = t
 	s.CPUTemp = cpuTemp.Temp
 }
+
+type FanState string
+
+const (
+	ToggleFan FanState = "Toggle"
+	FanOn     FanState = "On"
+	FanOff    FanState = "Off"
+)

@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"time"
@@ -22,7 +23,7 @@ type Service interface {
 	//PublishDeviceState fetches sensors data
 	PublishDeviceState(ctx context.Context, status *SensorStatus) error
 	//SubsribeToConfigChanges subscribe to any config changes
-	SubsribeToConfigChanges(ctx context.Context) error
+	SubsribeToConfigChanges(ctx context.Context) (*ConfigMessage, error)
 }
 
 type topics struct {
@@ -37,6 +38,7 @@ type service struct {
 	certs     *config.SSLCerts
 	iotConfig *config.GoogleIOTConfig
 	current   []byte
+	num       *int
 }
 
 func getTokenString(rsaPrivate string, projectID string) (string, error) {
@@ -75,7 +77,7 @@ func getTLSConfig(rootsCert string) *tls.Config {
 	}
 }
 
-func getMQTTClient(certs *config.SSLCerts, iotConfig *config.GoogleIOTConfig, logger *log.Logger) (MQTT.Client, error) {
+func getMQTTClient(certs *config.SSLCerts, iotConfig *config.GoogleIOTConfig, logger *log.Logger, opts *MQTT.ClientOptions) (MQTT.Client, error) {
 
 	clientID := fmt.Sprintf("projects/%v/locations/%v/registries/%v/devices/%v",
 		iotConfig.ProjectID,
@@ -91,18 +93,12 @@ func getMQTTClient(certs *config.SSLCerts, iotConfig *config.GoogleIOTConfig, lo
 
 	tlsConfig := getTLSConfig(certs.Roots)
 
-	opts := MQTT.NewClientOptions()
-
 	broker := fmt.Sprintf("ssl://%v:%v", iotConfig.Bridge.Host, iotConfig.Bridge.Port)
 	opts.AddBroker(broker)
 	opts.SetClientID(clientID).SetTLSConfig(tlsConfig)
 	opts.SetUsername("unused")
 
 	opts.SetPassword(jwtString)
-	opts.SetDefaultPublishHandler(func(client MQTT.Client, msg MQTT.Message) {
-		logger.Printf("GoogleIOT - topic > %s\n", msg.Topic())
-		logger.Printf("GoogleIOT - payload > %s\n", msg.Payload())
-	})
 
 	return MQTT.NewClient(opts), nil
 
@@ -120,12 +116,20 @@ func NewGoogleIOTService(certs *config.SSLCerts, iotConfig *config.GoogleIOTConf
 			state:     fmt.Sprintf("/devices/%v/state", iotConfig.DeviceID),
 			config:    fmt.Sprintf("/devices/%v/config", iotConfig.DeviceID),
 		},
+		num: flag.Int("num", 1, "The number of messages to publish or subscribe (default 1)"),
 	}
 }
 
 func (s *service) PublishSensorData(ctx context.Context, d *sensors.SensorData) error {
 
-	c, err := getMQTTClient(s.certs, s.iotConfig, s.Logger)
+	opts := MQTT.NewClientOptions()
+
+	opts.SetDefaultPublishHandler(func(client MQTT.Client, msg MQTT.Message) {
+		s.Logger.Printf("GoogleIOT - topic > %s\n", msg.Topic())
+		s.Logger.Printf("GoogleIOT - payload > %s\n", msg.Payload())
+	})
+
+	c, err := getMQTTClient(s.certs, s.iotConfig, s.Logger, opts)
 	if err != nil {
 		return err
 	}
@@ -158,45 +162,60 @@ func (s *service) PublishSensorData(ctx context.Context, d *sensors.SensorData) 
 }
 
 func (s *service) HandleMQTTConfigMessage(c MQTT.Client, m MQTT.Message) {
-	s.Logger.Println("Handler config message")
+	s.Logger.Println("GoogleIOT - Handler config message")
 	s.Logger.Println(string(m.Payload()))
 	s.current = m.Payload()
 }
 
-func (s *service) SubsribeToConfigChanges(ctx context.Context) error {
+func (s *service) SubsribeToConfigChanges(ctx context.Context) (*ConfigMessage, error) {
 
-	s.Logger.Println("Subscribe to config message")
+	s.Logger.Println("GoogleIOT - Subscribe to config message")
 
-	c, err := getMQTTClient(s.certs, s.iotConfig, s.Logger)
+	receiveCount := 0
+	cm := &ConfigMessage{}
+	choke := make(chan [2]string)
+
+	opts := MQTT.NewClientOptions()
+	opts.SetDefaultPublishHandler(func(client MQTT.Client, msg MQTT.Message) {
+		choke <- [2]string{msg.Topic(), string(msg.Payload())}
+	})
+
+	c, err := getMQTTClient(s.certs, s.iotConfig, s.Logger, opts)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if token := c.Connect(); token.Wait() && token.Error() != nil {
 		log.Fatal(token.Error().Error())
-		return token.Error()
+		return nil, token.Error()
 	}
 
 	token := c.Subscribe(
 		s.topics.config,
 		0,
-		s.HandleMQTTConfigMessage)
+		nil)
 
 	token.WaitTimeout(5 * time.Second)
 	err = token.Error()
 	if err != nil {
 		s.Logger.Println("GoogleIOT - ERROR: failed to publish the payload")
-		return err
+		return nil, err
+	}
+
+	for receiveCount < *s.num {
+		incoming := <-choke
+		s.Logger.Printf("GoogleIOT - recieved message %s", incoming[1])
+		json.Unmarshal([]byte(incoming[1]), &cm)
+		receiveCount++
 	}
 
 	c.Disconnect(250)
-	s.Logger.Println(s.current)
-	return nil
+	return cm, nil
 }
 
 func (s *service) PublishDeviceState(ctx context.Context, status *SensorStatus) error {
 
-	c, err := getMQTTClient(s.certs, s.iotConfig, s.Logger)
+	c, err := getMQTTClient(s.certs, s.iotConfig, s.Logger, MQTT.NewClientOptions())
 	if err != nil {
 		return err
 	}

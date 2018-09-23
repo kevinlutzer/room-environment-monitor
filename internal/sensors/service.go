@@ -25,8 +25,8 @@ const (
 type Service interface {
 	//FetchSensorData fetches sensors data
 	FetchSensorData(ctx context.Context) (*SensorData, error)
-	//ToggleFan toggles the fan state
-	ToggleFan() error
+	//SetFanStatus toggles the fan state
+	SetFanStatus(status FanState) error
 }
 
 type service struct {
@@ -48,23 +48,17 @@ func NewSensorService(tsl2561Driver *i2c.TSL2561Driver, ccs811Driver *i2c.CCS811
 	return s
 }
 
-// Change the current state of the fan
-func (s *service) ToggleFan() error {
-	return s.fd.Toggle()
-}
-
-// SetFanFromCPUTemp
-func (s *service) SetFanFromCPUTemp() error {
-	cpuTemp := &TempData{}
-	if err := s.fetchCPUTemp(cpuTemp); err != nil {
-		return err
+// SetFanStatus change the current state of the fan
+func (s *service) SetFanStatus(state FanState) error {
+	var err error
+	if state == FanOn {
+		err = s.fd.On()
+	} else if state == FanOff {
+		err = s.fd.Off()
+	} else {
+		err = s.fd.Toggle()
 	}
-
-	if cpuTemp.Temp >= CPUTempFanThresh {
-		return s.fd.On()
-	}
-
-	return nil
+	return err
 }
 
 // FetchSensorData returns an object representing all of the sensor data

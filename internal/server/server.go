@@ -49,6 +49,7 @@ func StartHTTPServer(logger *log.Logger, ss sensors.Service, gs googleiot.Servic
 	mux.HandleFunc("/publish-sensor-data-snapshot", s.PublishSensorDataSnapshotHandler)
 	mux.HandleFunc("/publish-device-status", s.PublishDeviceStatus)
 	mux.HandleFunc("/toggle-fan", s.ToggleFanHandler)
+	mux.HandleFunc("/subscribe-iot-config", s.SubscribeToIOTCoreConfig)
 
 	//Start the http server (blocking)
 	fmt.Printf("Started HTTP handler on port %s \n", HTTPPort)
@@ -71,7 +72,7 @@ func (s *server) ToggleFanHandler(wr http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.SensorsService.ToggleFan()
+	//s.SensorsService.ToggleFan()
 
 	str := "Request - successfully toggled the fan"
 	s.Logger.Println(str)
@@ -163,6 +164,43 @@ func (s *server) PublishDeviceStatus(wr http.ResponseWriter, r *http.Request) {
 
 	s.Logger.Println("Request - successfully published the device status")
 	s.setResponse(wr, "Successfully published the device status", 200)
+}
+
+func (s *server) SubscribeToIOTCoreConfig(wr http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+	s.Logger.Printf("Request - calling handler: SubscribeToIOTCoreConfig")
+
+	p := r.URL.Query().Get("api_key")
+	if p != s.apiKey {
+		s.Logger.Printf("Request - WARNING: api key \"%s\" does not match known key \"%s\"", p, s.apiKey)
+		s.setResponse(wr, "api key is incorrect or was not passed", 403)
+		return
+	}
+
+	msg, err := s.GoogleIOTService.SubsribeToConfigChanges(ctx)
+	if err != nil {
+		s.Logger.Printf("Request - ERROR: failed to subscribe to the config changes > %s \n", err.Error())
+		s.setResponse(wr, "can't publish the device status ", 500)
+		return
+	}
+
+	s.Logger.Printf("%+v", msg)
+
+	if msg.FanState != "" {
+		s.Logger.Println("Request - Setting fan state")
+		err = s.SensorsService.SetFanStatus(msg.FanState)
+	} else {
+		s.Logger.Println("Request - ERROR: Message does not have a valid fan state")
+	}
+
+	if err != nil {
+		s.Logger.Println("Request - ERROR: Failed to toggle fan")
+		s.setResponse(wr, "can't toggle fan", 500)
+	}
+
+	s.Logger.Println("Request - subscribed to google iot config changes published the device status")
+	s.setResponse(wr, string(msg.FanState), 200)
 }
 
 func (s *server) setResponse(wr http.ResponseWriter, message string, statusCode int) {

@@ -1,11 +1,9 @@
 package main
 
 import (
-	"context"
 	"log"
 	"os"
 	"runtime"
-	"time"
 
 	"github.com/kml183/room-environment-monitor/internal/config"
 	googleiot "github.com/kml183/room-environment-monitor/internal/google-iot"
@@ -20,6 +18,10 @@ import (
 const (
 	FanPin = "15"
 )
+
+func configMessageHandler(msg *googleiot.ConfigMessage) {
+
+}
 
 func main() {
 	logger := log.New(os.Stdout, "http: ", log.LstdFlags)
@@ -50,11 +52,11 @@ func main() {
 		ss := sensors.NewSensorService(dl, dg, fd)
 		gs := googleiot.NewGoogleIOTService(certs, iotConfig, logger)
 
-		ctx := context.TODO()
+		// ctx := context.TODO()
 
-		gobot.Every(1*time.Second, func() {
-			gs.SubsribeToConfigChanges(ctx)
-		})
+		// gobot.Every(5*time.Second, func() {
+		// 	gs.SubsribeToConfigChanges(ctx)
+		// })
 
 		if err := server.StartHTTPServer(logger, ss, gs); err != nil {
 			logger.Fatalf("Could not start the http server > %s \n", err.Error())
