@@ -9,33 +9,32 @@ type LightData struct {
 }
 
 type TempData struct {
-	Temp float64 `json:"temp"`
-}
-
-type GasData struct {
-	CO2      uint16  `json:"co2"`
-	TVOC     uint16  `json:"tvoc"`
+	CPUTemp  float64 `json:"cpu_temp"`
 	RoomTemp float32 `json:"room_temp"`
 }
 
+type GasData struct {
+	CO2  uint16 `json:"co2"`
+	TVOC uint16 `json:"tvoc"`
+}
+
 type SensorData struct {
-	Lux       uint32    `json:"lux"`
-	CO2       uint16    `json:"co2"`
-	TVOC      uint16    `json:"tvoc"`
-	RoomTemp  float32   `json:"room_temp"`
-	CPUTemp   float64   `json:"cpu_temp"`
+	GasData
+	LightData
+	TempData
 	TimeStamp time.Time `json:"timestamp"`
 }
 
-func (s *SensorData) convertFromLightAndGasData(g *GasData, l *LightData, t time.Time, cpuTemp *TempData) {
+func (s *SensorData) convertFromLightAndGasData(g *GasData, l *LightData, t time.Time, temp *TempData) {
 	s.Lux = l.Lux
 
 	s.CO2 = g.CO2
 	s.TVOC = g.TVOC
-	s.RoomTemp = g.RoomTemp
 
 	s.TimeStamp = t
-	s.CPUTemp = cpuTemp.Temp
+
+	s.RoomTemp = temp.RoomTemp
+	s.CPUTemp = temp.CPUTemp
 }
 
 type FanState string

@@ -65,19 +65,19 @@ func (s *service) SetFanStatus(state FanState) error {
 func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 	g, ctx := errgroup.WithContext(ctx)
 
+	temp := &TempData{}
+	g.Go(func() error {
+		return s.fetchCPUTemp(temp)
+	})
+
 	gd := &GasData{}
 	g.Go(func() error {
-		return s.fetchGasData(gd)
+		return s.fetchGasData(gd, temp)
 	})
 
 	ld := &LightData{}
 	g.Go(func() error {
 		return s.fetchLightData(ld)
-	})
-
-	cpuTemp := &TempData{}
-	g.Go(func() error {
-		return s.fetchCPUTemp(cpuTemp)
 	})
 
 	err := g.Wait()
@@ -86,7 +86,7 @@ func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 	}
 
 	sd := &SensorData{}
-	sd.convertFromLightAndGasData(gd, ld, time.Now(), cpuTemp)
+	sd.convertFromLightAndGasData(gd, ld, time.Now(), temp)
 
 	return sd, nil
 }
@@ -110,11 +110,11 @@ func (s *service) fetchCPUTemp(cpuTemp *TempData) error {
 		return err
 	}
 
-	cpuTemp.Temp = floatTemp
+	cpuTemp.CPUTemp = floatTemp
 	return nil
 }
 
-func (s *service) fetchGasData(gd *GasData) error {
+func (s *service) fetchGasData(gd *GasData, t *TempData) error {
 	co2, tvoc, err := s.cd.GetData()
 	if err != nil {
 		return err
@@ -127,7 +127,7 @@ func (s *service) fetchGasData(gd *GasData) error {
 
 	gd.CO2 = co2
 	gd.TVOC = tvoc
-	gd.RoomTemp = temp
+	t.RoomTemp = temp
 
 	return nil
 }

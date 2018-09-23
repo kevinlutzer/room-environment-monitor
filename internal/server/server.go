@@ -14,6 +14,10 @@ import (
 	"github.com/kml183/room-environment-monitor/internal/sensors"
 )
 
+type Message struct {
+	Message string `json:"message"`
+}
+
 const (
 	// HTTPPort is the port to run the server on
 	HTTPPort = "192.168.1.111:8080"
@@ -84,7 +88,7 @@ func (s *server) ToggleFanHandler(wr http.ResponseWriter, r *http.Request) {
 func (s *server) GetSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
-	s.Logger.Printf("Request - calling handler: GetSensorDataSnapshotHandler")
+	s.Logger.Printf("\nRequest - calling handler: GetSensorDataSnapshotHandler")
 
 	p := r.URL.Query().Get("api_key")
 	if p != s.apiKey {
@@ -107,14 +111,14 @@ func (s *server) GetSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Re
 		return
 	}
 
-	s.Logger.Printf("Request - resulting data: %s", string(md))
+	s.Logger.Printf("Request - resulting data: %s\n", string(md))
 	s.setResponse(wr, string(md), 200)
 }
 
 func (s *server) PublishSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
-	s.Logger.Printf("Request - calling handler: PublishSensorDataSnapshotHandler")
+	s.Logger.Printf("\nRequest - calling handler: PublishSensorDataSnapshotHandler")
 
 	p := r.URL.Query().Get("api_key")
 	if p != s.apiKey {
@@ -136,14 +140,14 @@ func (s *server) PublishSensorDataSnapshotHandler(wr http.ResponseWriter, r *htt
 		return
 	}
 
-	s.Logger.Println("Request - successfully published the sensor data")
+	s.Logger.Println("Request - successfully published the sensor data\n")
 	s.setResponse(wr, "Successfully published the sensor data", 200)
 }
 
 func (s *server) PublishDeviceStatus(wr http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
-	s.Logger.Printf("Request - calling handler: PublishDeviceStatus")
+	s.Logger.Printf("\nRequest - calling handler: PublishDeviceStatus")
 
 	p := r.URL.Query().Get("api_key")
 	if p != s.apiKey {
@@ -162,14 +166,14 @@ func (s *server) PublishDeviceStatus(wr http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.Logger.Println("Request - successfully published the device status")
+	s.Logger.Println("Request - successfully published the device status\n")
 	s.setResponse(wr, "Successfully published the device status", 200)
 }
 
 func (s *server) SubscribeToIOTCoreConfig(wr http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
-	s.Logger.Printf("Request - calling handler: SubscribeToIOTCoreConfig")
+	s.Logger.Printf("\nRequest - calling handler: SubscribeToIOTCoreConfig")
 
 	p := r.URL.Query().Get("api_key")
 	if p != s.apiKey {
@@ -205,6 +209,11 @@ func (s *server) SubscribeToIOTCoreConfig(wr http.ResponseWriter, r *http.Reques
 
 func (s *server) setResponse(wr http.ResponseWriter, message string, statusCode int) {
 	wr.WriteHeader(statusCode)
+
+	msg := &Message{Message: message}
+	b, _ := json.Marshal(msg)
+
+	wr.Write(b)
 	wr.Write([]byte(message))
 	return
 }
