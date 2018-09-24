@@ -18,6 +18,11 @@ type Message struct {
 	Message string `json:"message"`
 }
 
+type DataMessage struct {
+	Message string `json:"message"`
+	Data    *sensors.SensorData
+}
+
 const (
 	// HTTPPort is the port to run the server on
 	HTTPPort = "192.168.1.111:8080"
@@ -72,7 +77,7 @@ func (s *server) ToggleFanHandler(wr http.ResponseWriter, r *http.Request) {
 	p := r.URL.Query().Get("api_key")
 	if p != s.apiKey {
 		s.Logger.Printf("Request - WARNING: api key \"%s\" does not match known key \"%s\"", p, s.apiKey)
-		s.setResponse(wr, "api key is incorrect or was not passed", 403)
+		s.setStringResponse(wr, "api key is incorrect or was not passed", 403)
 		return
 	}
 
@@ -80,7 +85,7 @@ func (s *server) ToggleFanHandler(wr http.ResponseWriter, r *http.Request) {
 
 	str := "Request - successfully toggled the fan"
 	s.Logger.Println(str)
-	s.setResponse(wr, string(str), 200)
+	s.setStringResponse(wr, string(str), 200)
 
 }
 
@@ -93,26 +98,26 @@ func (s *server) GetSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Re
 	p := r.URL.Query().Get("api_key")
 	if p != s.apiKey {
 		s.Logger.Printf("Request - WARNING: api key \"%s\" does not match known key \"%s\"", p, s.apiKey)
-		s.setResponse(wr, "api key is incorrect or was not passed", 403)
+		s.setStringResponse(wr, "api key is incorrect or was not passed", 403)
 		return
 	}
 
 	d, err := s.SensorsService.FetchSensorData(ctx)
 	if err != nil {
 		s.Logger.Printf("Request - ERROR: failed to fetch sensor data > %s\n", err.Error())
-		s.setResponse(wr, fmt.Sprintf("could't fetch the sensor data > %s", err.Error()), 500)
+		s.setStringResponse(wr, fmt.Sprintf("could't fetch the sensor data > %s", err.Error()), 500)
 		return
 	}
 
 	md, err := json.Marshal(d)
 	if err != nil {
 		s.Logger.Printf("Request - ERROR: failed to marshal sensor data > %s \n", err.Error())
-		s.setResponse(wr, fmt.Sprintf("couldn't marshal the data > %s", err.Error()), 500)
+		s.setStringResponse(wr, fmt.Sprintf("couldn't marshal the data > %s", err.Error()), 500)
 		return
 	}
 
 	s.Logger.Printf("Request - resulting data: %s\n", string(md))
-	s.setResponse(wr, string(md), 200)
+	s.setStringResponse(wr, string(md), 200)
 }
 
 func (s *server) PublishSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Request) {
@@ -123,25 +128,25 @@ func (s *server) PublishSensorDataSnapshotHandler(wr http.ResponseWriter, r *htt
 	p := r.URL.Query().Get("api_key")
 	if p != s.apiKey {
 		s.Logger.Printf("Request - WARNING: api key \"%s\" does not match known key \"%s\"", p, s.apiKey)
-		s.setResponse(wr, "api key is incorrect or was not passed", 403)
+		s.setStringResponse(wr, "api key is incorrect or was not passed", 403)
 		return
 	}
 
 	data, err := s.SensorsService.FetchSensorData(ctx)
 	if err != nil {
 		s.Logger.Printf("Request - ERROR to fetch sensor data > %s \n", err.Error())
-		s.setResponse(wr, fmt.Sprintf("can't get snapshot of sensor data > %s", err.Error()), 500)
+		s.setStringResponse(wr, fmt.Sprintf("can't get snapshot of sensor data > %s", err.Error()), 500)
 		return
 	}
 
 	if err := s.GoogleIOTService.PublishSensorData(ctx, data); err != nil {
 		s.Logger.Printf("Request - ERROR: failed to publish the sensor data to cloud iot > %s \n", err.Error())
-		s.setResponse(wr, fmt.Sprintf("can't publish the sensor data > %s", err.Error()), 500)
+		s.setStringResponse(wr, fmt.Sprintf("can't publish the sensor data > %s", err.Error()), 500)
 		return
 	}
 
 	s.Logger.Println("Request - successfully published the sensor data\n")
-	s.setResponse(wr, "Successfully published the sensor data", 200)
+	s.setStringResponse(wr, "Successfully published the sensor data", 200)
 }
 
 func (s *server) PublishDeviceStatus(wr http.ResponseWriter, r *http.Request) {
@@ -152,7 +157,7 @@ func (s *server) PublishDeviceStatus(wr http.ResponseWriter, r *http.Request) {
 	p := r.URL.Query().Get("api_key")
 	if p != s.apiKey {
 		s.Logger.Printf("Request - WARNING: api key \"%s\" does not match known key \"%s\"", p, s.apiKey)
-		s.setResponse(wr, "api key is incorrect or was not passed", 403)
+		s.setStringResponse(wr, "api key is incorrect or was not passed", 403)
 		return
 	}
 
@@ -162,12 +167,12 @@ func (s *server) PublishDeviceStatus(wr http.ResponseWriter, r *http.Request) {
 
 	if err := s.GoogleIOTService.PublishDeviceState(ctx, data); err != nil {
 		s.Logger.Printf("Request - ERROR: failed to publish the device status to cloud iot > %s \n", err.Error())
-		s.setResponse(wr, "can't publish the device status ", 500)
+		s.setStringResponse(wr, "can't publish the device status ", 500)
 		return
 	}
 
 	s.Logger.Println("Request - successfully published the device status\n")
-	s.setResponse(wr, "Successfully published the device status", 200)
+	s.setStringResponse(wr, "Successfully published the device status", 200)
 }
 
 func (s *server) SubscribeToIOTCoreConfig(wr http.ResponseWriter, r *http.Request) {
@@ -178,14 +183,14 @@ func (s *server) SubscribeToIOTCoreConfig(wr http.ResponseWriter, r *http.Reques
 	p := r.URL.Query().Get("api_key")
 	if p != s.apiKey {
 		s.Logger.Printf("Request - WARNING: api key \"%s\" does not match known key \"%s\"", p, s.apiKey)
-		s.setResponse(wr, "api key is incorrect or was not passed", 403)
+		s.setStringResponse(wr, "api key is incorrect or was not passed", 403)
 		return
 	}
 
 	msg, err := s.GoogleIOTService.SubsribeToConfigChanges(ctx)
 	if err != nil {
 		s.Logger.Printf("Request - ERROR: failed to subscribe to the config changes > %s \n", err.Error())
-		s.setResponse(wr, "can't publish the device status ", 500)
+		s.setStringResponse(wr, "can't publish the device status ", 500)
 		return
 	}
 
@@ -200,20 +205,35 @@ func (s *server) SubscribeToIOTCoreConfig(wr http.ResponseWriter, r *http.Reques
 
 	if err != nil {
 		s.Logger.Println("Request - ERROR: Failed to toggle fan")
-		s.setResponse(wr, "can't toggle fan", 500)
+		s.setStringResponse(wr, "can't toggle fan", 500)
 	}
 
 	s.Logger.Println("Request - subscribed to google iot config changes published the device status")
-	s.setResponse(wr, string(msg.FanState), 200)
+	s.setStringResponse(wr, string(msg.FanState), 200)
 }
 
-func (s *server) setResponse(wr http.ResponseWriter, message string, statusCode int) {
+func (s *server) setStringResponse(wr http.ResponseWriter, message string, statusCode int) {
 	wr.WriteHeader(statusCode)
+	wr.Header().Set("Content-Type", "application/json")
 
 	msg := &Message{Message: message}
 	b, _ := json.Marshal(msg)
 
 	wr.Write(b)
-	wr.Write([]byte(message))
+	return
+}
+
+func (s *server) setDataResponse(wr http.ResponseWriter, data *sensors.SensorData, statusCode int) {
+	wr.WriteHeader(statusCode)
+	wr.Header().Set("Content-Type", "application/json")
+
+	msg := &DataMessage{
+		Message: "Recieved Data",
+		Data:    data,
+	}
+
+	b, _ := json.Marshal(msg)
+
+	wr.Write(b)
 	return
 }
