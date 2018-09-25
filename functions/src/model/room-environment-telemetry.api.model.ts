@@ -26,5 +26,4 @@ export interface RoomEnvironmentMonitorLookupApiRequestInteface {
         value: string,
         opStr: string,
     }
-
 }
