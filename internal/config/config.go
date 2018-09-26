@@ -5,12 +5,12 @@ import (
 )
 
 var (
-	rootsPath      = "certs/roots.pem"
-	rsaCertPath    = "certs/rsa_cert.pem"
-	rsaPrivatePath = "certs/rsa_private.pem"
+	rootsPath      = "/home/pi/certs/roots.pem"
+	rsaCertPath    = "/home/pi/certs/rsa_cert.pem"
+	rsaPrivatePath = "/home/pi/certs/rsa_private.pem"
 
 	// APIKeyFile is the name of the file containing an string to be dynamically loaded when the server starts
-	APIKeyFile = "api_key.txt"
+	APIKeyFile = "/home/pi/api_key.txt"
 )
 
 type SSLCerts struct {
@@ -32,13 +32,9 @@ type GoogleIOTConfig struct {
 	Region     string
 }
 
-// events=room-monitor-telemetry
-// flag.String("mqtt_host", "mqtt.googleapis.com", "MQTT Bridge Host"),
-// flag.String("mqtt_port", "8883", "MQTT Bridge Port"),
-
 func GetGoogleIOTConfig() *GoogleIOTConfig {
 	return &GoogleIOTConfig{
-		DeviceID: "raspberry-pi-room-monitor-rs256-device",
+		DeviceID: "room-monitor-rs256-device",
 		Bridge: &Bridge{
 			Host: "mqtt.googleapis.com",
 			Port: "8883",

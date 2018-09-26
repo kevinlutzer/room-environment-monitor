@@ -25,7 +25,7 @@ type DataMessage struct {
 
 const (
 	// HTTPPort is the port to run the server on
-	HTTPPort = "192.168.1.111:8080"
+	HTTPPort = "192.168.1.141:8080"
 )
 
 type server struct {
@@ -42,7 +42,7 @@ func StartHTTPServer(logger *log.Logger, ss sensors.Service, gs googleiot.Servic
 	val, err := ioutil.ReadFile(config.APIKeyFile)
 	if err != nil {
 		logger.Fatalf("Failed to read api key file", err.Error())
-		return err
+		return errors.New("Failed to read the api key file")
 	}
 
 	s := &server{
@@ -61,7 +61,7 @@ func StartHTTPServer(logger *log.Logger, ss sensors.Service, gs googleiot.Servic
 	mux.HandleFunc("/subscribe-iot-config", s.SubscribeToIOTCoreConfig)
 
 	//Start the http server (blocking)
-	fmt.Println("Started HTTP handler on port %s", HTTPPort)
+	fmt.Printf("Started HTTP handler on port %s\n", HTTPPort)
 	if err := http.ListenAndServe(HTTPPort, mux); err != nil {
 		return errors.New("Couldn't start http server")
 	}
@@ -81,12 +81,13 @@ func (s *server) ToggleFanHandler(wr http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//s.SensorsService.ToggleFan()
+	err := s.SensorsService.SetFanStatus(sensors.ToggleFan)
+	if err != nil {
+		s.Logger.Panicln("Request - ERROR: failed to set the fan state ")
+	}
 
-	str := "Request - successfully toggled the fan"
-	s.Logger.Println(str)
-	s.setStringResponse(wr, string(str), 200)
-
+	s.Logger.Println("Request - successfully toggled the fan")
+	s.setStringResponse(wr, "successfully toggled the fan", 200)
 }
 
 // Handler is the main http handler for the room environment monitor app
@@ -204,12 +205,12 @@ func (s *server) SubscribeToIOTCoreConfig(wr http.ResponseWriter, r *http.Reques
 	}
 
 	if err != nil {
-		s.Logger.Println("Request - ERROR: Failed to toggle fan")
-		s.setStringResponse(wr, "can't toggle fan", 500)
+		s.Logger.Println("Request - ERROR: Failed to set the state of the fan")
+		s.setStringResponse(wr, "can't set fan value fan", 500)
 	}
 
 	s.Logger.Println("Request - subscribed to google iot config changes published the device status")
-	s.setStringResponse(wr, string(msg.FanState), 200)
+	s.setStringResponse(wr, "successfully subscribed to the iot config data", 200)
 }
 
 func (s *server) setStringResponse(wr http.ResponseWriter, message string, statusCode int) {
