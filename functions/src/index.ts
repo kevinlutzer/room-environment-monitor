@@ -1,5 +1,5 @@
 export * from './api/room_environment_monitor';
-export * from './api/iot_fullfillment';
+export * from './api/actions_smart_home';
 
 import * as glob from "glob";
 const camelCase = require("camel-case");
