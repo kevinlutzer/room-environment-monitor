@@ -41,7 +41,7 @@ func StartHTTPServer(logger *log.Logger, ss sensors.Service, gs googleiot.Servic
 	//Load The api key from file
 	val, err := ioutil.ReadFile(config.APIKeyFile)
 	if err != nil {
-		logger.Fatalf("Failed to read api key file", err.Error())
+		fmt.Printf("Failed to read api key file", err.Error())
 		return errors.New("Failed to read the api key file")
 	}
 

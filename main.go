@@ -5,6 +5,8 @@ import (
 	"os"
 	"runtime"
 
+	"fmt"
+
 	"github.com/kml183/room-environment-monitor/internal/config"
 	googleiot "github.com/kml183/room-environment-monitor/internal/google-iot"
 	"github.com/kml183/room-environment-monitor/internal/sensors"
@@ -26,8 +28,8 @@ func configMessageHandler(msg *googleiot.ConfigMessage) {
 func main() {
 	logger := log.New(os.Stdout, "http: ", log.LstdFlags)
 
-	if val := runtime.GOMAXPROCS(8); val < -1 {
-		logger.Fatalf("Could not set the max processes, value recieved > %d \n", val)
+	if val := runtime.GOMAXPROCS(1); val < -1 {
+		fmt.Printf("Could not set the max processes, value recieved > %d \n", val)
 	}
 
 	// Initialize Gobot and I2C drivers
@@ -42,7 +44,7 @@ func main() {
 		// Create SSL Certs
 		certs, err := config.GetSSLCerts()
 		if err != nil {
-			logger.Fatalf("Failed to fetch the ssl cert files > %s ", err.Error())
+			fmt.Printf("Failed to fetch the ssl cert files > %s ", err.Error())
 		}
 
 		// Fetch Google IOT Config
@@ -59,7 +61,7 @@ func main() {
 		// })
 
 		if err := server.StartHTTPServer(logger, ss, gs); err != nil {
-			logger.Fatalf("Could not start the http server > %s \n", err.Error())
+			fmt.Printf("Could not start the http server > %s \n", err.Error())
 		}
 	}
 
