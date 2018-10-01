@@ -19,13 +19,13 @@ type Message struct {
 }
 
 type DataMessage struct {
-	Message string `json:"message"`
-	Data    *sensors.SensorData
+	Message string              `json:"message"`
+	Data    *sensors.SensorData `json:"data"`
 }
 
 const (
 	// HTTPPort is the port to run the server on
-	HTTPPort = "192.168.1.141:8080"
+	HTTPPort = "192.168.1.111:8080"
 )
 
 type server struct {
@@ -63,7 +63,7 @@ func StartHTTPServer(logger *log.Logger, ss sensors.Service, gs googleiot.Servic
 	//Start the http server (blocking)
 	fmt.Printf("Started HTTP handler on port %s\n", HTTPPort)
 	if err := http.ListenAndServe(HTTPPort, mux); err != nil {
-		return errors.New("Couldn't start http server")
+		return err
 	}
 
 	return nil
@@ -110,15 +110,7 @@ func (s *server) GetSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Re
 		return
 	}
 
-	md, err := json.Marshal(d)
-	if err != nil {
-		s.Logger.Println("Request - ERROR: failed to marshal sensor data > %s", err.Error())
-		s.setStringResponse(wr, fmt.Sprintf("couldn't marshal the data > %s", err.Error()), 500)
-		return
-	}
-
-	s.Logger.Println("Request - resulting data: %s", string(md))
-	s.setStringResponse(wr, string(md), 200)
+	s.setDataResponse(wr, d, 200)
 }
 
 func (s *server) PublishSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Request) {
@@ -233,7 +225,12 @@ func (s *server) setDataResponse(wr http.ResponseWriter, data *sensors.SensorDat
 		Data:    data,
 	}
 
-	b, _ := json.Marshal(msg)
+	b, err := json.Marshal(msg)
+	if err != nil {
+		s.Logger.Printf("Request - ERROR: failed to marshal the data %s", err.Error())
+		s.setStringResponse(wr, "can't marshal the data", 500)
+		return
+	}
 
 	wr.Write(b)
 	return

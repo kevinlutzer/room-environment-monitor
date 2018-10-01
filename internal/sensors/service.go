@@ -115,7 +115,7 @@ func (s *service) fetchCPUTemp(cpuTemp *TempData) error {
 }
 
 func (s *service) fetchGasData(gd *GasData, t *TempData) error {
-	co2, tvoc, err := s.cd.GetData()
+	co2, tvoc, err := s.cd.GetGasData()
 	if err != nil {
 		return err
 	}
