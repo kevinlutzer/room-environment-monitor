@@ -10,7 +10,6 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
-	"time"
 
 	"gobot.io/x/gobot/drivers/gpio"
 
@@ -30,19 +29,19 @@ type Service interface {
 }
 
 type service struct {
-	PyFile string
-	td     *i2c.TSL2561Driver
-	cd     *i2c.CCS811Driver
-	fd     *gpio.LedDriver
+	tsl2561Driver *i2c.TSL2561Driver
+	ccs811Driver  *i2c.CCS811Driver
+	bme280Driver  *i2c.BME280Driver
+	fanDriver     *gpio.LedDriver
 }
 
 // NewSensorService returns a new instance of the Service interface
-func NewSensorService(tsl2561Driver *i2c.TSL2561Driver, ccs811Driver *i2c.CCS811Driver, fanDriver *gpio.LedDriver) Service {
+func NewSensorService(tsl2561Driver *i2c.TSL2561Driver, ccs811Driver *i2c.CCS811Driver, bme280Driver *i2c.BME280Driver, fanDriver *gpio.LedDriver) Service {
 	s := &service{
-		PyFile: "main.py",
-		td:     tsl2561Driver,
-		cd:     ccs811Driver,
-		fd:     fanDriver,
+		tsl2561Driver: tsl2561Driver,
+		ccs811Driver:  ccs811Driver,
+		bme280Driver:  bme280Driver,
+		fanDriver:     fanDriver,
 	}
 
 	return s
@@ -52,11 +51,11 @@ func NewSensorService(tsl2561Driver *i2c.TSL2561Driver, ccs811Driver *i2c.CCS811
 func (s *service) SetFanStatus(state FanState) error {
 	var err error
 	if state == FanOn {
-		err = s.fd.On()
+		err = s.fanDriver.On()
 	} else if state == FanOff {
-		err = s.fd.Off()
+		err = s.fanDriver.Off()
 	} else {
-		err = s.fd.Toggle()
+		err = s.fanDriver.Toggle()
 	}
 	return err
 }
@@ -65,19 +64,24 @@ func (s *service) SetFanStatus(state FanState) error {
 func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 	g, ctx := errgroup.WithContext(ctx)
 
-	temp := &TempData{}
+	var lux uint32
+	var pressure, humidity, roomTemp, cpuTemp float32
+	var co2, tvoc uint16
+
 	g.Go(func() error {
-		return s.fetchCPUTemp(temp)
+		return s.fetchCPUTemp(&cpuTemp)
 	})
 
-	gd := &GasData{}
 	g.Go(func() error {
-		return s.fetchGasData(gd, temp)
+		return s.fetchGasData(&co2, &tvoc)
 	})
 
-	ld := &LightData{}
 	g.Go(func() error {
-		return s.fetchLightData(ld)
+		return s.fetchLightData(&lux)
+	})
+
+	g.Go(func() error {
+		return s.fetchHumidty(&pressure, &humidity, &roomTemp)
 	})
 
 	err := g.Wait()
@@ -85,13 +89,30 @@ func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 		return nil, err
 	}
 
-	sd := &SensorData{}
-	sd.convertFromLightAndGasData(gd, ld, time.Now(), temp)
-
-	return sd, nil
+	return NewSensorData(lux, cpuTemp, pressure, humidity, roomTemp, co2, tvoc), nil
 }
 
-func (s *service) fetchCPUTemp(cpuTemp *TempData) error {
+func (s *service) fetchHumidty(pressure, humidity, roomTemp *float32) error {
+	var err error
+	*pressure, err = s.bme280Driver.Pressure()
+	if err != nil {
+		return err
+	}
+
+	*humidity, err = s.bme280Driver.Humidity()
+	if err != nil {
+		return err
+	}
+
+	*roomTemp, err = s.bme280Driver.Temperature()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *service) fetchCPUTemp(roomTemp *float32) error {
 	cmd := exec.Command("sudo", "/opt/vc/bin/vcgencmd", "measure_temp")
 	val, err := cmd.Output()
 	if err != nil {
@@ -110,34 +131,26 @@ func (s *service) fetchCPUTemp(cpuTemp *TempData) error {
 		return err
 	}
 
-	cpuTemp.CPUTemp = floatTemp
+	*roomTemp = float32(floatTemp)
 	return nil
 }
 
-func (s *service) fetchGasData(gd *GasData, t *TempData) error {
-	co2, tvoc, err := s.cd.GetGasData()
+func (s *service) fetchGasData(co2 *uint16, tvoc *uint16) error {
+	var err error
+	*co2, *tvoc, err = s.ccs811Driver.GetGasData()
 	if err != nil {
 		return err
 	}
-
-	temp, err := s.cd.GetTemperature()
-	if err != nil {
-		return err
-	}
-
-	gd.CO2 = co2
-	gd.TVOC = tvoc
-	t.RoomTemp = temp
 
 	return nil
 }
 
-func (s *service) fetchLightData(ld *LightData) error {
-	b, ir, err := s.td.GetLuminocity()
+func (s *service) fetchLightData(ld *uint32) error {
+	b, ir, err := s.tsl2561Driver.GetLuminocity()
 	if err != nil {
 		return err
 	}
-	ld.Lux = s.td.CalculateLux(b, ir)
+	*ld = s.tsl2561Driver.CalculateLux(b, ir)
 
 	return nil
 }

@@ -149,6 +149,7 @@ func (s *service) PublishSensorData(ctx context.Context, d *sensors.SensorData) 
 		false,
 		data)
 
+	fmt.Println("Token")
 	token.WaitTimeout(5 * time.Second)
 	err = token.Error()
 	if err != nil {

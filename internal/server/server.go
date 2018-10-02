@@ -206,22 +206,19 @@ func (s *server) SubscribeToIOTCoreConfig(wr http.ResponseWriter, r *http.Reques
 }
 
 func (s *server) setStringResponse(wr http.ResponseWriter, message string, statusCode int) {
-	wr.WriteHeader(statusCode)
-	wr.Header().Set("Content-Type", "application/json")
-
 	msg := &Message{Message: message}
 	b, _ := json.Marshal(msg)
 
 	wr.Write(b)
+	wr.WriteHeader(statusCode)
+	wr.Header().Set("Content-Type", "application/json")
 	return
 }
 
 func (s *server) setDataResponse(wr http.ResponseWriter, data *sensors.SensorData, statusCode int) {
-	wr.WriteHeader(statusCode)
-	wr.Header().Set("Content-Type", "application/json")
 
 	msg := &DataMessage{
-		Message: "Recieved Data",
+		Message: "successfuly fetched data from the sensors",
 		Data:    data,
 	}
 
@@ -233,5 +230,7 @@ func (s *server) setDataResponse(wr http.ResponseWriter, data *sensors.SensorDat
 	}
 
 	wr.Write(b)
+	wr.WriteHeader(statusCode)
+	wr.Header().Set("Content-Type", "application/json")
 	return
 }

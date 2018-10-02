@@ -36,6 +36,7 @@ func main() {
 	r := raspi.NewAdaptor()
 	dl := i2c.NewTSL2561Driver(r)
 	dg := i2c.NewCCS811Driver(r)
+	dt := i2c.NewBME280Driver(r)
 	fd := gpio.NewLedDriver(r, FanPin)
 
 	work := func() {
@@ -51,7 +52,7 @@ func main() {
 		iotConfig := config.GetGoogleIOTConfig()
 
 		// Services
-		ss := sensors.NewSensorService(dl, dg, fd)
+		ss := sensors.NewSensorService(dl, dg, dt, fd)
 		gs := googleiot.NewGoogleIOTService(certs, iotConfig, logger)
 
 		// ctx := context.TODO()
@@ -67,7 +68,7 @@ func main() {
 
 	robot := gobot.NewRobot("room-environment-monitor",
 		[]gobot.Connection{r},
-		[]gobot.Device{dl, dg, fd},
+		[]gobot.Device{dl, dg, fd, dt},
 		work,
 	)
 
