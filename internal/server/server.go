@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os/exec"
 
 	"github.com/kml183/room-environment-monitor/internal/config"
 
@@ -25,7 +26,7 @@ type DataMessage struct {
 
 const (
 	// HTTPPort is the port to run the server on
-	HTTPPort = "192.168.1.111:8080"
+	HTTPPort = "192.168.1.144:8080"
 )
 
 type server struct {
@@ -84,6 +85,7 @@ func (s *server) ToggleFanHandler(wr http.ResponseWriter, r *http.Request) {
 	err := s.SensorsService.SetFanStatus(sensors.ToggleFan)
 	if err != nil {
 		s.Logger.Panicln("Request - ERROR: failed to set the fan state ")
+		return
 	}
 
 	s.Logger.Println("Request - successfully toggled the fan")
@@ -168,6 +170,40 @@ func (s *server) PublishDeviceStatus(wr http.ResponseWriter, r *http.Request) {
 	s.setStringResponse(wr, "Successfully published the device status", 200)
 }
 
+func (s *server) turnOffDevice(wr http.ResponseWriter, status googleiot.PowerStatus) error {
+	if status != googleiot.Off {
+		return nil
+	}
+	cmd := exec.Command("sudo", "/sbin/shutdown", "-P", "now")
+	_, err := cmd.Output()
+	return err
+}
+
+func (s *server) handleIOTCOnfigMessage(wr http.ResponseWriter, msg *googleiot.ConfigMessage) error {
+
+	var err error
+
+	// Handle fan state
+	if msg.FanState != "" {
+		s.Logger.Println("Request - setting fan state")
+		err = s.SensorsService.SetFanStatus(msg.FanState)
+	} else {
+		s.Logger.Println("Request - WARNING: Message does not have a valid fan state")
+	}
+
+	// Handler power state
+	if msg.PowerStatus != "" {
+		s.Logger.Println("Request - turn off device")
+		if msg.PowerStatus == "Off" {
+			err = s.turnOffDevice(wr, msg.PowerStatus)
+		}
+	} else {
+		s.Logger.Println("Request - WARNING: Message does not have a valid power status")
+	}
+
+	return err
+}
+
 func (s *server) SubscribeToIOTCoreConfig(wr http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
@@ -187,18 +223,11 @@ func (s *server) SubscribeToIOTCoreConfig(wr http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	s.Logger.Printf("Request - recieved message: %+v", msg)
-
-	if msg.FanState != "" {
-		s.Logger.Println("Request - Setting fan state")
-		err = s.SensorsService.SetFanStatus(msg.FanState)
-	} else {
-		s.Logger.Println("Request - ERROR: Message does not have a valid fan state")
-	}
-
+	err = s.handleIOTCOnfigMessage(wr, msg)
 	if err != nil {
-		s.Logger.Println("Request - ERROR: Failed to set the state of the fan")
-		s.setStringResponse(wr, "can't set fan value fan", 500)
+		s.Logger.Printf("Request - ERROR: Failed to handle config update with error > %s", err.Error())
+		s.setStringResponse(wr, "can't handle config update", 500)
+		return
 	}
 
 	s.Logger.Println("Request - subscribed to google iot config changes published the device status")

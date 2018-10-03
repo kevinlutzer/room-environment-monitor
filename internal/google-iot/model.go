@@ -13,8 +13,16 @@ const (
 	Unactive Status = "Unactive"
 )
 
+type PowerStatus string
+
+const (
+	Off PowerStatus = "Off"
+	On  PowerStatus = "On"
+)
+
 type ConfigMessage struct {
-	FanState sensors.FanState `json:"fan_status"`
+	FanState    sensors.FanState `json:"fan_status"`
+	PowerStatus PowerStatus      `json:"power_status"`
 }
 
 type SensorStatus struct {

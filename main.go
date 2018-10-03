@@ -55,12 +55,6 @@ func main() {
 		ss := sensors.NewSensorService(dl, dg, dt, fd)
 		gs := googleiot.NewGoogleIOTService(certs, iotConfig, logger)
 
-		// ctx := context.TODO()
-
-		// gobot.Every(5*time.Second, func() {
-		// 	gs.SubsribeToConfigChanges(ctx)
-		// })
-
 		if err := server.StartHTTPServer(logger, ss, gs); err != nil {
 			fmt.Printf("Could not start the http server > %s \n", err.Error())
 		}
@@ -68,7 +62,7 @@ func main() {
 
 	robot := gobot.NewRobot("room-environment-monitor",
 		[]gobot.Connection{r},
-		[]gobot.Device{dl, dg, fd, dt},
+		[]gobot.Device{dl, dt, dg},
 		work,
 	)
 

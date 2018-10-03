@@ -169,47 +169,47 @@ func (s *service) HandleMQTTConfigMessage(c MQTT.Client, m MQTT.Message) {
 
 func (s *service) SubsribeToConfigChanges(ctx context.Context) (*ConfigMessage, error) {
 
-	// s.Logger.Println("GoogleIOT - Subscribe to config message")
+	s.Logger.Println("GoogleIOT - Subscribe to config message")
 
-	// receiveCount := 0
+	receiveCount := 0
 	cm := &ConfigMessage{}
-	// choke := make(chan [2]string)
+	choke := make(chan [2]string)
 
-	// opts := MQTT.NewClientOptions()
-	// opts.SetDefaultPublishHandler(func(client MQTT.Client, msg MQTT.Message) {
-	// 	choke <- [2]string{msg.Topic(), string(msg.Payload())}
-	// })
+	opts := MQTT.NewClientOptions()
+	opts.SetDefaultPublishHandler(func(client MQTT.Client, msg MQTT.Message) {
+		choke <- [2]string{msg.Topic(), string(msg.Payload())}
+	})
 
-	// c, err := getMQTTClient(s.certs, s.iotConfig, s.Logger, opts)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	c, err := getMQTTClient(s.certs, s.iotConfig, s.Logger, opts)
+	if err != nil {
+		return nil, err
+	}
 
-	// if token := c.Connect(); token.Wait() && token.Error() != nil {
-	// 	log.Fatal(token.Error().Error())
-	// 	return nil, token.Error()
-	// }
+	if token := c.Connect(); token.Wait() && token.Error() != nil {
+		log.Fatal(token.Error().Error())
+		return nil, token.Error()
+	}
 
-	// token := c.Subscribe(
-	// 	s.topics.config,
-	// 	0,
-	// 	nil)
+	token := c.Subscribe(
+		s.topics.config,
+		0,
+		nil)
 
-	// token.WaitTimeout(5 * time.Second)
-	// err = token.Error()
-	// if err != nil {
-	// 	s.Logger.Println("GoogleIOT - ERROR: failed to publish the payload")
-	// 	return nil, err
-	// }
+	token.WaitTimeout(5 * time.Second)
+	err = token.Error()
+	if err != nil {
+		s.Logger.Println("GoogleIOT - ERROR: failed to publish the payload")
+		return nil, err
+	}
 
-	// for receiveCount < *s.num {
-	// 	incoming := <-choke
-	// 	s.Logger.Printf("GoogleIOT - recieved message %s", incoming[1])
-	// 	json.Unmarshal([]byte(incoming[1]), &cm)
-	// 	receiveCount++
-	// }
+	for receiveCount < 1 {
+		incoming := <-choke
+		s.Logger.Printf("GoogleIOT - recieved message %s", incoming[1])
+		json.Unmarshal([]byte(incoming[1]), &cm)
+		receiveCount++
+	}
 
-	// c.Disconnect(250)
+	c.Disconnect(250)
 	return cm, nil
 }
 
