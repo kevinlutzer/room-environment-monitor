@@ -12,6 +12,7 @@ db.settings({timestampsInSnapshots: true});
     // Handlers
 export const roomEnvironmentMonitorPubsubHandler = async (message: functions.pubsub.Message) => {
 
+    console.log(message)
     let rawData: RoomEnvironmentMonitorPubsubMessageInterface;
     try {
         rawData = JSON.parse(message.data ? Buffer.from(message.data, 'base64').toString() : null);
@@ -19,6 +20,7 @@ export const roomEnvironmentMonitorPubsubHandler = async (message: functions.pub
         console.error("Failed to parse the pubsub mesage. The api interface most likely changed");
         return null;
     }
+    console.log("message", message, "rawData", rawData);
 
     // Becasue the id is based on the timestamp, if the timestamp is passed null or undefined the same entity will be updated
     const sysDate = new Date(rawData.timestamp || "");
@@ -30,6 +32,8 @@ export const roomEnvironmentMonitorPubsubHandler = async (message: functions.pub
         tvoc: rawData.tvoc || 0,
         roomTemp: rawData.room_temp || 0,
         cpuTemp: rawData.cpu_temp || 0,
+        pressure: rawData.pressure || 0, 
+        humidity: rawData.humidity || 0,
         timestamp: admin.firestore.Timestamp.fromDate(sysDate),
     } as RoomEnvironmentMonitorTelemetry
 

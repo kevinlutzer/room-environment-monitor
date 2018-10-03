@@ -6,6 +6,8 @@ export interface RoomEnvironmentMonitorPubsubMessageInterface {
     tvoc: number;
     room_temp: number;
     cpu_temp: number;
+    pressure: number;
+    humidity: number;
     timestamp: string;
 }
 
@@ -15,6 +17,8 @@ export class RoomEnvironmentMonitorTelemetry {
     tvoc: number;
     roomTemp: number;
     cpuTemp: number;
+    pressure: number;
+    humidity: number;
     timestamp: admin.firestore.Timestamp;
 }
 
