@@ -1,7 +1,13 @@
+if [ $# -eq 0 ]
+  then
+    echo "The name of the device to add must be passed as the first argument"
+fi
+
+# constants
 project=iot-klutzer
 region=us-central1
 registry=devices-klutzer
-device=room-monitor-rs256-device
+device=$1
 events=room-monitor-telemetry		
 configDirName=certs
 
