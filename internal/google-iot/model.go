@@ -16,8 +16,9 @@ const (
 type PowerStatus string
 
 const (
-	Off PowerStatus = "Off"
-	On  PowerStatus = "On"
+	Off    PowerStatus = "Off"
+	On     PowerStatus = "On"
+	Reboot PowerStatus = "Reboot"
 )
 
 type ConfigMessage struct {

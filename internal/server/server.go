@@ -26,7 +26,7 @@ type DataMessage struct {
 
 const (
 	// HTTPPort is the port to run the server on
-	HTTPPort = "192.168.1.144:8080"
+	HTTPPort = "192.168.1.140:8080"
 )
 
 type server struct {
@@ -171,10 +171,13 @@ func (s *server) PublishDeviceStatus(wr http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) turnOffDevice(wr http.ResponseWriter, status googleiot.PowerStatus) error {
-	if status != googleiot.Off {
-		return nil
-	}
 	cmd := exec.Command("sudo", "/sbin/shutdown", "-P", "now")
+	_, err := cmd.Output()
+	return err
+}
+
+func (s *server) rebootTheDevice(wr http.ResponseWriter, status googleiot.PowerStatus) error {
+	cmd := exec.Command("sudo", "/sbin/reboot")
 	_, err := cmd.Output()
 	return err
 }
@@ -194,8 +197,12 @@ func (s *server) handleIOTCOnfigMessage(wr http.ResponseWriter, msg *googleiot.C
 	// Handler power state
 	if msg.PowerStatus != "" {
 		s.Logger.Println("Request - turn off device")
-		if msg.PowerStatus == "Off" {
+		if msg.PowerStatus == googleiot.Off {
 			err = s.turnOffDevice(wr, msg.PowerStatus)
+		}
+
+		if msg.PowerStatus == googleiot.Reboot {
+			err = s.rebootTheDevice(wr, msg.PowerStatus)
 		}
 	} else {
 		s.Logger.Println("Request - WARNING: Message does not have a valid power status")
