@@ -11,9 +11,6 @@ db.settings({timestampsInSnapshots: true});
 
     // Handlers
 export const roomEnvironmentMonitorPubsubHandler = async (message: functions.pubsub.Message) => {
-
-    console.log("message: ", message)
-
     // Wrap whole thing in try catch. If there is an error for some pubsub message, the message will not be acked off the pubsub queue
     try {
         let rawData: RoomEnvironmentMonitorPubsubMessageInterface;
@@ -23,6 +20,7 @@ export const roomEnvironmentMonitorPubsubHandler = async (message: functions.pub
             console.error("Failed to parse the pubsub mesage. The api interface most likely changed");
             return null;
         }
+        console.log("message: ", message, ", rawData: ", rawData);
 
         // Becasue the id is based on the timestamp, if the timestamp is passed null or undefined the same entity will be updated
         const sysDate = new Date(rawData.timestamp || "");

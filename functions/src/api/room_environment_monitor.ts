@@ -10,6 +10,5 @@ app.use(cors({ origin: true }));
 // CRUD interfaces:
 app.get('/list', roomEnvironmentDataList);
 
-
 export const RoomEnvironmentMonitorPubsubHandler = functions.pubsub.topic('room-monitor-telemetry').onPublish(roomEnvironmentMonitorPubsubHandler)
 export const RoomEnvironmentDataList = functions.https.onRequest(app);
