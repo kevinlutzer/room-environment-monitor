@@ -2,14 +2,10 @@ package server
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os/exec"
-
-	"github.com/kml183/room-environment-monitor/internal/config"
 
 	googleiot "github.com/kml183/room-environment-monitor/internal/google-iot"
 	"github.com/kml183/room-environment-monitor/internal/sensors"
@@ -40,17 +36,17 @@ type server struct {
 func StartHTTPServer(logger *log.Logger, ss sensors.Service, gs googleiot.Service) error {
 
 	//Load The api key from file
-	val, err := ioutil.ReadFile(config.APIKeyFile)
-	if err != nil {
-		fmt.Printf("Failed to read api key file", err.Error())
-		return errors.New("Failed to read the api key file")
-	}
+	// k, err := ioutil.ReadFile(config.APIKeyFile)
+	// if err != nil {
+	// 	fmt.Printf("Failed to read api key file", err.Error())
+	// 	return errors.New("Failed to read the api key file")
+	// }
 
 	s := &server{
 		SensorsService:   ss,
 		GoogleIOTService: gs,
 		Logger:           logger,
-		apiKey:           string(val),
+		// apiKey:           string(k),
 	}
 
 	//Setup Handlers
@@ -58,7 +54,6 @@ func StartHTTPServer(logger *log.Logger, ss sensors.Service, gs googleiot.Servic
 	mux.HandleFunc("/get-sensor-data-snapshot", s.GetSensorDataSnapshotHandler)
 	mux.HandleFunc("/publish-sensor-data-snapshot", s.PublishSensorDataSnapshotHandler)
 	mux.HandleFunc("/publish-device-status", s.PublishDeviceStatus)
-	mux.HandleFunc("/toggle-fan", s.ToggleFanHandler)
 	mux.HandleFunc("/subscribe-iot-config", s.SubscribeToIOTCoreConfig)
 
 	//Start the http server (blocking)
@@ -71,39 +66,10 @@ func StartHTTPServer(logger *log.Logger, ss sensors.Service, gs googleiot.Servic
 }
 
 // Handler is the main http handler for the room environment monitor app
-func (s *server) ToggleFanHandler(wr http.ResponseWriter, r *http.Request) {
-
-	s.Logger.Println("Request - calling handler: GetSensorDataSnapshotHandler")
-
-	p := r.URL.Query().Get("api_key")
-	if p != s.apiKey {
-		s.Logger.Println("Request - WARNING: api key \"%s\" does not match known key \"%s\"", p, s.apiKey)
-		s.setStringResponse(wr, "api key is incorrect or was not passed", 403)
-		return
-	}
-
-	err := s.SensorsService.SetFanStatus(sensors.ToggleFan)
-	if err != nil {
-		s.Logger.Panicln("Request - ERROR: failed to set the fan state ")
-		return
-	}
-
-	s.Logger.Println("Request - successfully toggled the fan")
-	s.setStringResponse(wr, "successfully toggled the fan", 200)
-}
-
-// Handler is the main http handler for the room environment monitor app
 func (s *server) GetSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 	s.Logger.Println("Request - calling handler: GetSensorDataSnapshotHandler")
-
-	p := r.URL.Query().Get("api_key")
-	if p != s.apiKey {
-		s.Logger.Println("Request - WARNING: api key \"%s\" does not match known key \"%s\"", p, s.apiKey)
-		s.setStringResponse(wr, "api key is incorrect or was not passed", 403)
-		return
-	}
 
 	d, err := s.SensorsService.FetchSensorData(ctx)
 	if err != nil {
@@ -119,13 +85,6 @@ func (s *server) PublishSensorDataSnapshotHandler(wr http.ResponseWriter, r *htt
 
 	ctx := r.Context()
 	s.Logger.Println("Request - calling handler: PublishSensorDataSnapshotHandler")
-
-	p := r.URL.Query().Get("api_key")
-	if p != s.apiKey {
-		s.Logger.Println("Request - WARNING: api key \"%s\" does not match known key \"%s\"", p, s.apiKey)
-		s.setStringResponse(wr, "api key is incorrect or was not passed", 403)
-		return
-	}
 
 	data, err := s.SensorsService.FetchSensorData(ctx)
 	if err != nil {
@@ -148,13 +107,6 @@ func (s *server) PublishDeviceStatus(wr http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 	s.Logger.Println("\nRequest - calling handler: PublishDeviceStatus")
-
-	p := r.URL.Query().Get("api_key")
-	if p != s.apiKey {
-		s.Logger.Println("Request - WARNING: api key \"%s\" does not match known key \"%s\"", p, s.apiKey)
-		s.setStringResponse(wr, "api key is incorrect or was not passed", 403)
-		return
-	}
 
 	data := &googleiot.SensorStatus{
 		Status: "Active",
@@ -186,14 +138,6 @@ func (s *server) handleIOTCOnfigMessage(wr http.ResponseWriter, msg *googleiot.C
 
 	var err error
 
-	// Handle fan state
-	if msg.FanState != "" {
-		s.Logger.Println("Request - setting fan state")
-		err = s.SensorsService.SetFanStatus(msg.FanState)
-	} else {
-		s.Logger.Println("Request - WARNING: Message does not have a valid fan state")
-	}
-
 	// Handler power state
 	if msg.PowerStatus != "" {
 		s.Logger.Println("Request - turn off device")
@@ -215,13 +159,6 @@ func (s *server) SubscribeToIOTCoreConfig(wr http.ResponseWriter, r *http.Reques
 
 	ctx := r.Context()
 	s.Logger.Printf("\nRequest - calling handler: SubscribeToIOTCoreConfig")
-
-	p := r.URL.Query().Get("api_key")
-	if p != s.apiKey {
-		s.Logger.Println("Request - WARNING: api key \"%s\" does not match known key \"%s\"", p, s.apiKey)
-		s.setStringResponse(wr, "api key is incorrect or was not passed", 403)
-		return
-	}
 
 	msg, err := s.GoogleIOTService.SubsribeToConfigChanges(ctx)
 	if err != nil {

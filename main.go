@@ -12,18 +12,9 @@ import (
 	"github.com/kml183/room-environment-monitor/internal/sensors"
 	server "github.com/kml183/room-environment-monitor/internal/server"
 	"gobot.io/x/gobot"
-	"gobot.io/x/gobot/drivers/gpio"
 	"gobot.io/x/gobot/drivers/i2c"
 	"gobot.io/x/gobot/platforms/raspi"
 )
-
-const (
-	FanPin = "15"
-)
-
-func configMessageHandler(msg *googleiot.ConfigMessage) {
-
-}
 
 func main() {
 	logger := log.New(os.Stdout, "http: ", log.LstdFlags)
@@ -37,7 +28,6 @@ func main() {
 	dl := i2c.NewTSL2561Driver(r)
 	dg := i2c.NewCCS811Driver(r)
 	dt := i2c.NewBME280Driver(r)
-	fd := gpio.NewLedDriver(r, FanPin)
 
 	work := func() {
 		// Setup cpu-fan control system
@@ -52,7 +42,7 @@ func main() {
 		iotConfig := config.GetGoogleIOTConfig()
 
 		// Services
-		ss := sensors.NewSensorService(dl, dg, dt, fd)
+		ss := sensors.NewSensorService(dl, dg, dt)
 		gs := googleiot.NewGoogleIOTService(certs, iotConfig, logger)
 
 		if err := server.StartHTTPServer(logger, ss, gs); err != nil {

@@ -11,8 +11,6 @@ import (
 	"strconv"
 	"strings"
 
-	"gobot.io/x/gobot/drivers/gpio"
-
 	"golang.org/x/sync/errgroup"
 )
 
@@ -24,40 +22,23 @@ const (
 type Service interface {
 	//FetchSensorData fetches sensors data
 	FetchSensorData(ctx context.Context) (*SensorData, error)
-	//SetFanStatus toggles the fan state
-	SetFanStatus(status FanState) error
 }
 
 type service struct {
 	tsl2561Driver *i2c.TSL2561Driver
 	ccs811Driver  *i2c.CCS811Driver
 	bme280Driver  *i2c.BME280Driver
-	fanDriver     *gpio.LedDriver
 }
 
 // NewSensorService returns a new instance of the Service interface
-func NewSensorService(tsl2561Driver *i2c.TSL2561Driver, ccs811Driver *i2c.CCS811Driver, bme280Driver *i2c.BME280Driver, fanDriver *gpio.LedDriver) Service {
+func NewSensorService(tsl2561Driver *i2c.TSL2561Driver, ccs811Driver *i2c.CCS811Driver, bme280Driver *i2c.BME280Driver) Service {
 	s := &service{
 		tsl2561Driver: tsl2561Driver,
 		ccs811Driver:  ccs811Driver,
 		bme280Driver:  bme280Driver,
-		fanDriver:     fanDriver,
 	}
 
 	return s
-}
-
-// SetFanStatus change the current state of the fan
-func (s *service) SetFanStatus(state FanState) error {
-	var err error
-	if state == FanOn {
-		err = s.fanDriver.On()
-	} else if state == FanOff {
-		err = s.fanDriver.Off()
-	} else {
-		err = s.fanDriver.Toggle()
-	}
-	return err
 }
 
 // FetchSensorData returns an object representing all of the sensor data
