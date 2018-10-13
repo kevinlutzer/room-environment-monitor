@@ -20,6 +20,7 @@ export class RoomEnvironmentMonitorTelemetry {
     pressure: number;
     humidity: number;
     timestamp: admin.firestore.Timestamp;
+    deviceId: string;
 }
 
 export interface RoomEnvironmentMonitorLookupApiRequestInteface {

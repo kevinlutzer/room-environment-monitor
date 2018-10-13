@@ -4,13 +4,16 @@ import * as admin   from 'firebase-admin';
 import {Request, Response} from 'express';
 
 import {RoomEnvironmentMonitorTelemetry, RoomEnvironmentMonitorPubsubMessageInterface, RoomEnvironmentMonitorLookupApiRequestInteface} from '../model/room-environment-telemetry.api.model';
+import {IOTPubsubMessageInterface} from '../model/iot-pubsub-message.interface';
 
 admin.initializeApp(functions.config().firebase);
 const db = admin.firestore();
 db.settings({timestampsInSnapshots: true});
 
+const model = "RoomMonitorTelemetry";
+
     // Handlers
-export const roomEnvironmentMonitorPubsubHandler = async (message: functions.pubsub.Message) => {
+export const roomEnvironmentMonitorPubsubHandler = async (message: IOTPubsubMessageInterface) => {
     // Wrap whole thing in try catch. If there is an error for some pubsub message, the message will not be acked off the pubsub queue
     try {
         let rawData: RoomEnvironmentMonitorPubsubMessageInterface;
@@ -35,10 +38,11 @@ export const roomEnvironmentMonitorPubsubHandler = async (message: functions.pub
             pressure: rawData.pressure || 0, 
             humidity: rawData.humidity || 0,
             timestamp: admin.firestore.Timestamp.fromDate(sysDate),
+            deviceId: message.attributes.deviceId,
         } as RoomEnvironmentMonitorTelemetry
 
         return db
-        .collection('RoomMonitorTeletry')
+        .collection(model)
         .doc(id)
         .set(data)
         .then(
@@ -58,7 +62,7 @@ export const roomEnvironmentDataList = async(req: Request, res: Response) => {
     const pageSize = params.page_size ? parseInt(params.page_size, 10): 1000;
 
     const results = await db
-        .collection('RoomMonitorTeletry')
+        .collection(model)
         .offset(cursor)
         .limit(pageSize)
         .get()
