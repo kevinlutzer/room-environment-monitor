@@ -20,11 +20,6 @@ type DataMessage struct {
 	Data    *sensors.SensorData `json:"data"`
 }
 
-const (
-	// HTTPPort is the port to run the server on
-	HTTPPort = "192.168.1.140:8080"
-)
-
 type server struct {
 	SensorsService   sensors.Service
 	GoogleIOTService googleiot.Service
@@ -33,7 +28,7 @@ type server struct {
 }
 
 // StartHTTPServer returns a instance of the http server
-func StartHTTPServer(logger *log.Logger, ss sensors.Service, gs googleiot.Service) error {
+func StartHTTPServer(logger *log.Logger, ss sensors.Service, gs googleiot.Service, ip string) error {
 
 	//Load The api key from file
 	// k, err := ioutil.ReadFile(config.APIKeyFile)
@@ -56,9 +51,12 @@ func StartHTTPServer(logger *log.Logger, ss sensors.Service, gs googleiot.Servic
 	mux.HandleFunc("/publish-device-status", s.PublishDeviceStatus)
 	mux.HandleFunc("/subscribe-iot-config", s.SubscribeToIOTCoreConfig)
 
+	//Get IP With Port
+	port := fmt.Sprintf("%+s:8080", ip)
+
 	//Start the http server (blocking)
-	fmt.Printf("Started HTTP handler on port %s\n", HTTPPort)
-	if err := http.ListenAndServe(HTTPPort, mux); err != nil {
+	fmt.Printf("Started HTTP handler on port %+s\n", port)
+	if err := http.ListenAndServe(port, mux); err != nil {
 		return err
 	}
 

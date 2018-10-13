@@ -30,23 +30,34 @@ func main() {
 	dt := i2c.NewBME280Driver(r)
 
 	work := func() {
-		// Setup cpu-fan control system
-
 		// Create SSL Certs
 		certs, err := config.GetSSLCerts()
 		if err != nil {
-			fmt.Printf("Failed to fetch the ssl cert files > %s ", err.Error())
+			s, _ := fmt.Printf("Failed to fetch the ssl cert files > %+s ", err.Error())
+			panic(s)
 		}
 
 		// Fetch Google IOT Config
-		iotConfig := config.GetGoogleIOTConfig()
+		iotConfig, err := config.GetGoogleIOTConfig()
+		if err != nil {
+			s, _ := fmt.Printf("Failed to get the iot config > %+s ", err.Error())
+			panic(s)
+		}
 
 		// Services
 		ss := sensors.NewSensorService(dl, dg, dt)
 		gs := googleiot.NewGoogleIOTService(certs, iotConfig, logger)
 
-		if err := server.StartHTTPServer(logger, ss, gs); err != nil {
-			fmt.Printf("Could not start the http server > %s \n", err.Error())
+		// Get IP Address
+		ip, err := config.GetIPAddress()
+		if err != nil {
+			s, _ := fmt.Printf("Failed to get the ip address > %+s ", err.Error())
+			panic(s)
+		}
+
+		if err := server.StartHTTPServer(logger, ss, gs, ip); err != nil {
+			s, _ := fmt.Printf("Could not start the http server > %s \n", err.Error())
+			panic(s)
 		}
 	}
 
