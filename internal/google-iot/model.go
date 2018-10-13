@@ -1,11 +1,6 @@
 package googleiot
 
-import (
-	"github.com/kml183/room-environment-monitor/internal/sensors"
-)
-
 // The global status of the sensor
-
 type Status string
 
 const (
@@ -22,8 +17,7 @@ const (
 )
 
 type ConfigMessage struct {
-	FanState    sensors.FanState `json:"fan_status"`
-	PowerStatus PowerStatus      `json:"power_status"`
+	PowerStatus PowerStatus `json:"power_status"`
 }
 
 type SensorStatus struct {

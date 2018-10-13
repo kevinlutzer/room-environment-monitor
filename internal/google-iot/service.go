@@ -153,7 +153,7 @@ func (s *service) PublishSensorData(ctx context.Context, d *sensors.SensorData) 
 	token.WaitTimeout(5 * time.Second)
 	err = token.Error()
 	if err != nil {
-		s.Logger.Println("GoogleIOT - ERROR: failed to publish the payload")
+		s.Logger.Fatalf("GoogleIOT - ERROR: failed to publish the payload: %+s", err.Error())
 		return err
 	}
 

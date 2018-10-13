@@ -27,11 +27,3 @@ func NewSensorData(lux uint32, cpuTemp float32, pressure float32, humidity float
 		TimeStamp: time.Now(),
 	}
 }
-
-type FanState string
-
-const (
-	ToggleFan FanState = "Toggle"
-	FanOn     FanState = "On"
-	FanOff    FanState = "Off"
-)

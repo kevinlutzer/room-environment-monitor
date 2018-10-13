@@ -19,7 +19,7 @@ import (
 func main() {
 	logger := log.New(os.Stdout, "http: ", log.LstdFlags)
 
-	if val := runtime.GOMAXPROCS(1); val < -1 {
+	if val := runtime.GOMAXPROCS(8); val < -1 {
 		fmt.Printf("Could not set the max processes, value recieved > %d \n", val)
 	}
 

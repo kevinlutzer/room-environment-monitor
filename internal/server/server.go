@@ -94,7 +94,7 @@ func (s *server) PublishSensorDataSnapshotHandler(wr http.ResponseWriter, r *htt
 	}
 
 	if err := s.GoogleIOTService.PublishSensorData(ctx, data); err != nil {
-		s.Logger.Println("Request - ERROR: failed to publish the sensor data to cloud iot > %s", err.Error())
+		s.Logger.Fatalf("Request - ERROR: failed to publish the sensor data to cloud iot > %s", err.Error())
 		s.setStringResponse(wr, fmt.Sprintf("can't publish the sensor data > %s", err.Error()), 500)
 		return
 	}
