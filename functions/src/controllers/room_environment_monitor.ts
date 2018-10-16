@@ -5,6 +5,7 @@ import {Request, Response} from 'express';
 
 import {RoomEnvironmentMonitorTelemetry, RoomEnvironmentMonitorPubsubMessageInterface, RoomEnvironmentMonitorLookupApiRequestInteface} from '../model/room-environment-telemetry.api.model';
 import {IOTPubsubMessageInterface} from '../model/iot-pubsub-message.interface';
+import { request } from 'http';
 
 admin.initializeApp(functions.config().firebase);
 const db = admin.firestore();
@@ -13,7 +14,7 @@ db.settings({timestampsInSnapshots: true});
 const model = "RoomMonitorTelemetry";
 
     // Handlers
-export const roomEnvironmentMonitorPubsubHandler = async (message: IOTPubsubMessageInterface) => {
+export const pubsubHandler = async (message: IOTPubsubMessageInterface) => {
     // Wrap whole thing in try catch. If there is an error for some pubsub message, the message will not be acked off the pubsub queue
     try {
         let rawData: RoomEnvironmentMonitorPubsubMessageInterface;
@@ -27,7 +28,8 @@ export const roomEnvironmentMonitorPubsubHandler = async (message: IOTPubsubMess
 
         // Becasue the id is based on the timestamp, if the timestamp is passed null or undefined the same entity will be updated
         const sysDate = new Date(rawData.timestamp || "");
-        const id = sysDate.getTime().toString();
+        const deviceId = message.attributes.deviceId;
+        const id = deviceId + ":" + sysDate.getTime().toString();
 
         const data = {
             lux: rawData.lux || 0,
@@ -38,7 +40,7 @@ export const roomEnvironmentMonitorPubsubHandler = async (message: IOTPubsubMess
             pressure: rawData.pressure || 0, 
             humidity: rawData.humidity || 0,
             timestamp: admin.firestore.Timestamp.fromDate(sysDate),
-            deviceId: message.attributes.deviceId,
+            deviceId: deviceId,
         } as RoomEnvironmentMonitorTelemetry
 
         return db
@@ -55,7 +57,7 @@ export const roomEnvironmentMonitorPubsubHandler = async (message: IOTPubsubMess
     }
 }
 
-export const roomEnvironmentDataList = async(req: Request, res: Response) => {
+export const dataList = async(req: Request, res: Response) => {
 
     const params = req.query as RoomEnvironmentMonitorLookupApiRequestInteface;
     const cursor = params.cursor ? parseInt(params.cursor, 10): 0;
@@ -69,6 +71,7 @@ export const roomEnvironmentDataList = async(req: Request, res: Response) => {
 
     const telemetry = results.docs && results.docs.length ? results.docs.map((v) => (v.data())) : [];
     res.json({
-        telemetry: telemetry})
-    return
+        telemetry: telemetry
+    })
 }
+
