@@ -60,15 +60,21 @@ export const roomEnvironmentDataList = async(req: Request, res: Response) => {
     const params = req.query as RoomEnvironmentMonitorLookupApiRequestInteface;
     const cursor = params.cursor ? parseInt(params.cursor, 10): 0;
     const pageSize = params.page_size ? parseInt(params.page_size, 10): 1000;
+    const deviceId = params.device_id;
 
-    const results = await db
+    let dataSet = db
         .collection(model)
         .offset(cursor)
         .limit(pageSize)
-        .get()
+
+
+    if (deviceId && deviceId != "") {
+        dataSet = dataSet.where("deviceId", "==", deviceId)
+    }
+
+    const results = await dataSet.get();
 
     const telemetry = results.docs && results.docs.length ? results.docs.map((v) => (v.data())) : [];
-    res.json({
-        telemetry: telemetry})
+    res.json({telemetry: telemetry})
     return
 }

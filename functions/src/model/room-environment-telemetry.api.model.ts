@@ -26,9 +26,5 @@ export class RoomEnvironmentMonitorTelemetry {
 export interface RoomEnvironmentMonitorLookupApiRequestInteface {
     cursor: string;
     page_size: string;
-    search: {
-        term: string,
-        value: string,
-        opStr: string,
-    }
+    device_id: string;
 }
