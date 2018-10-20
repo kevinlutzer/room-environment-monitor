@@ -2,7 +2,7 @@
 import * as admin   from 'firebase-admin';
 
 import {IOTPubsubMessageInterface} from '../model/iot_pubsub_message.interface';
-import {RoomEnvironmentMonitorDeviceCPUTempThreshold} from '../config';
+import {RoomEnvironmentMonitorDeviceCPUTempThreshold, RoomEnvironmentMonitoryDeviceStatusRecieptors} from '../config';
 import {ExtractInterfaceFromPubsubMessage} from '../util/pubsub';
 import {RoomEnvironmentMonitorDeviceStatusPubsubMessageInterface, Convert} from '../model/room_environment_monitor_device_status.interface';
 import {SendEmail} from './sendgrid';
@@ -21,8 +21,8 @@ export async function PubsubHandler(message: IOTPubsubMessageInterface) {
 
 export async function handleCPUTempOverThresh(cpuTemp: number, deviceId: string) {
     if (cpuTemp >= RoomEnvironmentMonitorDeviceCPUTempThreshold) {
-        console.log('Cpu Temp is over threshold');
-        return SendEmail(['kevinlutzer9@gmail.com'], 'Room Environment Monitor CPU Temp Is Too High - ' + deviceId, 'The cpu temp is ' + cpuTemp.toString())
+        console.log('Cpu Temp is over threshold for device: ', deviceId);
+        return SendEmail(RoomEnvironmentMonitoryDeviceStatusRecieptors, 'Room Environment Monitor CPU Temp Is Too High For: ' + deviceId, 'The cpu temp is ' + cpuTemp.toString())
             // Type this error parameter
             .catch( err => console.log("Error email(s): " + err.response.body.errors))
     } else {
@@ -30,4 +30,3 @@ export async function handleCPUTempOverThresh(cpuTemp: number, deviceId: string)
         return Promise.resolve();
     }
 }
-
