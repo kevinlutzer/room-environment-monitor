@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 	"runtime"
@@ -55,7 +56,19 @@ func main() {
 			panic(s)
 		}
 
+		ctx := context.TODO()
+
+		if err := gs.PublishDeviceState(ctx, &googleiot.DeviceStatus{Status: googleiot.Active}); err != nil {
+			s, _ := fmt.Printf("Failed to publish active state for the device > %+s ", err.Error())
+			panic(s)
+		}
+
 		if err := server.StartHTTPServer(logger, ss, gs, ip); err != nil {
+			if err := gs.PublishDeviceState(ctx, &googleiot.DeviceStatus{Status: googleiot.Unactive}); err != nil {
+				s, _ := fmt.Printf("Failed to publish unactive state for the device > %+s ", err.Error())
+				panic(s)
+			}
+
 			s, _ := fmt.Printf("Could not start the http server > %s \n", err.Error())
 			panic(s)
 		}

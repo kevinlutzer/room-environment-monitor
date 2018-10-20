@@ -10,5 +10,5 @@ A small iot device built from the raspberry pi and some adafruit sensors.
 ``` bash 
 */15 * * * * /usr/bin/wget http://192.168.1.111:8080/publish-sensor-data-snapshot -O /dev/null
 * * * * * /usr/bin/wget http://192.168.1.111:8080/subscribe-iot-config -O /dev/null
-0 0 * * * /usr/bin/wget http://192.168.1.111:8080/publish-device-status -O /dev/null
+*/5 * * * * /usr/bin/wget http://192.168.1.111:8080/publish-device-status -O /dev/null
 ```

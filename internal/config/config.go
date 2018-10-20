@@ -13,9 +13,6 @@ var (
 	rootsPath      = "/home/pi/certs/roots.pem"
 	rsaCertPath    = "/home/pi/certs/rsa_cert.pem"
 	rsaPrivatePath = "/home/pi/certs/rsa_private.pem"
-
-	// APIKeyFile is the name of the file containing an string to be dynamically loaded when the server starts
-	APIKeyFile = "/home/pi/api_key.txt"
 )
 
 type SSLCerts struct {

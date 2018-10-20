@@ -20,6 +20,7 @@ type ConfigMessage struct {
 	PowerStatus PowerStatus `json:"power_status"`
 }
 
-type SensorStatus struct {
-	Status Status `json:"status"`
+type DeviceStatus struct {
+	Status  Status  `json:"status"`
+	CpuTemp float32 `json:"cpu_temp"`
 }

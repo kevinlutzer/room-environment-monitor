@@ -20,7 +20,7 @@ type Service interface {
 	//PublishSensorData fetches sensors data
 	PublishSensorData(ctx context.Context, data *sensors.SensorData) error
 	//PublishDeviceState fetches sensors data
-	PublishDeviceState(ctx context.Context, status *SensorStatus) error
+	PublishDeviceState(ctx context.Context, status *DeviceStatus) error
 	//SubsribeToConfigChanges subscribe to any config changes
 	SubsribeToConfigChanges(ctx context.Context) (*ConfigMessage, error)
 }
@@ -213,7 +213,7 @@ func (s *service) SubsribeToConfigChanges(ctx context.Context) (*ConfigMessage, 
 	return cm, nil
 }
 
-func (s *service) PublishDeviceState(ctx context.Context, status *SensorStatus) error {
+func (s *service) PublishDeviceState(ctx context.Context, status *DeviceStatus) error {
 
 	c, err := getMQTTClient(s.certs, s.iotConfig, s.Logger, MQTT.NewClientOptions())
 	if err != nil {

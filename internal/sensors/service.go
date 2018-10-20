@@ -22,6 +22,8 @@ const (
 type Service interface {
 	//FetchSensorData fetches sensors data
 	FetchSensorData(ctx context.Context) (*SensorData, error)
+	//FetchCPUTemp fetches the cpu temp
+	FetchCPUTemp(cpuTemp *float32) error
 }
 
 type service struct {
@@ -50,7 +52,7 @@ func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 	var co2, tvoc uint16
 
 	g.Go(func() error {
-		return s.fetchCPUTemp(&cpuTemp)
+		return s.FetchCPUTemp(&cpuTemp)
 	})
 
 	g.Go(func() error {
@@ -93,7 +95,7 @@ func (s *service) fetchHumidty(pressure, humidity, roomTemp *float32) error {
 	return nil
 }
 
-func (s *service) fetchCPUTemp(roomTemp *float32) error {
+func (s *service) FetchCPUTemp(cpuTemp *float32) error {
 	cmd := exec.Command("sudo", "/opt/vc/bin/vcgencmd", "measure_temp")
 	val, err := cmd.Output()
 	if err != nil {
@@ -112,7 +114,7 @@ func (s *service) fetchCPUTemp(roomTemp *float32) error {
 		return err
 	}
 
-	*roomTemp = float32(floatTemp)
+	*cpuTemp = float32(floatTemp)
 	return nil
 }
 

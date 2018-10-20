@@ -106,8 +106,17 @@ func (s *server) PublishDeviceStatus(wr http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	s.Logger.Println("\nRequest - calling handler: PublishDeviceStatus")
 
-	data := &googleiot.SensorStatus{
-		Status: "Active",
+	var cpuTemp float32
+	err := s.SensorsService.FetchCPUTemp(&cpuTemp)
+	if err != nil {
+		s.Logger.Println("Request - ERROR to get cpu temp > %+s", err.Error())
+		s.setStringResponse(wr, fmt.Sprintf("can't get cpu temp > %+s", err.Error()), 500)
+		return
+	}
+
+	data := &googleiot.DeviceStatus{
+		Status:  "Active",
+		CpuTemp: cpuTemp,
 	}
 
 	if err := s.GoogleIOTService.PublishDeviceState(ctx, data); err != nil {
