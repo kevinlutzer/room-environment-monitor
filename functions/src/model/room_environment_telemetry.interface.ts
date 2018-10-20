@@ -11,7 +11,7 @@ export interface RoomEnvironmentMonitorPubsubMessageInterface {
     timestamp: string;
 }
 
-export interface RoomEnvironmentMonitorTelemetry {
+export interface RoomEnvironmentMonitorTelemetryInterface {
     lux: number;
     co2: number;
     tvoc: number;
@@ -23,7 +23,7 @@ export interface RoomEnvironmentMonitorTelemetry {
     deviceId: string;
 }
 
-export function Convert(deviceId: string, sysDate: Date, data: RoomEnvironmentMonitorPubsubMessageInterface): RoomEnvironmentMonitorTelemetry {
+export function Convert(deviceId: string, sysDate: Date, data: RoomEnvironmentMonitorPubsubMessageInterface): RoomEnvironmentMonitorTelemetryInterface {
     return {
         lux: data.lux || 0,
         co2: data.co2 || 0,
@@ -34,7 +34,7 @@ export function Convert(deviceId: string, sysDate: Date, data: RoomEnvironmentMo
         humidity: data.humidity || 0,
         timestamp: admin.firestore.Timestamp.fromDate(sysDate),
         deviceId: deviceId,
-    } as RoomEnvironmentMonitorTelemetry
+    } as RoomEnvironmentMonitorTelemetryInterface
 }
 
 export interface RoomEnvironmentMonitorListApiRequestInteface {

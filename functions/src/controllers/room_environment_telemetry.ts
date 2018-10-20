@@ -2,7 +2,7 @@ import * as admin   from 'firebase-admin';
 
 import {Request, Response} from 'express';
 
-import {RoomEnvironmentMonitorTelemetry, RoomEnvironmentMonitorPubsubMessageInterface, RoomEnvironmentMonitorListApiRequestInteface, Convert} from '../model/room_environment_telemetry.interface';
+import {RoomEnvironmentMonitorTelemetryInterface, RoomEnvironmentMonitorPubsubMessageInterface, RoomEnvironmentMonitorListApiRequestInteface, Convert} from '../model/room_environment_telemetry.interface';
 import {IOTPubsubMessageInterface} from '../model/iot_pubsub_message.interface';
 import {RoomEnvironmentTelemetryModel} from '../config';
 import {ExtractInterfaceFromPubsubMessage} from '../util/pubsub';
@@ -27,7 +27,7 @@ export async function PubsubHandler(message: IOTPubsubMessageInterface) {
     return createRoomEnvironmentMonitorTelemetryEntity(id, data);
 }
 
-async function createRoomEnvironmentMonitorTelemetryEntity(id: string, data: RoomEnvironmentMonitorTelemetry) {
+async function createRoomEnvironmentMonitorTelemetryEntity(id: string, data: RoomEnvironmentMonitorTelemetryInterface) {
     return db
     .collection(RoomEnvironmentTelemetryModel)
     .doc(id)

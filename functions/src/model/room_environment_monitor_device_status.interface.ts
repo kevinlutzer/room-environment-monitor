@@ -8,12 +8,12 @@ export interface RoomEnvironmentMonitorDeviceStatusPubsubMessageInterface {
     cpu_temp: number;
 }
 
-export interface RoomEnvironmentMonitorDeviceStatus {
+export interface RoomEnvironmentMonitorDeviceStatusInterface {
     status: Status;
     cpuTemp: number;
 }
 
-export function Convert(data: RoomEnvironmentMonitorDeviceStatusPubsubMessageInterface): RoomEnvironmentMonitorDeviceStatus
+export function Convert(data: RoomEnvironmentMonitorDeviceStatusPubsubMessageInterface): RoomEnvironmentMonitorDeviceStatusInterface
 {
     return {
         status: Status[data.status],

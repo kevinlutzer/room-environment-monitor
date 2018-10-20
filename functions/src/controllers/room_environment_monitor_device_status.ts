@@ -19,24 +19,15 @@ export async function PubsubHandler(message: IOTPubsubMessageInterface) {
     return handleCPUTempOverThresh(data.cpuTemp, message.attributes.deviceId);
 }
 
-export async function handleCPUTempOverThresh(cpuTemp: number, deviceId: string): Promise<void> {
+export async function handleCPUTempOverThresh(cpuTemp: number, deviceId: string) {
     if (cpuTemp >= RoomEnvironmentMonitorDeviceCPUTempThreshold) {
         console.log('Cpu Temp is over threshold');
         return SendEmail(['kevinlutzer9@gmail.com'], 'Room Environment Monitor CPU Temp Is Too High - ' + deviceId, 'The cpu temp is ' + cpuTemp.toString())
-            .then(() => console.log('Hello World'));
+            // Type this error parameter
+            .catch( err => console.log("Error email(s): " + err.response.body.errors))
     } else {
         console.log("Cpu Temp is within normal range");
         return Promise.resolve();
     }
 }
 
-// export const EntityCreateHandler = async(snapshot: admin.firestore.DocumentSnapshot, context: any) => {
-//     const data = snapshot.data() as RoomEnvironmentMonitorTelemetry;
-//     if (data.cpuTemp > RoomEnvironmentTelemetryCPUTempThreshold) {
-//         console.warn("Reached cpu threshold");
-//         
-//     } else {
-//         console.log("CPU temp is not above threshold")
-//         return Promise.resolve();
-//     }
-// }

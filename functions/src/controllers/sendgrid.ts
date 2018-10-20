@@ -6,7 +6,7 @@ import {Create} from '../model/sendgrid.interface';
 
 export async function SendEmail(recipients: string[], subject: string, message: string) {
     if (!message.length) {
-        throw Error('The message must be greater the 1 character')
+        throw Error('The message must be greater the 1 character, this is a sendgrid requirement')
     }
 
     return Promise.resolve()
@@ -24,6 +24,4 @@ export async function SendEmail(recipients: string[], subject: string, message: 
             console.log(`Sending email to: ${recipients}`);
             return client.API(request);
         })
-        .catch( err => console.log("Error email(s): " + err.response.body.errors))
-        .then( () => console.log("Successfully sent email out"))
 }
