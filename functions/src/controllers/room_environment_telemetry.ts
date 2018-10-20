@@ -1,56 +1,33 @@
-import * as functions from 'firebase-functions';
 import * as admin   from 'firebase-admin';
 
 import {Request, Response} from 'express';
 
-import {RoomEnvironmentMonitorTelemetry, RoomEnvironmentMonitorPubsubMessageInterface, RoomEnvironmentMonitorListApiRequestInteface} from '../model/room-environment-telemetry.api.model';
+import {RoomEnvironmentMonitorTelemetry, RoomEnvironmentMonitorPubsubMessageInterface, RoomEnvironmentMonitorListApiRequestInteface, Convert} from '../model/room-environment-telemetry.api.model';
 import {IOTPubsubMessageInterface} from '../model/iot-pubsub-message.interface';
-import {RoomEnvironmentTelemetryModel, RoomEnvironmentTelemetryCPUTempThreshold} from '../config';
-import {SendEmail} from './sendgrid';
+import {RoomEnvironmentTelemetryModel} from '../config';
+import {ExtractInterfaceFromPubsubMessage} from '../util/pubsub';
 
-admin.initializeApp(functions.config().firebase);
 const db = admin.firestore();
-db.settings({timestampsInSnapshots: true});
+try {
+    db.settings({timestampsInSnapshots: true});
+} catch {}
 
 // Handlers
 export const PubsubHandler = async (message: IOTPubsubMessageInterface) => {
-    // Wrap whole thing in try catch. If there is an error for some pubsub message, the message will not be acked off the pubsub queue
-    try {
-        let rawData: RoomEnvironmentMonitorPubsubMessageInterface;
-        try {
-            rawData = JSON.parse(message.data ? Buffer.from(message.data, 'base64').toString() : null);
-        } catch {
-            console.error("Failed to parse the pubsub mesage. The api interface most likely changed");
-            return null;
-        }
-        console.log("message: ", message, ", rawData: ", rawData);
 
-        // Becasue the id is based on the timestamp, if the timestamp is passed null or undefined the same entity will be updated
-        const sysDate = new Date(rawData.timestamp || "");
-        const deviceId = message.attributes.deviceId;
-        const id = deviceId + ":" + sysDate.getTime().toString();
-        
-        const data = {
-            lux: rawData.lux || 0,
-            co2: rawData.co2 || 0,
-            tvoc: rawData.tvoc || 0,
-            roomTemp: rawData.room_temp || 0,
-            cpuTemp: rawData.cpu_temp || 0,
-            pressure: rawData.pressure || 0, 
-            humidity: rawData.humidity || 0,
-            timestamp: admin.firestore.Timestamp.fromDate(sysDate),
-            deviceId: deviceId,
-        } as RoomEnvironmentMonitorTelemetry
+    const rawData = ExtractInterfaceFromPubsubMessage(message) as RoomEnvironmentMonitorPubsubMessageInterface;
 
-        return createRoomEnvironmentMonitorTelemetry(id, data);
+    // Becasue the id is based on the timestamp, if the timestamp is passed null or undefined the same entity will be updated
+    const sysDate = new Date(rawData.timestamp || "");
+    const deviceId = message.attributes.deviceId;
+    const id = deviceId + ":" + sysDate.getTime().toString();
+    
+    const data = Convert(deviceId, sysDate, rawData)
 
-    } catch (err) {
-        console.error(err);
-        return null;
-    }
+    return createRoomEnvironmentMonitorTelemetryEntity(id, data);
 }
 
-async function createRoomEnvironmentMonitorTelemetry(id: string, data: RoomEnvironmentMonitorTelemetry) {
+async function createRoomEnvironmentMonitorTelemetryEntity(id: string, data: RoomEnvironmentMonitorTelemetry) {
     return db
     .collection(RoomEnvironmentTelemetryModel)
     .doc(id)
@@ -86,15 +63,3 @@ export const DataList = async(req: Request, res: Response) => {
     })
 
 }
-
-export const EntityCreateHandler = async(snapshot: admin.firestore.DocumentSnapshot, context: any) => {
-    const data = snapshot.data() as RoomEnvironmentMonitorTelemetry;
-    if (data.cpuTemp > RoomEnvironmentTelemetryCPUTempThreshold) {
-        console.warn("Reached cpu threshold");
-        return SendEmail(['kevinlutzer9@gmail.com'], 'Room Environment Monitor Temp Is Too High', 'The cpu temp is ' + data.cpuTemp.toString())
-    } else {
-        console.log("CPU temp is not above threshold")
-        return Promise.resolve();
-    }
-}
-

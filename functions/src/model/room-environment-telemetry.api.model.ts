@@ -23,6 +23,20 @@ export interface RoomEnvironmentMonitorTelemetry {
     deviceId: string;
 }
 
+export function Convert(deviceId: string, sysDate: Date, data: RoomEnvironmentMonitorPubsubMessageInterface): RoomEnvironmentMonitorTelemetry {
+    return {
+        lux: data.lux || 0,
+        co2: data.co2 || 0,
+        tvoc: data.tvoc || 0,
+        roomTemp: data.room_temp || 0,
+        cpuTemp: data.cpu_temp || 0,
+        pressure: data.pressure || 0, 
+        humidity: data.humidity || 0,
+        timestamp: admin.firestore.Timestamp.fromDate(sysDate),
+        deviceId: deviceId,
+    } as RoomEnvironmentMonitorTelemetry
+}
+
 export interface RoomEnvironmentMonitorListApiRequestInteface {
     cursor?: string;
     page_size?: string;
