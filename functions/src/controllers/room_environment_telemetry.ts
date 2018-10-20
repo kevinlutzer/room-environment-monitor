@@ -2,8 +2,8 @@ import * as admin   from 'firebase-admin';
 
 import {Request, Response} from 'express';
 
-import {RoomEnvironmentMonitorTelemetry, RoomEnvironmentMonitorPubsubMessageInterface, RoomEnvironmentMonitorListApiRequestInteface, Convert} from '../model/room-environment-telemetry.api.model';
-import {IOTPubsubMessageInterface} from '../model/iot-pubsub-message.interface';
+import {RoomEnvironmentMonitorTelemetry, RoomEnvironmentMonitorPubsubMessageInterface, RoomEnvironmentMonitorListApiRequestInteface, Convert} from '../model/room_environment_telemetry.interface';
+import {IOTPubsubMessageInterface} from '../model/iot_pubsub_message.interface';
 import {RoomEnvironmentTelemetryModel} from '../config';
 import {ExtractInterfaceFromPubsubMessage} from '../util/pubsub';
 
@@ -13,7 +13,7 @@ try {
 } catch {}
 
 // Handlers
-export const PubsubHandler = async (message: IOTPubsubMessageInterface) => {
+export async function PubsubHandler(message: IOTPubsubMessageInterface) {
 
     const rawData = ExtractInterfaceFromPubsubMessage(message) as RoomEnvironmentMonitorPubsubMessageInterface;
 
@@ -38,7 +38,7 @@ async function createRoomEnvironmentMonitorTelemetryEntity(id: string, data: Roo
     );
 }
 
-export const DataList = async(req: Request, res: Response) => {
+export async function DataList(req: Request, res: Response) {
 
     const params = req.query as RoomEnvironmentMonitorListApiRequestInteface;
     const cursor = params.cursor ? parseInt(params.cursor, 10): 0;

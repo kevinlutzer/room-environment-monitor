@@ -2,7 +2,7 @@
 import * as sendgrid from 'sendgrid';
 
 import {SendGridApiKey} from '../config';
-import {CreateSendgridPayload} from '../model/sendgrid.interface';
+import {Create} from '../model/sendgrid.interface';
 
 export async function SendEmail(recipients: string[], subject: string, message: string) {
     if (!message.length) {
@@ -17,7 +17,7 @@ export async function SendEmail(recipients: string[], subject: string, message: 
             const request = client.emptyRequest({
                 method: 'POST',
                 path: '/v3/mail/send',
-                body: CreateSendgridPayload(recipients, subject, message)
+                body: Create(recipients, subject, message)
             });
 
             // Make the request to SendGrid's API

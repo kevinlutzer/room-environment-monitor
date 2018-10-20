@@ -3,4 +3,7 @@ import * as admin   from 'firebase-admin';
 
 // Cloud functions
 export {RoomEnvironmentMonitorDeviceStatusPubsubHandler} from './api/room_environment_monitor_device_status';
-export {RoomEnvironmentTelemetry, RoomEnvironmentTelemetryOnCreateHandler, RoomEnvironmentTelemetryPubsubHandler} from './api/room_environment_telemetry';
+export {RoomEnvironmentTelemetry, RoomEnvironmentTelemetryPubsubHandler} from './api/room_environment_telemetry';
+
+// Initialize Firebase App
+admin.initializeApp(functions.config().firebase);

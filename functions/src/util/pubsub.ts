@@ -1,4 +1,4 @@
-import {IOTPubsubMessageInterface} from '../model/iot-pubsub-message.interface';
+import {IOTPubsubMessageInterface} from '../model/iot_pubsub_message.interface';
 
 export function ExtractInterfaceFromPubsubMessage(message: IOTPubsubMessageInterface): any {
     let rawData: any;

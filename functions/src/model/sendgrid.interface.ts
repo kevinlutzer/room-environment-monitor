@@ -10,7 +10,7 @@ export interface SendgridPayloadInterface {
     }]
 }
 
-export function CreateSendgridPayload(reciepients: string[], subject: string, message: string): SendgridPayloadInterface {
+export function Create(reciepients: string[], subject: string, message: string): SendgridPayloadInterface {
     return {
         personalizations: [{
             to: reciepients.map(r => {return {email: r}}),

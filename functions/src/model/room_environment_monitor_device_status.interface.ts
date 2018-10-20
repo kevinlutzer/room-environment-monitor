@@ -1,5 +1,3 @@
-import * as admin from 'firebase-admin';
-
 export enum Status {
     Active = "Active",
     Unactive = "Unactive",
