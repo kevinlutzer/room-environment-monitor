@@ -11,7 +11,7 @@ export interface RoomEnvironmentMonitorPubsubMessageInterface {
     timestamp: string;
 }
 
-export class RoomEnvironmentMonitorTelemetry {
+export interface RoomEnvironmentMonitorTelemetry {
     lux: number;
     co2: number;
     tvoc: number;
@@ -23,8 +23,8 @@ export class RoomEnvironmentMonitorTelemetry {
     deviceId: string;
 }
 
-export interface RoomEnvironmentMonitorLookupApiRequestInteface {
-    cursor: string;
-    page_size: string;
-    device_id: string;
+export interface RoomEnvironmentMonitorListApiRequestInteface {
+    cursor?: string;
+    page_size?: string;
+    device_id?: string;
 }
