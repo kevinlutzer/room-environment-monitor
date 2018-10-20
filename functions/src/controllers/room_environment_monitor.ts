@@ -1,12 +1,12 @@
 import * as functions from 'firebase-functions';
 import * as admin   from 'firebase-admin';
-import * as mail from 'nodemailer-postmark-transport';
 
 import {Request, Response} from 'express';
 
 import {RoomEnvironmentMonitorTelemetry, RoomEnvironmentMonitorPubsubMessageInterface, RoomEnvironmentMonitorListApiRequestInteface} from '../model/room-environment-telemetry.api.model';
 import {IOTPubsubMessageInterface} from '../model/iot-pubsub-message.interface';
 import {RoomEnvironmentTelemetryModel, RoomEnvironmentTelemetryCPUTempThreshold} from '../config';
+import {SendSendgridEmail} from './sendgrid';
 
 admin.initializeApp(functions.config().firebase);
 const db = admin.firestore();
@@ -85,14 +85,17 @@ export const DataList = async(req: Request, res: Response) => {
     })
 }
 
-export const EntityCreateHandler = (snapshot: admin.firestore.DocumentSnapshot, context: any): Promise<void> => {
+export const EntityCreateHandler = async(snapshot: admin.firestore.DocumentSnapshot, context: any) => {
     const data = snapshot.data() as RoomEnvironmentMonitorTelemetry;
     if (data.cpuTemp > RoomEnvironmentTelemetryCPUTempThreshold) {
         console.warn("Reached cpu threshold");
-        return null;
+        return SendSendgridEmail(['kevinlutzer9@gmail.com'], 'Room Environment Monitor Temp Is Too High', 'The cpu temp is ' + data.cpuTemp.toString())
+            .catch((error) => console.error('Failed to send email ->', error))
+            .then(() => console.log('Successfully sent email'))
+
     } else {
         console.log("CPU temp is not above threshold")
-        return null;
+        return Promise.resolve();
     }
 }
 
