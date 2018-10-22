@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 	"runtime"
@@ -57,6 +58,14 @@ func main() {
 		e := fmt.Sprintf("Failed to get the ip address > %+s ", err.Error())
 		logger.Fatalln(e)
 	}
+
+	ctx := context.TODO()
+	go func() {
+		err = i.IntializeIOTFunctions(ctx)
+		if err != nil {
+			logger.Fatalln(err.Error())
+		}
+	}()
 
 	// Asnycronously start server. If gobot stuff hasn't been initialized, some of the server methods will not work.
 	go func() {

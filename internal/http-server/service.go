@@ -108,7 +108,7 @@ func (s *httpService) subscribeToIOTCoreConfigHandler(wr http.ResponseWriter, r 
 	ctx := r.Context()
 	s.Logger.Println("http: calling handler subscribeToIOTCoreConfigHandler")
 
-	err := s.iot.PublishDeviceStatus(ctx)
+	err := s.iot.SubscribeToIOTCoreConfig(ctx)
 	if err != nil {
 		s.Logger.Println("http: ", err.Error())
 		s.setStringResponse(wr, "could't subscribe to the iot config", 500)

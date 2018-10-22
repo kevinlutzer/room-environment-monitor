@@ -123,10 +123,10 @@ func (s *service) PublishSensorData(ctx context.Context, d *sensors.SensorData) 
 
 	opts := MQTT.NewClientOptions()
 
-	opts.SetDefaultPublishHandler(func(client MQTT.Client, msg MQTT.Message) {
-		s.Logger.Printf("GoogleIOT - topic > %s\n", msg.Topic())
-		s.Logger.Printf("GoogleIOT - payload > %s\n", msg.Payload())
-	})
+	// opts.SetDefaultPublishHandler(func(client MQTT.Client, msg MQTT.Message) {
+	// 	s.Logger.Printf("INFO: topic > %s\n", msg.Topic())
+	// 	s.Logger.Printf("INFO - payload > %s\n", msg.Payload())
+	// })
 
 	c, err := getMQTTClient(s.certs, s.iotConfig, s.Logger, opts)
 	if err != nil {
@@ -153,18 +153,12 @@ func (s *service) PublishSensorData(ctx context.Context, d *sensors.SensorData) 
 	token.WaitTimeout(5 * time.Second)
 	err = token.Error()
 	if err != nil {
-		s.Logger.Fatalf("GoogleIOT - ERROR: failed to publish the payload: %+s", err.Error())
+		s.Logger.Printf("ERROR: failed to publish the payload: %+s", err.Error())
 		return err
 	}
 
 	c.Disconnect(250)
 	return nil
-}
-
-func (s *service) HandleMQTTConfigMessage(c MQTT.Client, m MQTT.Message) {
-	s.Logger.Println("GoogleIOT - Handler config message")
-	s.Logger.Println(string(m.Payload()))
-	s.current = m.Payload()
 }
 
 func (s *service) SubsribeToConfigChanges(ctx context.Context) (*ConfigMessage, error) {
@@ -198,13 +192,13 @@ func (s *service) SubsribeToConfigChanges(ctx context.Context) (*ConfigMessage, 
 	token.WaitTimeout(5 * time.Second)
 	err = token.Error()
 	if err != nil {
-		s.Logger.Println("GoogleIOT - ERROR: failed to publish the payload")
+		s.Logger.Println("ERROR: failed to publish the payload")
 		return nil, err
 	}
 
 	for receiveCount < 1 {
 		incoming := <-choke
-		s.Logger.Printf("GoogleIOT - recieved message %s", incoming[1])
+		s.Logger.Printf("INFO: recieved message %s", incoming[1])
 		json.Unmarshal([]byte(incoming[1]), &cm)
 		receiveCount++
 	}
@@ -239,7 +233,7 @@ func (s *service) PublishDeviceState(ctx context.Context, status *DeviceStatus) 
 	token.WaitTimeout(5 * time.Second)
 	err = token.Error()
 	if err != nil {
-		s.Logger.Println("GoogleIOT - ERROR: failed to publish the payload")
+		s.Logger.Println("ERROR: failed to publish the payload")
 		return err
 	}
 

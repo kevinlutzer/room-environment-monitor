@@ -14,10 +14,6 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-const (
-	CPUTempFanThresh = 35
-)
-
 //Service represents the structure of the service layer
 type Service interface {
 	//FetchSensorData fetches sensors data
@@ -45,12 +41,12 @@ func NewSensorService(tsl2561Driver *i2c.TSL2561Driver, ccs811Driver *i2c.CCS811
 
 // FetchSensorData returns an object representing all of the sensor data
 func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
-	g, ctx := errgroup.WithContext(ctx)
 
 	var lux uint32
 	var pressure, humidity, roomTemp, cpuTemp float32
 	var co2, tvoc uint16
 
+	g, ctx := errgroup.WithContext(ctx)
 	g.Go(func() error {
 		return s.FetchCPUTemp(&cpuTemp)
 	})
