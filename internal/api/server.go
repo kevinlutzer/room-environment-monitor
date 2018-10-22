@@ -30,18 +30,10 @@ type server struct {
 // StartHTTPServer returns a instance of the http server
 func StartHTTPServer(logger *log.Logger, ss sensors.Service, gs googleiot.Service, ip string) error {
 
-	//Load The api key from file
-	// k, err := ioutil.ReadFile(config.APIKeyFile)
-	// if err != nil {
-	// 	fmt.Printf("Failed to read api key file", err.Error())
-	// 	return errors.New("Failed to read the api key file")
-	// }
-
 	s := &server{
 		SensorsService:   ss,
 		GoogleIOTService: gs,
 		Logger:           logger,
-		// apiKey:           string(k),
 	}
 
 	//Setup Handlers

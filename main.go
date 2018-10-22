@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"runtime"
+	"time"
 
 	"fmt"
 
@@ -74,11 +75,26 @@ func main() {
 		}
 	}
 
+	var t time.Duration
+	t = 1
+
+	timedHandler := func() {
+		gobot.Every(t*time.Second, func() {
+			fmt.Printf("TIMED PROCESS AHHHHHHHHHHHH, %+v\n", t)
+			t = t + 1
+		})
+	}
+
 	robot := gobot.NewRobot("room-environment-monitor",
 		[]gobot.Connection{r},
 		[]gobot.Device{dl, dt, dg},
 		work,
+		timedHandler,
 	)
 
 	robot.Start()
+}
+
+func createNewTimedFunction() *time.Ticker {
+
 }
