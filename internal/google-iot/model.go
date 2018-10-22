@@ -17,7 +17,10 @@ const (
 )
 
 type ConfigMessage struct {
-	PowerStatus PowerStatus `json:"power_status"`
+	PowerStatus         PowerStatus `json:"power_status"`
+	DataPublishRate     uint64      `json:"data_publish_rate"`
+	StatusPublishRate   uint64      `json:"status_publish_rate"`
+	ConfigSubscribeRate uint64      `json:"config_subscribe_rate"`
 }
 
 type DeviceStatus struct {

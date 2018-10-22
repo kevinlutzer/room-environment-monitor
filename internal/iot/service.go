@@ -21,7 +21,6 @@ type iot struct {
 	SensorsService   sensors.Service
 	GoogleIOTService googleiot.Service
 	Logger           *log.Logger
-	apiKey           string
 }
 
 // NewIOTService returns a instance of the iot service

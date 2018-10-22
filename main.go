@@ -1,18 +1,18 @@
 package main
 
 import (
-	"context"
 	"log"
 	"os"
 	"runtime"
-	"time"
+
+	"github.com/kml183/room-environment-monitor/internal/iot"
+	"github.com/kml183/room-environment-monitor/internal/sensors"
 
 	"fmt"
 
 	"github.com/kml183/room-environment-monitor/internal/config"
 	googleiot "github.com/kml183/room-environment-monitor/internal/google-iot"
 	httpserver "github.com/kml183/room-environment-monitor/internal/http-server"
-	"github.com/kml183/room-environment-monitor/internal/sensors"
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/drivers/i2c"
 	"gobot.io/x/gobot/platforms/raspi"
@@ -31,60 +31,45 @@ func main() {
 	dg := i2c.NewCCS811Driver(r)
 	dt := i2c.NewBME280Driver(r)
 
-	work := func() {
-		// Create SSL Certs
-		certs, err := config.GetSSLCerts()
-		if err != nil {
-			s, _ := fmt.Printf("Failed to fetch the ssl cert files > %+s ", err.Error())
-			panic(s)
-		}
-
-		// Fetch Google IOT Config
-		iotConfig, err := config.GetGoogleIOTConfig()
-		if err != nil {
-			e := fmt.Sprintf("Failed to get the iot config > %+s ", err.Error())
-			logger.Fatalln(e)
-		}
-
-		// Services
-		ss := sensors.NewSensorService(dl, dg, dt)
-		gs := googleiot.NewGoogleIOTService(certs, iotConfig, logger)
-
-		// Get IP Address
-		ip, err := config.GetIPAddress()
-		if err != nil {
-			e := fmt.Sprintf("Failed to get the ip address > %+s ", err.Error())
-			logger.Fatalln(e)
-		}
-
-		ctx := context.TODO()
-
-		if err := gs.PublishDeviceState(ctx, &googleiot.DeviceStatus{Status: googleiot.Active}); err != nil {
-			e := fmt.Errorf("Failed to publish active state for the device > %+s ", err.Error())
-			logger.Fatalln(e)
-		}
-
-		s := httpserver.NewHTTPService(logger, ss, gs, ip)
-
-		//Blocking start on the server.
-		s.Start()
+	// Create SSL Certs
+	certs, err := config.GetSSLCerts()
+	if err != nil {
+		s, _ := fmt.Printf("Failed to fetch the ssl cert files > %+s ", err.Error())
+		panic(s)
 	}
 
-	var t time.Duration
-	t = 1
-
-	timedHandler := func() {
-		gobot.Every(t*time.Second, func() {
-			fmt.Printf("TIMED PROCESS AHHHHHHHHHHHH, %+v\n", t)
-			t = t + 1
-		})
+	// Fetch Google IOT Config
+	iotConfig, err := config.GetGoogleIOTConfig()
+	if err != nil {
+		e := fmt.Sprintf("Failed to get the iot config > %+s ", err.Error())
+		logger.Fatalln(e)
 	}
 
-	robot := gobot.NewRobot("room-environment-monitor",
+	// Services
+	ss := sensors.NewSensorService(dl, dg, dt)
+	gs := googleiot.NewGoogleIOTService(certs, iotConfig, logger)
+	i := iot.NewIOTService(logger, ss, gs)
+	hs := httpserver.NewHTTPService(logger, ss, i)
+
+	// Get IP Address
+	ip, err := config.GetIPAddress()
+	if err != nil {
+		e := fmt.Sprintf("Failed to get the ip address > %+s ", err.Error())
+		logger.Fatalln(e)
+	}
+
+	// Asnycronously start server. If gobot stuff hasn't been initialized, some of the server methods will not work.
+	go func() {
+		err = hs.Start(ip)
+		if err != nil {
+			logger.Fatalln(err.Error())
+		}
+	}()
+
+	// Start gobot stuff
+	iotDevice := gobot.NewRobot("room-environment-monitor",
 		[]gobot.Connection{r},
 		[]gobot.Device{dl, dt, dg},
-		work,
-		timedHandler,
 	)
-	robot.Start()
+	iotDevice.Start()
 }
