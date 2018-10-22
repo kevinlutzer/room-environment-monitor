@@ -11,8 +11,8 @@ import (
 
 	"github.com/kml183/room-environment-monitor/internal/config"
 	googleiot "github.com/kml183/room-environment-monitor/internal/google-iot"
+	httpserver "github.com/kml183/room-environment-monitor/internal/http-server"
 	"github.com/kml183/room-environment-monitor/internal/sensors"
-	server "github.com/kml183/room-environment-monitor/internal/server"
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/drivers/i2c"
 	"gobot.io/x/gobot/platforms/raspi"
@@ -42,8 +42,8 @@ func main() {
 		// Fetch Google IOT Config
 		iotConfig, err := config.GetGoogleIOTConfig()
 		if err != nil {
-			s, _ := fmt.Printf("Failed to get the iot config > %+s ", err.Error())
-			panic(s)
+			e := fmt.Sprintf("Failed to get the iot config > %+s ", err.Error())
+			logger.Fatalln(e)
 		}
 
 		// Services
@@ -53,26 +53,21 @@ func main() {
 		// Get IP Address
 		ip, err := config.GetIPAddress()
 		if err != nil {
-			s, _ := fmt.Printf("Failed to get the ip address > %+s ", err.Error())
-			panic(s)
+			e := fmt.Sprintf("Failed to get the ip address > %+s ", err.Error())
+			logger.Fatalln(e)
 		}
 
 		ctx := context.TODO()
 
 		if err := gs.PublishDeviceState(ctx, &googleiot.DeviceStatus{Status: googleiot.Active}); err != nil {
-			s, _ := fmt.Printf("Failed to publish active state for the device > %+s ", err.Error())
-			panic(s)
+			e := fmt.Errorf("Failed to publish active state for the device > %+s ", err.Error())
+			logger.Fatalln(e)
 		}
 
-		if err := server.StartHTTPServer(logger, ss, gs, ip); err != nil {
-			if err := gs.PublishDeviceState(ctx, &googleiot.DeviceStatus{Status: googleiot.Unactive}); err != nil {
-				s, _ := fmt.Printf("Failed to publish unactive state for the device > %+s ", err.Error())
-				panic(s)
-			}
+		s := httpserver.NewHTTPService(logger, ss, gs, ip)
 
-			s, _ := fmt.Printf("Could not start the http server > %s \n", err.Error())
-			panic(s)
-		}
+		//Blocking start on the server.
+		s.Start()
 	}
 
 	var t time.Duration
@@ -91,10 +86,5 @@ func main() {
 		work,
 		timedHandler,
 	)
-
 	robot.Start()
-}
-
-func createNewTimedFunction() *time.Ticker {
-
 }
