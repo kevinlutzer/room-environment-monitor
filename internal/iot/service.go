@@ -181,6 +181,10 @@ func (i *iot) handlePowerStatus(p googleiot.PowerState) error {
 			i.logger.StdOut.Println("reboot device")
 			err = i.rebootTheDevice()
 		}
+
+		if p == googleiot.On {
+			i.logger.StdOut.Println("leave device on")
+		}
 	} else {
 		i.logger.StdOut.Println("Message does not have a valid power status")
 	}
