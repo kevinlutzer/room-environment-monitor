@@ -19,12 +19,7 @@ export async function PubsubHandler(message: IOTPubsubMessageInterface) {
     const deviceId = message.attributes.deviceId;
     const id = deviceId;
 
-    const entity = {
-        cpuTemp: data.cpuTemp,
-        status: data.status,
-    } as RoomEnvironmentMonitorDeviceStatusInterface
-
-    return createRoomEnvironmentMonitorDeviceStatusEntity(id, entity);
+    return createRoomEnvironmentMonitorDeviceStatusEntity(id, data);
 }
 
 async function createRoomEnvironmentMonitorDeviceStatusEntity(id: string, data: RoomEnvironmentMonitorDeviceStatusInterface) {
