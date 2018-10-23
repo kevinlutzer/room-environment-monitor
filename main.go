@@ -60,6 +60,12 @@ func main() {
 
 	ctx := context.TODO()
 
+	// Publish device status on startup
+	err = i.PublishDeviceStatus(ctx)
+	if err != nil {
+		logger.StdErr.Fatalln(err.Error())
+	}
+
 	// Initialize the iot timed functions
 	go i.IntializeIOTFunctions(ctx)
 
