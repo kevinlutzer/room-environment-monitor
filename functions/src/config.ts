@@ -6,8 +6,9 @@ export const CloudConfig = {
 }
 
 // Room Environment Telemetry 
-export const RoomEnvironmentTelemetryModel = 'RoomMonitorTelemetry';
+export const RoomEnvironmentTelemetryModel = 'RoomEnvironmentTelemetry';
 export const RoomEnvironmentTelemetryPubsubTopic = 'room-environment-telemetry';
+
 
 // Room Environment Monitor Device Status
 export const RoomEnvironmentMonitorDeviceStatusPubsubTopic = 'room-environment-monitor-device-status';
