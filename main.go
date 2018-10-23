@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
-	"os"
 	"runtime"
 
 	"github.com/kml183/room-environment-monitor/internal/iot"
@@ -20,7 +18,8 @@ import (
 )
 
 func main() {
-	logger := log.New(os.Stdout, "http: ", log.LstdFlags)
+
+	logger := config.NewLogger()
 
 	if val := runtime.GOMAXPROCS(8); val < -1 {
 		fmt.Printf("Could not set the max processes, value recieved > %d \n", val)
@@ -43,7 +42,7 @@ func main() {
 	iotConfig, err := config.GetGoogleIOTConfig()
 	if err != nil {
 		e := fmt.Sprintf("Failed to get the iot config > %+s ", err.Error())
-		logger.Fatalln(e)
+		logger.StdErr.Fatalln(e)
 	}
 
 	// Services
@@ -56,7 +55,7 @@ func main() {
 	ip, err := config.GetIPAddress()
 	if err != nil {
 		e := fmt.Sprintf("Failed to get the ip address > %+s ", err.Error())
-		logger.Fatalln(e)
+		logger.StdErr.Fatalln(e)
 	}
 
 	ctx := context.TODO()
@@ -68,7 +67,7 @@ func main() {
 	go func() {
 		err = hs.Start(ip)
 		if err != nil {
-			logger.Fatalln(err.Error())
+			logger.StdErr.Fatalln(err.Error())
 		}
 	}()
 
@@ -77,5 +76,6 @@ func main() {
 		[]gobot.Connection{r},
 		[]gobot.Device{dl, dt, dg},
 	)
+
 	iotDevice.Start()
 }

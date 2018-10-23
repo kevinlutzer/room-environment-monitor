@@ -4,21 +4,20 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"os/exec"
 	"time"
 
 	"gobot.io/x/gobot"
 
+	"github.com/kml183/room-environment-monitor/internal/config"
 	googleiot "github.com/kml183/room-environment-monitor/internal/google-iot"
 	"github.com/kml183/room-environment-monitor/internal/sensors"
-	"golang.org/x/sync/errgroup"
 )
 
 const (
-	DefaultDataPublishRate     = 1
+	DefaultDataPublishRate     = 15
 	DefaultConfigSubscribeRate = 1
-	DefaultStatusPublishRate   = 1
+	DefaultStatusPublishRate   = 720 // rate of every 12 hours
 )
 
 type Service interface {
@@ -31,13 +30,13 @@ type Service interface {
 type iot struct {
 	sensors                     sensors.Service
 	googleiot                   googleiot.Service
-	logger                      *log.Logger
+	logger                      *config.Logger
 	DataPublishRate             time.Duration
 	DataPublishTickerReferences *time.Ticker
 }
 
 // NewIOTService returns a instance of the iot service
-func NewIOTService(logger *log.Logger, ss sensors.Service, gs googleiot.Service) Service {
+func NewIOTService(logger *config.Logger, ss sensors.Service, gs googleiot.Service) Service {
 	i := &iot{
 		sensors:   ss,
 		googleiot: gs,
@@ -48,32 +47,32 @@ func NewIOTService(logger *log.Logger, ss sensors.Service, gs googleiot.Service)
 
 func (i *iot) PublishSensorDataSnapshotHandler(ctx context.Context) error {
 
-	i.logger.Println("INFO: Fetching sensor data")
+	i.logger.StdOut.Println("Fetching sensor data")
 	data, err := i.sensors.FetchSensorData(ctx)
 	if err != nil {
-		e := fmt.Sprintf("ERROR: failed to fetch the sensor data: %+s", err.Error())
-		i.logger.Println(e)
+		e := fmt.Sprintf("failed to fetch the sensor data: %+s", err.Error())
+		i.logger.StdErr.Println(e)
 		return errors.New(e)
 	}
 
 	if err := i.googleiot.PublishSensorData(ctx, data); err != nil {
-		e := fmt.Sprintf("ERROR: failed to publish the sensor data to cloud iot: %+s", err.Error())
-		i.logger.Println(e)
+		e := fmt.Sprintf("failed to publish the sensor data to cloud iot: %+s", err.Error())
+		i.logger.StdErr.Println(e)
 		return errors.New(e)
 	}
 
-	i.logger.Println("INFO: Successfully published the sensor data")
+	i.logger.StdOut.Println("Successfully published the sensor data")
 	return nil
 }
 
 func (i *iot) PublishDeviceStatus(ctx context.Context) error {
 
-	i.logger.Println("INFO: fetching cpu temperature")
+	i.logger.StdOut.Println("fetching cpu temperature")
 	var cpuTemp float32
 	err := i.sensors.FetchCPUTemp(&cpuTemp)
 	if err != nil {
 		e := fmt.Sprintf("ERROR to get cpu temp: %+s", err.Error())
-		i.logger.Println(e)
+		i.logger.StdErr.Println(e)
 		return errors.New(e)
 	}
 
@@ -82,64 +81,57 @@ func (i *iot) PublishDeviceStatus(ctx context.Context) error {
 	}
 
 	if err := i.googleiot.PublishDeviceState(ctx, data); err != nil {
-		e := fmt.Sprintf("ERROR: failed to publish the device status to cloud iot: %s", err.Error())
-		i.logger.Println(e)
+		e := fmt.Sprintf("failed to publish the device status to cloud iot: %s", err.Error())
+		i.logger.StdErr.Println(e)
 		return errors.New(e)
 	}
 
-	i.logger.Println("INFO: successfully published the device status")
+	i.logger.StdOut.Println("successfully published the device status")
 	return nil
 }
 
 func (i *iot) SubscribeToIOTCoreConfig(ctx context.Context) error {
-	i.logger.Println("INFO: subscribing to google iot config changes")
+	i.logger.StdOut.Println("subscribing to google iot config changes")
 
 	msg, err := i.googleiot.SubsribeToConfigChanges(ctx)
 	if err != nil {
-		e := fmt.Sprintf("ERROR: failed to subscribe to the config changes: %s", err.Error())
-		i.logger.Println(e)
+		e := fmt.Sprintf("failed to subscribe to the config changes: %s", err.Error())
+		i.logger.StdErr.Println(e)
 		return errors.New(e)
 	}
 
 	err = i.handleIOTCOnfigMessage(msg, ctx)
 	if err != nil {
-		e := fmt.Sprintf("ERROR: Failed to handle config update with error: %s", err.Error())
-		i.logger.Println(e)
+		e := fmt.Sprintf("Failed to handle config update with %s", err.Error())
+		i.logger.StdErr.Println(e)
 		return errors.New(e)
 	}
 
-	i.logger.Println("INFO: subscribed to google iot config changes published the device status")
+	i.logger.StdOut.Println("subscribed to google iot config changes published the device status")
 	return nil
 }
 
 func (i *iot) IntializeIOTFunctions(ctx context.Context) {
-	i.logger.Println("INFO: initialize the base iot functions")
+	i.logger.StdOut.Println("initialize the base iot functions")
 	i.handleDataPublishRateUpdate(DefaultDataPublishRate, ctx)
 	i.setupDefaultTimedFunctions(ctx)
 }
 
 func (i *iot) handleIOTCOnfigMessage(msg *googleiot.ConfigMessage, ctx context.Context) error {
-	g, ctx := errgroup.WithContext(ctx)
-
-	g.Go(func() error {
-		i.logger.Println("INFO: handling power status updates")
-		return i.handlePowerStatus(msg.PowerState)
-	})
-
-	g.Go(func() error {
-		i.logger.Println("INFO: handling data publish rate update")
+	go func() {
+		i.logger.StdOut.Println("handling data publish rate update")
 		i.handleDataPublishRateUpdate(msg.DataPublishRate, ctx)
-		return nil
-	})
+	}()
 
-	return g.Wait()
+	i.logger.StdOut.Println("handling power status updates")
+	return i.handlePowerStatus(msg.PowerState)
 }
 
 func (i *iot) setupDefaultTimedFunctions(ctx context.Context) {
 	gobot.Every(DefaultStatusPublishRate*time.Minute, func() {
 		err := i.PublishDeviceStatus(ctx)
 		if err != nil {
-			i.logger.Printf("ERROR: Failed to publish the device status: %+s", err.Error())
+			i.logger.StdErr.Printf("Failed to publish the device status: %+s", err.Error())
 			return
 		}
 	})
@@ -147,7 +139,7 @@ func (i *iot) setupDefaultTimedFunctions(ctx context.Context) {
 	gobot.Every(DefaultConfigSubscribeRate*time.Minute, func() {
 		err := i.SubscribeToIOTCoreConfig(ctx)
 		if err != nil {
-			i.logger.Printf("ERROR: Failed to subscribe to the iot config: %+s", err.Error())
+			i.logger.StdErr.Printf("Failed to subscribe to the iot config: %+s", err.Error())
 			return
 		}
 	})
@@ -155,26 +147,23 @@ func (i *iot) setupDefaultTimedFunctions(ctx context.Context) {
 
 func (i *iot) handleDataPublishRateUpdate(rate time.Duration, ctx context.Context) {
 	if rate == i.DataPublishRate {
-		i.logger.Println("INFO: Data publish rate is the same as current")
+		i.logger.StdErr.Println("Data publish rate is the same as current")
 		return
 	}
 
 	if rate == 0 {
-		i.logger.Println("INFO: Data publish rate is 0, do not act")
+		i.logger.StdErr.Println("Data publish rate is 0, do not act")
 		return
 	}
 
-	i.logger.Println("INFO: Updating the rate of the publish data process")
+	if i.DataPublishTickerReferences != nil {
+		i.DataPublishTickerReferences.Stop()
+	}
+
 	t := gobot.Every(rate*time.Minute, func() {
-
-		if i.DataPublishTickerReferences != nil {
-			i.DataPublishTickerReferences.Stop()
-		}
-
 		err := i.PublishSensorDataSnapshotHandler(ctx)
 		if err != nil {
-			i.logger.Printf("ERROR: Failed to publish the sensor data: %+s", err.Error())
-			return
+			i.logger.StdErr.Printf("Failed to publish the sensor data: %+s", err.Error())
 		}
 	})
 	i.DataPublishTickerReferences = t
@@ -184,16 +173,16 @@ func (i *iot) handlePowerStatus(p googleiot.PowerState) error {
 	var err error
 	if p != "" {
 		if p == googleiot.Off {
-			i.logger.Println("INFO: turn off device")
+			i.logger.StdOut.Println("turn off device")
 			err = i.turnOffDevice()
 		}
 
 		if p == googleiot.Reboot {
-			i.logger.Println("INFO: reboot device")
+			i.logger.StdOut.Println("reboot device")
 			err = i.rebootTheDevice()
 		}
 	} else {
-		i.logger.Println("WARNING: Message does not have a valid power status")
+		i.logger.StdOut.Println("Message does not have a valid power status")
 	}
 	return err
 }
