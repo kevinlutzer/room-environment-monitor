@@ -9,8 +9,8 @@ export const CloudConfig = {
 export const RoomEnvironmentTelemetryModel = 'RoomEnvironmentTelemetry';
 export const RoomEnvironmentTelemetryPubsubTopic = 'room-environment-telemetry';
 
-
 // Room Environment Monitor Device Status
+export const RoomEnvironmentMonitorDeviceStatusModel = 'RoomEnvironmentMonitorDeviceStatusModel';
 export const RoomEnvironmentMonitorDeviceStatusPubsubTopic = 'room-environment-monitor-device-status';
 export const RoomEnvironmentMonitorDeviceCPUTempThreshold = 45;
 export let RoomEnvironmentMonitoryDeviceStatusRecieptors = ['kevinlutzer9@gmail.com', 'kml183@mail.usask.ca'];
