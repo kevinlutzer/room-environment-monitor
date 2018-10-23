@@ -24,19 +24,19 @@ type Service interface {
 }
 
 type httpService struct {
-	iot    iot.Service
-	ss     sensors.Service
-	Logger *log.Logger
-	mux    *http.ServeMux
+	iot     iot.Service
+	sensors sensors.Service
+	logger  *log.Logger
+	mux     *http.ServeMux
 }
 
 // NewHTTPService returns a instance of the http service
-func NewHTTPService(logger *log.Logger, ss sensors.Service, iot iot.Service) Service {
+func NewHTTPService(logger *log.Logger, sensors sensors.Service, iot iot.Service) Service {
 
 	s := &httpService{
-		iot:    iot,
-		ss:     ss,
-		Logger: logger,
+		iot:     iot,
+		sensors: sensors,
+		logger:  logger,
 	}
 
 	//Setup Handlers
@@ -63,11 +63,11 @@ func (s *httpService) Start(ip string) error {
 // Handler is the main http handler for the room environment monitor app
 func (s *httpService) getSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	s.Logger.Println("http: calling handler getSensorDataSnapshotHandler")
+	s.logger.Println("http: calling handler getSensorDataSnapshotHandler")
 
-	d, err := s.ss.FetchSensorData(ctx)
+	d, err := s.sensors.FetchSensorData(ctx)
 	if err != nil {
-		s.Logger.Println("http: ", err.Error())
+		s.logger.Println("http: ", err.Error())
 		s.setStringResponse(wr, "could't fetch the sensor data", 500)
 		return
 	}
@@ -77,11 +77,11 @@ func (s *httpService) getSensorDataSnapshotHandler(wr http.ResponseWriter, r *ht
 
 func (s *httpService) publishSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	s.Logger.Println("http: calling handler publishSensorDataSnapshotHandler")
+	s.logger.Println("http: calling handler publishSensorDataSnapshotHandler")
 
 	err := s.iot.PublishSensorDataSnapshotHandler(ctx)
 	if err != nil {
-		s.Logger.Println("http: ", err.Error())
+		s.logger.Println("http: ", err.Error())
 		s.setStringResponse(wr, "could't publish the sensor data", 500)
 		return
 	}
@@ -92,11 +92,11 @@ func (s *httpService) publishSensorDataSnapshotHandler(wr http.ResponseWriter, r
 
 func (s *httpService) publishDeviceStatusHandler(wr http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	s.Logger.Println("http: calling handler publishDeviceStatusHandler")
+	s.logger.Println("http: calling handler publishDeviceStatusHandler")
 
 	err := s.iot.PublishDeviceStatus(ctx)
 	if err != nil {
-		s.Logger.Println("http: ", err.Error())
+		s.logger.Println("http: ", err.Error())
 		s.setStringResponse(wr, "could't publish the status", 500)
 		return
 	}
@@ -106,11 +106,11 @@ func (s *httpService) publishDeviceStatusHandler(wr http.ResponseWriter, r *http
 
 func (s *httpService) subscribeToIOTCoreConfigHandler(wr http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	s.Logger.Println("http: calling handler subscribeToIOTCoreConfigHandler")
+	s.logger.Println("http: calling handler subscribeToIOTCoreConfigHandler")
 
 	err := s.iot.SubscribeToIOTCoreConfig(ctx)
 	if err != nil {
-		s.Logger.Println("http: ", err.Error())
+		s.logger.Println("http: ", err.Error())
 		s.setStringResponse(wr, "could't subscribe to the iot config", 500)
 		return
 	}
@@ -137,7 +137,7 @@ func (s *httpService) setDataResponse(wr http.ResponseWriter, data *sensors.Sens
 
 	b, err := json.Marshal(msg)
 	if err != nil {
-		s.Logger.Printf("Request - ERROR: failed to marshal the data %s", err.Error())
+		s.logger.Printf("Request - ERROR: failed to marshal the data %s", err.Error())
 		s.setStringResponse(wr, "can't marshal the data", 500)
 		return
 	}

@@ -60,12 +60,9 @@ func main() {
 	}
 
 	ctx := context.TODO()
-	go func() {
-		err = i.IntializeIOTFunctions(ctx)
-		if err != nil {
-			logger.Fatalln(err.Error())
-		}
-	}()
+
+	// Initialize the iot timed functions
+	go i.IntializeIOTFunctions(ctx)
 
 	// Asnycronously start server. If gobot stuff hasn't been initialized, some of the server methods will not work.
 	go func() {
