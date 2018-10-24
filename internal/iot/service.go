@@ -17,7 +17,7 @@ import (
 const (
 	DefaultDataPublishRate     = 15
 	DefaultConfigSubscribeRate = 1
-	DefaultStatusPublishRate   = 720 // rate of every 12 hours
+	DefaultStatusPublishRate   = 5 // rate of every 12 hours
 )
 
 type Service interface {
