@@ -2,40 +2,139 @@
 
 
 [[projects]]
+  digest = "1:76dc72490af7174349349838f2fe118996381b31ea83243812a97e5a0fd5ed55"
   name = "github.com/dgrijalva/jwt-go"
   packages = ["."]
+  pruneopts = "UT"
   revision = "06ea1031745cb8b3dab3f6a236daf2b0aa468b7e"
   version = "v3.2.0"
 
 [[projects]]
+  digest = "1:184008c955d6a3226b700c13ed0e875a7a051a759618f9bccba9b5c99f17faa5"
   name = "github.com/eclipse/paho.mqtt.golang"
   packages = [
     ".",
-    "packets"
+    "packets",
   ]
+  pruneopts = "UT"
   revision = "36d01c2b4cbeb3d2a12063e4880ce30800af9560"
   version = "v1.1.1"
 
 [[projects]]
+  digest = "1:0ade334594e69404d80d9d323445d2297ff8161637f9b2d347cc6973d2d6f05b"
+  name = "github.com/hashicorp/errwrap"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "8a6fb523712970c966eefc6b39ed2c5e74880354"
+  version = "v1.0.0"
+
+[[projects]]
   branch = "master"
+  digest = "1:f668349b83f7d779567c880550534addeca7ebadfdcf44b0b9c39be61864b4b7"
+  name = "github.com/hashicorp/go-multierror"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "886a7fbe3eb1c874d46f623bfa70af45f425b3d1"
+
+[[projects]]
+  digest = "1:b7022e0408e5e018acf9880e0624c5f5365262aa69d0dd0c47fc440e7eb02180"
+  name = "github.com/hybridgroup/gobot"
+  packages = ["drivers/i2c"]
+  pruneopts = "UT"
+  revision = "7a6e247bb8107eb5bbc4dba99bdef47eb102c0b9"
+  version = "v1.0.0"
+
+[[projects]]
+  digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "ba968bfe8b2f7e042a574c888954fccecfa385b4"
+  version = "v0.8.1"
+
+[[projects]]
+  branch = "master"
+  digest = "1:fe592bd048ffa30b699fbccadade6bf60b747c7d4b888cc41fce3726af17b157"
+  name = "github.com/sigurn/crc8"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "e55481d6f45c5a8f040343bace9013571dae103e"
+
+[[projects]]
+  branch = "master"
+  digest = "1:9af7525086446bbd8be2f3f11fb3c056da67f216e1b12700616b6c6327ece095"
+  name = "github.com/sigurn/utils"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "f19e41f79f8f006116f682c1af454591bc278ad4"
+
+[[projects]]
+  branch = "master"
+  digest = "1:a7b7a70cb661a270a236b9fe39f4307fd04919be8b283733be1288c67ba163e2"
+  name = "gobot.io/x/gobot"
+  packages = [
+    ".",
+    "drivers/gpio",
+    "drivers/i2c",
+    "drivers/spi",
+    "platforms/raspi",
+    "sysfs",
+  ]
+  pruneopts = "UT"
+  revision = "58db149a40a113aec7d6068fb9418b7e05de1802"
+
+[[projects]]
+  branch = "master"
+  digest = "1:bb60d46998a0c836dd04ad3890948e7191dc5d293b66525466647cf853c2d55e"
   name = "golang.org/x/net"
   packages = [
-    "context",
     "internal/socks",
     "proxy",
-    "websocket"
+    "websocket",
   ]
+  pruneopts = "UT"
   revision = "57065200b4b034a1c8ad54ff77069408c2218ae6"
 
 [[projects]]
   branch = "master"
+  digest = "1:b521f10a2d8fa85c04a8ef4e62f2d1e14d303599a55d64dabf9f5a02f84d35eb"
   name = "golang.org/x/sync"
   packages = ["errgroup"]
-  revision = "1d60e4601c6fd243af51cc01ddf169918a5407ca"
+  pruneopts = "UT"
+  revision = "37e7f081c4d4c64e13b10787722085407fe5d15f"
+
+[[projects]]
+  digest = "1:154889374b8995a776bb16e2b960712fefc4ebb8511d885d877d07ddab58f6cd"
+  name = "periph.io/x/periph"
+  packages = [
+    ".",
+    "conn",
+    "conn/gpio",
+    "conn/gpio/gpioreg",
+    "conn/i2c",
+    "conn/i2c/i2creg",
+    "conn/physic",
+    "conn/pin",
+    "conn/spi",
+    "conn/spi/spireg",
+    "host/fs",
+    "host/sysfs",
+  ]
+  pruneopts = "UT"
+  revision = "5bdec8dc7f7a7c7adec37c6821d8728ee92cf2e7"
+  version = "v3.4.0"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f870066c0bb48ed3ffb76aaa2bcf0c7c316b1d99b106a6d2e616330a83d0e036"
+  input-imports = [
+    "github.com/dgrijalva/jwt-go",
+    "github.com/eclipse/paho.mqtt.golang",
+    "github.com/hybridgroup/gobot/drivers/i2c",
+    "gobot.io/x/gobot",
+    "gobot.io/x/gobot/drivers/i2c",
+    "gobot.io/x/gobot/platforms/raspi",
+    "golang.org/x/sync/errgroup",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -4,8 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-
-	"gobot.io/x/gobot/drivers/i2c"
+	i2c "github.com/hybridgroup/gobot/drivers/i2c"
 
 	"os/exec"
 	"strconv"
