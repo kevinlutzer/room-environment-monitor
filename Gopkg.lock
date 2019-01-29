@@ -37,12 +37,12 @@
   revision = "886a7fbe3eb1c874d46f623bfa70af45f425b3d1"
 
 [[projects]]
-  digest = "1:b7022e0408e5e018acf9880e0624c5f5365262aa69d0dd0c47fc440e7eb02180"
+  branch = "master"
+  digest = "1:0348d2ab26342f89da57e0cda7580547fba23c09fcdb9c83aac858ca822aa004"
   name = "github.com/hybridgroup/gobot"
   packages = ["drivers/i2c"]
   pruneopts = "UT"
-  revision = "7a6e247bb8107eb5bbc4dba99bdef47eb102c0b9"
-  version = "v1.0.0"
+  revision = "58db149a40a113aec7d6068fb9418b7e05de1802"
 
 [[projects]]
   digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"

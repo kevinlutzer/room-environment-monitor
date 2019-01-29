@@ -1,8 +1,8 @@
 package i2c
 
-import "gobot.io/x/gobot"
-
-var _ gobot.Driver = (*MMA7660Driver)(nil)
+import (
+	"gobot.io/x/gobot"
+)
 
 const mma7660Address = 0x4c
 
@@ -32,35 +32,62 @@ const (
 
 type MMA7660Driver struct {
 	name       string
-	connection I2c
+	connector  Connector
+	connection Connection
+	Config
 }
 
 // NewMMA7660Driver creates a new driver with specified i2c interface
-func NewMMA7660Driver(a I2c) *MMA7660Driver {
-	return &MMA7660Driver{
-		connection: a,
+// Params:
+//		conn Connector - the Adaptor to use with this Driver
+//
+// Optional params:
+//		i2c.WithBus(int):	bus to use with this driver
+//		i2c.WithAddress(int):	address to use with this driver
+//
+func NewMMA7660Driver(a Connector, options ...func(Config)) *MMA7660Driver {
+	m := &MMA7660Driver{
+		name:      gobot.DefaultName("MMA7660"),
+		connector: a,
+		Config:    NewConfig(),
 	}
+
+	for _, option := range options {
+		option(m)
+	}
+
+	// TODO: add commands for API
+	return m
 }
 
-func (h *MMA7660Driver) Name() string                 { return h.name }
-func (h *MMA7660Driver) SetName(n string)             { h.name = n }
-func (h *MMA7660Driver) Connection() gobot.Connection { return h.connection.(gobot.Connection) }
+// Name returns the Name for the Driver
+func (h *MMA7660Driver) Name() string { return h.name }
+
+// SetName sets the Name for the Driver
+func (h *MMA7660Driver) SetName(n string) { h.name = n }
+
+// Connection returns the connection for the Driver
+func (h *MMA7660Driver) Connection() gobot.Connection { return h.connector.(gobot.Connection) }
 
 // Start initialized the mma7660
 func (h *MMA7660Driver) Start() (err error) {
-	if err := h.connection.I2cStart(mma7660Address); err != nil {
+	bus := h.GetBusOrDefault(h.connector.GetDefaultBus())
+	address := h.GetAddressOrDefault(mma7660Address)
+
+	h.connection, err = h.connector.GetConnection(address, bus)
+	if err != nil {
 		return err
 	}
 
-	if err := h.connection.I2cWrite(mma7660Address, []byte{MMA7660_MODE, MMA7660_STAND_BY}); err != nil {
+	if _, err := h.connection.Write([]byte{MMA7660_MODE, MMA7660_STAND_BY}); err != nil {
 		return err
 	}
 
-	if err := h.connection.I2cWrite(mma7660Address, []byte{MMA7660_SR, MMA7660_AUTO_SLEEP_32}); err != nil {
+	if _, err := h.connection.Write([]byte{MMA7660_SR, MMA7660_AUTO_SLEEP_32}); err != nil {
 		return err
 	}
 
-	if err := h.connection.I2cWrite(mma7660Address, []byte{MMA7660_MODE, MMA7660_ACTIVE}); err != nil {
+	if _, err := h.connection.Write([]byte{MMA7660_MODE, MMA7660_ACTIVE}); err != nil {
 		return err
 	}
 
@@ -70,33 +97,34 @@ func (h *MMA7660Driver) Start() (err error) {
 // Halt returns true if devices is halted successfully
 func (h *MMA7660Driver) Halt() (err error) { return }
 
-// Acceleration returns the acceleration  of the provided x, y, z
+// Acceleration returns the acceleration of the provided x, y, z
 func (h *MMA7660Driver) Acceleration(x, y, z float64) (ax, ay, az float64) {
 	return x / 21.0, y / 21.0, z / 21.0
 }
 
-// XYZ returns the raw x,y and z axis from the  mma7660
+// XYZ returns the raw x,y and z axis from the mma7660
 func (h *MMA7660Driver) XYZ() (x float64, y float64, z float64, err error) {
-	ret, err := h.connection.I2cRead(mma7660Address, 3)
+	buf := []byte{0, 0, 0}
+	bytesRead, err := h.connection.Read(buf)
 	if err != nil {
 		return
 	}
 
-	if len(ret) != 3 {
+	if bytesRead != 3 {
 		err = ErrNotEnoughBytes
 		return
 	}
 
-	for _, val := range ret {
+	for _, val := range buf {
 		if ((val >> 6) & 0x01) == 1 {
 			err = ErrNotReady
 			return
 		}
 	}
 
-	x = float64((int8(ret[0]) << 2)) / 4.0
-	y = float64((int8(ret[1]) << 2)) / 4.0
-	z = float64((int8(ret[2]) << 2)) / 4.0
+	x = float64((int8(buf[0]) << 2)) / 4.0
+	y = float64((int8(buf[1]) << 2)) / 4.0
+	z = float64((int8(buf[2]) << 2)) / 4.0
 
 	return
 }

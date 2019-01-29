@@ -23,15 +23,16 @@ type Service interface {
 
 type service struct {
 	tsl2561Driver *i2c.TSL2561Driver
-	ccs811Driver  *i2c.CCS811Driver
+	// ccs811Driver  *i2c.CCS811Driver
 	bme280Driver  *i2c.BME280Driver
 }
 
 // NewSensorService returns a new instance of the Service interface
-func NewSensorService(tsl2561Driver *i2c.TSL2561Driver, ccs811Driver *i2c.CCS811Driver, bme280Driver *i2c.BME280Driver) Service {
+// func NewSensorService(tsl2561Driver *i2c.TSL2561Driver, ccs811Driver *i2c.CCS811Driver, bme280Driver *i2c.BME280Driver) Service {
+func NewSensorService(tsl2561Driver *i2c.TSL2561Driver, bme280Driver *i2c.BME280Driver) Service {
 	s := &service{
 		tsl2561Driver: tsl2561Driver,
-		ccs811Driver:  ccs811Driver,
+		// ccs811Driver:  ccs811Driver,
 		bme280Driver:  bme280Driver,
 	}
 
@@ -114,11 +115,11 @@ func (s *service) FetchCPUTemp(cpuTemp *float32) error {
 }
 
 func (s *service) fetchGasData(co2 *uint16, tvoc *uint16) error {
-	var err error
-	*co2, *tvoc, err = s.ccs811Driver.GetGasData()
-	if err != nil {
-		return err
-	}
+	// var err error
+	// *co2, *tvoc, err = s.ccs811Driver.GetGasData()
+	// if err != nil {
+	// 	return err
+	// }
 
 	return nil
 }

@@ -8,20 +8,47 @@ type GroveLcdDriver struct {
 	*JHD1313M1Driver
 }
 
-// NewGroveLcdDriver creates a new driver with specified i2c interface.
-func NewGroveLcdDriver(a I2c) *GroveLcdDriver {
-	return &GroveLcdDriver{
-		JHD1313M1Driver: NewJHD1313M1Driver(a),
-	}
-}
-
+// GroveAccelerometerDriver is a driver for the MMA7660 accelerometer
 type GroveAccelerometerDriver struct {
 	*MMA7660Driver
 }
 
+// NewGroveLcdDriver creates a new driver with specified i2c interface.
+// Params:
+//		conn Connector - the Adaptor to use with this Driver
+//
+// Optional params:
+//		i2c.WithBus(int):	bus to use with this driver
+//		i2c.WithAddress(int):	address to use with this driver
+//
+func NewGroveLcdDriver(a Connector, options ...func(Config)) *GroveLcdDriver {
+	lcd := &GroveLcdDriver{
+		JHD1313M1Driver: NewJHD1313M1Driver(a),
+	}
+
+	for _, option := range options {
+		option(lcd)
+	}
+
+	return lcd
+}
+
 // NewGroveAccelerometerDriver creates a new driver with specified i2c interface
-func NewGroveAccelerometerDriver(a I2c) *GroveAccelerometerDriver {
-	return &GroveAccelerometerDriver{
+// Params:
+//		conn Connector - the Adaptor to use with this Driver
+//
+// Optional params:
+//		i2c.WithBus(int):	bus to use with this driver
+//		i2c.WithAddress(int):	address to use with this driver
+//
+func NewGroveAccelerometerDriver(a Connector, options ...func(Config)) *GroveAccelerometerDriver {
+	mma := &GroveAccelerometerDriver{
 		MMA7660Driver: NewMMA7660Driver(a),
 	}
+
+	for _, option := range options {
+		option(mma)
+	}
+
+	return mma
 }

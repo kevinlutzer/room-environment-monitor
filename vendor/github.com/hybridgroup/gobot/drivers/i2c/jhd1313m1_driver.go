@@ -2,6 +2,7 @@ package i2c
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"gobot.io/x/gobot"
@@ -41,8 +42,6 @@ const (
 	LCD_2NDLINEOFFSET = 0x40
 )
 
-var _ gobot.Driver = (*JHD1313M1Driver)(nil)
-
 // CustomLCDChars is a map of CGRAM characters that can be loaded
 // into a LCD screen to display custom characters. Some LCD screens such
 // as the Grove screen (jhd1313m1) isn't loaded with latin 1 characters.
@@ -51,21 +50,21 @@ var _ gobot.Driver = (*JHD1313M1Driver)(nil)
 // the position of the custom character to use.
 // See SetCustomChar
 var CustomLCDChars = map[string][8]byte{
-	"é":       [8]byte{130, 132, 142, 145, 159, 144, 142, 128},
-	"è":       [8]byte{136, 132, 142, 145, 159, 144, 142, 128},
-	"ê":       [8]byte{132, 138, 142, 145, 159, 144, 142, 128},
-	"à":       [8]byte{136, 134, 128, 142, 145, 147, 141, 128},
-	"â":       [8]byte{132, 138, 128, 142, 145, 147, 141, 128},
-	"á":       [8]byte{2, 4, 14, 1, 15, 17, 15, 0},
-	"î":       [8]byte{132, 138, 128, 140, 132, 132, 142, 128},
-	"í":       [8]byte{2, 4, 12, 4, 4, 4, 14, 0},
-	"û":       [8]byte{132, 138, 128, 145, 145, 147, 141, 128},
-	"ù":       [8]byte{136, 134, 128, 145, 145, 147, 141, 128},
-	"ñ":       [8]byte{14, 0, 22, 25, 17, 17, 17, 0},
-	"ó":       [8]byte{2, 4, 14, 17, 17, 17, 14, 0},
-	"heart":   [8]byte{0, 10, 31, 31, 31, 14, 4, 0},
-	"smiley":  [8]byte{0, 0, 10, 0, 0, 17, 14, 0},
-	"frowney": [8]byte{0, 0, 10, 0, 0, 0, 14, 17},
+	"é":       {130, 132, 142, 145, 159, 144, 142, 128},
+	"è":       {136, 132, 142, 145, 159, 144, 142, 128},
+	"ê":       {132, 138, 142, 145, 159, 144, 142, 128},
+	"à":       {136, 134, 128, 142, 145, 147, 141, 128},
+	"â":       {132, 138, 128, 142, 145, 147, 141, 128},
+	"á":       {2, 4, 14, 1, 15, 17, 15, 0},
+	"î":       {132, 138, 128, 140, 132, 132, 142, 128},
+	"í":       {2, 4, 12, 4, 4, 4, 14, 0},
+	"û":       {132, 138, 128, 145, 145, 147, 141, 128},
+	"ù":       {136, 134, 128, 145, 145, 147, 141, 128},
+	"ñ":       {14, 0, 22, 25, 17, 17, 17, 0},
+	"ó":       {2, 4, 14, 17, 17, 17, 14, 0},
+	"heart":   {0, 10, 31, 31, 31, 14, 4, 0},
+	"smiley":  {0, 0, 10, 0, 0, 17, 14, 0},
+	"frowney": {0, 0, 10, 0, 0, 0, 14, 17},
 }
 
 // JHD1313M1Driver is a driver for the Jhd1313m1 LCD display which has two i2c addreses,
@@ -73,20 +72,63 @@ var CustomLCDChars = map[string][8]byte{
 // This module was tested with the Seed Grove LCD RGB Backlight v2.0 display which requires 5V to operate.
 // http://www.seeedstudio.com/wiki/Grove_-_LCD_RGB_Backlight
 type JHD1313M1Driver struct {
-	name       string
-	connection I2c
-	lcdAddress int
-	rgbAddress int
+	name      string
+	connector Connector
+	Config
+	gobot.Commander
+	lcdAddress    int
+	lcdConnection Connection
+	rgbAddress    int
+	rgbConnection Connection
 }
 
 // NewJHD1313M1Driver creates a new driver with specified i2c interface.
-func NewJHD1313M1Driver(a I2c) *JHD1313M1Driver {
-	return &JHD1313M1Driver{
-		name:       "JHD1313M1",
-		connection: a,
+// Params:
+//		conn Connector - the Adaptor to use with this Driver
+//
+// Optional params:
+//		i2c.WithBus(int):	bus to use with this driver
+//
+func NewJHD1313M1Driver(a Connector, options ...func(Config)) *JHD1313M1Driver {
+	j := &JHD1313M1Driver{
+		name:       gobot.DefaultName("JHD1313M1"),
+		connector:  a,
+		Config:     NewConfig(),
+		Commander:  gobot.NewCommander(),
 		lcdAddress: 0x3E,
 		rgbAddress: 0x62,
 	}
+
+	for _, option := range options {
+		option(j)
+	}
+
+	j.AddCommand("SetRGB", func(params map[string]interface{}) interface{} {
+		r, _ := strconv.Atoi(params["r"].(string))
+		g, _ := strconv.Atoi(params["g"].(string))
+		b, _ := strconv.Atoi(params["b"].(string))
+		return j.SetRGB(r, g, b)
+	})
+	j.AddCommand("Clear", func(params map[string]interface{}) interface{} {
+		return j.Clear()
+	})
+	j.AddCommand("Home", func(params map[string]interface{}) interface{} {
+		return j.Home()
+	})
+	j.AddCommand("Write", func(params map[string]interface{}) interface{} {
+		msg := params["msg"].(string)
+		return j.Write(msg)
+	})
+	j.AddCommand("SetPosition", func(params map[string]interface{}) interface{} {
+		pos, _ := strconv.Atoi(params["pos"].(string))
+		return j.SetPosition(pos)
+	})
+	j.AddCommand("Scroll", func(params map[string]interface{}) interface{} {
+		lr, _ := strconv.ParseBool(params["lr"].(string))
+		return j.Scroll(lr)
+	})
+
+	return j
 }
 
 // Name returns the name the JHD1313M1 Driver was given when created.
@@ -97,29 +139,48 @@ func (h *JHD1313M1Driver) SetName(n string) { h.name = n }
 
 // Connection returns the driver connection to the device.
 func (h *JHD1313M1Driver) Connection() gobot.Connection {
-	return h.connection.(gobot.Connection)
+	return h.connector.(gobot.Connection)
 }
 
 // Start starts the backlit and the screen and initializes the states.
-func (h *JHD1313M1Driver) Start() error {
-	if err := h.connection.I2cStart(h.lcdAddress); err != nil {
+func (h *JHD1313M1Driver) Start() (err error) {
+	bus := h.GetBusOrDefault(h.connector.GetDefaultBus())
+
+	if h.lcdConnection, err = h.connector.GetConnection(h.lcdAddress, bus); err != nil {
 		return err
 	}
 
-	if err := h.connection.I2cStart(h.rgbAddress); err != nil {
+	if h.rgbConnection, err = h.connector.GetConnection(h.rgbAddress, bus); err != nil {
 		return err
 	}
 
-	time.Sleep(50000 * time.Microsecond)
-	payload := []byte{LCD_CMD, LCD_FUNCTIONSET | LCD_2LINE}
-	if err := h.connection.I2cWrite(h.lcdAddress, payload); err != nil {
-		if err := h.connection.I2cWrite(h.lcdAddress, payload); err != nil {
-			return err
-		}
+	// SEE PAGE 45/46 FOR INITIALIZATION SPECIFICATION!
+	// according to datasheet, we need at least 40ms after power rises above 2.7V
+	// before sending commands. Arduino can turn on way befer 4.5V so we'll wait 50
+	time.Sleep(50 * time.Millisecond)
+
+	// this is according to the hitachi HD44780 datasheet
+	// page 45 figure 23
+	// Send function set command sequence
+	init_payload := []byte{LCD_CMD, LCD_FUNCTIONSET | LCD_2LINE}
+	if _, err := h.lcdConnection.Write(init_payload); err != nil {
+		return err
 	}
 
-	time.Sleep(100 * time.Microsecond)
-	if err := h.connection.I2cWrite(h.lcdAddress, []byte{LCD_CMD, LCD_DISPLAYCONTROL | LCD_DISPLAYON}); err != nil {
+	// wait more than 4.1ms
+	time.Sleep(4500 * time.Microsecond)
+	// second try
+	if _, err := h.lcdConnection.Write(init_payload); err != nil {
+		return err
+	}
+
+	time.Sleep(150 * time.Microsecond)
+	// third go
+	if _, err := h.lcdConnection.Write(init_payload); err != nil {
+		return err
+	}
+
+	if _, err := h.lcdConnection.Write([]byte{LCD_CMD, LCD_DISPLAYCONTROL | LCD_DISPLAYON}); err != nil {
 		return err
 	}
 
@@ -128,7 +189,7 @@ func (h *JHD1313M1Driver) Start() error {
 		return err
 	}
 
-	if err := h.connection.I2cWrite(h.lcdAddress, []byte{LCD_CMD, LCD_ENTRYMODESET | LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT}); err != nil {
+	if _, err := h.lcdConnection.Write([]byte{LCD_CMD, LCD_ENTRYMODESET | LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT}); err != nil {
 		return err
 	}
 
@@ -185,7 +246,7 @@ func (h *JHD1313M1Driver) Write(message string) error {
 			}
 			continue
 		}
-		if err := h.connection.I2cWrite(h.lcdAddress, []byte{LCD_DATA, byte(val)}); err != nil {
+		if _, err := h.lcdConnection.Write([]byte{LCD_DATA, byte(val)}); err != nil {
 			return err
 		}
 	}
@@ -209,24 +270,20 @@ func (h *JHD1313M1Driver) SetPosition(pos int) (err error) {
 	return
 }
 
-func (h *JHD1313M1Driver) Scroll(leftToRight bool) error {
-	if leftToRight {
-		return h.connection.I2cWrite(h.lcdAddress, []byte{LCD_CMD, LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVELEFT})
+// Scroll sets the scrolling direction for the display, either left to right, or
+// right to left.
+func (h *JHD1313M1Driver) Scroll(lr bool) error {
+	if lr {
+		_, err := h.lcdConnection.Write([]byte{LCD_CMD, LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVELEFT})
+		return err
 	}
 
-	return h.connection.I2cWrite(h.lcdAddress, []byte{LCD_CMD, LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVERIGHT})
+	_, err := h.lcdConnection.Write([]byte{LCD_CMD, LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVERIGHT})
+	return err
 }
 
 // Halt is a noop function.
 func (h *JHD1313M1Driver) Halt() error { return nil }
-
-func (h *JHD1313M1Driver) setReg(command int, data int) error {
-	return h.connection.I2cWrite(h.rgbAddress, []byte{byte(command), byte(data)})
-}
-
-func (h *JHD1313M1Driver) command(buf []byte) error {
-	return h.connection.I2cWrite(h.lcdAddress, append([]byte{LCD_CMD}, buf...))
-}
 
 // SetCustomChar sets one of the 8 CGRAM locations with a custom character.
 // The custom character can be used by writing a byte of value 0 to 7.
@@ -244,6 +301,16 @@ func (h *JHD1313M1Driver) SetCustomChar(pos int, charMap [8]byte) error {
 	if err := h.command([]byte{LCD_SETCGRAMADDR | (location << 3)}); err != nil {
 		return err
 	}
+	_, err := h.lcdConnection.Write(append([]byte{LCD_DATA}, charMap[:]...))
+	return err
+}
 
-	return h.connection.I2cWrite(h.lcdAddress, append([]byte{LCD_DATA}, charMap[:]...))
+func (h *JHD1313M1Driver) setReg(command int, data int) error {
+	_, err := h.rgbConnection.Write([]byte{byte(command), byte(data)})
+	return err
+}
+
+func (h *JHD1313M1Driver) command(buf []byte) error {
+	_, err := h.lcdConnection.Write(append([]byte{LCD_CMD}, buf...))
+	return err
 }

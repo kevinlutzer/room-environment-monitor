@@ -32,9 +32,12 @@ type ThreeDData struct {
 	Z int16
 }
 
+// MPU6050Driver is a new Gobot Driver for an MPU6050 I2C Accelerometer/Gyroscope.
 type MPU6050Driver struct {
-	name          string
-	connection    I2c
+	name       string
+	connector  Connector
+	connection Connection
+	Config
 	interval      time.Duration
 	Accelerometer ThreeDData
 	Gyroscope     ThreeDData
@@ -42,67 +45,83 @@ type MPU6050Driver struct {
 	gobot.Eventer
 }
 
-// NewMPU6050Driver creates a new driver with specified i2c interface
-func NewMPU6050Driver(a I2c, v ...time.Duration) *MPU6050Driver {
+// NewMPU6050Driver creates a new Gobot Driver for an MPU6050 I2C Accelerometer/Gyroscope.
+//
+// Params:
+//		conn Connector - the Adaptor to use with this Driver
+//
+// Optional params:
+//		i2c.WithBus(int):	bus to use with this driver
+//		i2c.WithAddress(int):	address to use with this driver
+//
+func NewMPU6050Driver(a Connector, options ...func(Config)) *MPU6050Driver {
 	m := &MPU6050Driver{
-		name:       "MPU6050",
-		connection: a,
-		interval:   10 * time.Millisecond,
-		Eventer:    gobot.NewEventer(),
+		name:      gobot.DefaultName("MPU6050"),
+		connector: a,
+		Config:    NewConfig(),
+		Eventer:   gobot.NewEventer(),
 	}
 
-	if len(v) > 0 {
-		m.interval = v[0]
+	for _, option := range options {
+		option(m)
 	}
 
-	m.AddEvent(Error)
+	// TODO: add commands to API
 	return m
 }
 
-func (h *MPU6050Driver) Name() string                 { return h.name }
-func (h *MPU6050Driver) SetName(n string)             { h.name = n }
-func (h *MPU6050Driver) Connection() gobot.Connection { return h.connection.(gobot.Connection) }
+// Name returns the name of the device.
+func (h *MPU6050Driver) Name() string { return h.name }
 
-// Start writes initialization bytes and reads from adaptor
-// using specified interval to accelerometer andtemperature data
+// SetName sets the name of the device.
+func (h *MPU6050Driver) SetName(n string) { h.name = n }
+
+// Connection returns the connection for the device.
+func (h *MPU6050Driver) Connection() gobot.Connection { return h.connector.(gobot.Connection) }
+
+// Start writes initialization bytes to sensor
 func (h *MPU6050Driver) Start() (err error) {
 	if err := h.initialize(); err != nil {
 		return err
 	}
 
-	go func() {
-		for {
-			if err := h.connection.I2cWrite(mpu6050Address, []byte{MPU6050_RA_ACCEL_XOUT_H}); err != nil {
-				h.Publish(h.Event(Error), err)
-				continue
-			}
-
-			ret, err := h.connection.I2cRead(mpu6050Address, 14)
-			if err != nil {
-				h.Publish(h.Event(Error), err)
-				continue
-			}
-			buf := bytes.NewBuffer(ret)
-			binary.Read(buf, binary.BigEndian, &h.Accelerometer)
-			binary.Read(buf, binary.BigEndian, &h.Temperature)
-			binary.Read(buf, binary.BigEndian, &h.Gyroscope)
-			h.convertToCelsius()
-			time.Sleep(h.interval)
-		}
-	}()
 	return
 }
 
 // Halt returns true if devices is halted successfully
 func (h *MPU6050Driver) Halt() (err error) { return }
 
-func (h *MPU6050Driver) initialize() (err error) {
-	if err = h.connection.I2cStart(mpu6050Address); err != nil {
+// GetData fetches the latest data from the MPU6050
+func (h *MPU6050Driver) GetData() (err error) {
+	if _, err = h.connection.Write([]byte{MPU6050_RA_ACCEL_XOUT_H}); err != nil {
 		return
 	}
 
+	data := make([]byte, 14)
+	_, err = h.connection.Read(data)
+	if err != nil {
+		return
+	}
+
+	buf := bytes.NewBuffer(data)
+	binary.Read(buf, binary.BigEndian, &h.Accelerometer)
+	binary.Read(buf, binary.BigEndian, &h.Temperature)
+	binary.Read(buf, binary.BigEndian, &h.Gyroscope)
+	h.convertToCelsius()
+	return
+}
+
+func (h *MPU6050Driver) initialize() (err error) {
+	bus := h.GetBusOrDefault(h.connector.GetDefaultBus())
+	address := h.GetAddressOrDefault(mpu6050Address)
+
+	h.connection, err = h.connector.GetConnection(address, bus)
+	if err != nil {
+		return err
+	}
+
 	// setClockSource
-	if err = h.connection.I2cWrite(mpu6050Address, []byte{MPU6050_RA_PWR_MGMT_1,
+	if _, err = h.connection.Write([]byte{MPU6050_RA_PWR_MGMT_1,
 		MPU6050_PWR1_CLKSEL_BIT,
 		MPU6050_PWR1_CLKSEL_LENGTH,
 		MPU6050_CLOCK_PLL_XGYRO}); err != nil {
@@ -110,7 +129,7 @@ func (h *MPU6050Driver) initialize() (err error) {
 	}
 
 	// setFullScaleGyroRange
-	if err = h.connection.I2cWrite(mpu6050Address, []byte{MPU6050_RA_GYRO_CONFIG,
+	if _, err = h.connection.Write([]byte{MPU6050_RA_GYRO_CONFIG,
 		MPU6050_GCONFIG_FS_SEL_BIT,
 		MPU6050_GCONFIG_FS_SEL_LENGTH,
 		MPU6050_GYRO_FS_250}); err != nil {
@@ -118,7 +137,7 @@ func (h *MPU6050Driver) initialize() (err error) {
 	}
 
 	// setFullScaleAccelRange
-	if err = h.connection.I2cWrite(mpu6050Address, []byte{MPU6050_RA_ACCEL_CONFIG,
+	if _, err = h.connection.Write([]byte{MPU6050_RA_ACCEL_CONFIG,
 		MPU6050_ACONFIG_AFS_SEL_BIT,
 		MPU6050_ACONFIG_AFS_SEL_LENGTH,
 		MPU6050_ACCEL_FS_2}); err != nil {
@@ -126,7 +145,7 @@ func (h *MPU6050Driver) initialize() (err error) {
 	}
 
 	// setSleepEnabled
-	if err = h.connection.I2cWrite(mpu6050Address, []byte{MPU6050_RA_PWR_MGMT_1,
+	if _, err = h.connection.Write([]byte{MPU6050_RA_PWR_MGMT_1,
 		MPU6050_PWR1_ENABLE_BIT,
 		0}); err != nil {
 		return

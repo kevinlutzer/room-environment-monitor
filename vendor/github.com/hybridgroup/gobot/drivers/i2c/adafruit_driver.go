@@ -1,12 +1,45 @@
 package i2c
 
 import (
+	"errors"
 	"log"
 	"math"
 	"time"
 
 	"gobot.io/x/gobot"
 )
+
+// AdafruitDirection declares a type for specification of the motor direction
+type AdafruitDirection int
+
+// AdafruitStepStyle declares a type for specification of the stepper motor rotation
+type AdafruitStepStyle int
+
+type adaFruitDCMotor struct {
+	pwmPin, in1Pin, in2Pin byte
+}
+type adaFruitStepperMotor struct {
+	pwmPinA, pwmPinB                   byte
+	ain1, ain2                         byte
+	bin1, bin2                         byte
+	secPerStep                         float64
+	currentStep, stepCounter, revSteps int
+}
+
+// AdafruitMotorHatDriver is a driver for the DC+Stepper Motor HAT from Adafruit.
+// The HAT is a Raspberry Pi add-on that can drive up to 4 DC or 2 Stepper motors
+// with full PWM speed control.  It has a dedicated PWM driver chip onboard to
+// control both motor direction and speed over I2C.
+type AdafruitMotorHatDriver struct {
+	name               string
+	connector          Connector
+	motorHatConnection Connection
+	servoHatConnection Connection
+	Config
+	gobot.Commander
+	dcMotors      []adaFruitDCMotor
+	stepperMotors []adaFruitStepperMotor
+}
 
 var adafruitDebug = false // Set this to true to see debug output
 
@@ -48,17 +81,12 @@ const (
 	_Outdrv  = 0x04
 )
 
-// AdafruitDirection declares a type for specification of the motor direction
-type AdafruitDirection int
-
-// AdafruitStepStyle declares a type for specification of the stepper motor rotation
-type AdafruitStepStyle int
-
 const (
 	AdafruitForward  AdafruitDirection = iota // 0
 	AdafruitBackward                          // 1
 	AdafruitRelease                           // 2
 )
+
 const (
 	AdafruitSingle     AdafruitStepStyle = iota // 0
 	AdafruitDouble                              // 1
@@ -66,39 +94,50 @@ const (
 	AdafruitMicrostep                           // 3
 )
 
-func init() {
-	stepperMicrostepCurve = []int{0, 50, 98, 142, 180, 212, 236, 250, 255}
-	step2coils[0] = []int32{1, 0, 0, 0}
-	step2coils[1] = []int32{1, 1, 0, 0}
-	step2coils[2] = []int32{0, 1, 0, 0}
-	step2coils[3] = []int32{0, 1, 1, 0}
-	step2coils[4] = []int32{0, 0, 1, 0}
-	step2coils[5] = []int32{0, 0, 1, 1}
-	step2coils[6] = []int32{0, 0, 0, 1}
-	step2coils[7] = []int32{1, 0, 0, 1}
-}
+// NewAdafruitMotorHatDriver initializes the internal DCMotor and StepperMotor types.
+// Again the Adafruit Motor Hat supports up to four DC motors and up to two stepper motors.
+// Params:
+//		conn Connector - the Adaptor to use with this Driver
+//
+// Optional params:
+//		i2c.WithBus(int):	bus to use with this driver
+//		i2c.WithAddress(int):	address to use with this driver
+//
+func NewAdafruitMotorHatDriver(conn Connector, options ...func(Config)) *AdafruitMotorHatDriver {
+	var dc []adaFruitDCMotor
+	var st []adaFruitStepperMotor
+	for i := 0; i < 4; i++ {
+		switch {
+		case i == 0:
+			dc = append(dc, adaFruitDCMotor{pwmPin: 8, in1Pin: 10, in2Pin: 9})
+			st = append(st, adaFruitStepperMotor{pwmPinA: 8, pwmPinB: 13,
+				ain1: 10, ain2: 9, bin1: 11, bin2: 12, revSteps: 200, secPerStep: 0.1})
+		case i == 1:
+			dc = append(dc, adaFruitDCMotor{pwmPin: 13, in1Pin: 11, in2Pin: 12})
+			st = append(st, adaFruitStepperMotor{pwmPinA: 2, pwmPinB: 7,
+				ain1: 4, ain2: 3, bin1: 5, bin2: 6, revSteps: 200, secPerStep: 0.1})
+		case i == 2:
+			dc = append(dc, adaFruitDCMotor{pwmPin: 2, in1Pin: 4, in2Pin: 3})
+		case i == 3:
+			dc = append(dc, adaFruitDCMotor{pwmPin: 7, in1Pin: 5, in2Pin: 6})
+		}
+	}
 
-type adaFruitDCMotor struct {
-	pwmPin, in1Pin, in2Pin byte
-}
-type adaFruitStepperMotor struct {
-	pwmPinA, pwmPinB                   byte
-	ain1, ain2                         byte
-	bin1, bin2                         byte
-	secPerStep                         float64
-	currentStep, stepCounter, revSteps int
-}
+	driver := &AdafruitMotorHatDriver{
+		name:          gobot.DefaultName("AdafruitMotorHat"),
+		connector:     conn,
+		Config:        NewConfig(),
+		Commander:     gobot.NewCommander(),
+		dcMotors:      dc,
+		stepperMotors: st,
+	}
 
-// AdafruitMotorHatDriver is a driver for the DC+Stepper Motor HAT from Adafruit.
-// The HAT is a Raspberry Pi add-on that can drive up to 4 DC or 2 Stepper motors
-// with full PWM speed control.  It has a dedicated PWM driver chip onboard to
-// control both motor direction and speed over I2C.
-type AdafruitMotorHatDriver struct {
-	name       string
-	connection I2c
-	gobot.Commander
-	dcMotors      []adaFruitDCMotor
-	stepperMotors []adaFruitStepperMotor
+	for _, option := range options {
+		option(driver)
+	}
+
+	// TODO: add API funcs
+	return driver
 }
 
 // SetMotorHatAddress sets the I2C address for the DC and Stepper Motor HAT.
@@ -122,77 +161,62 @@ func (a *AdafruitMotorHatDriver) Name() string { return a.name }
 func (a *AdafruitMotorHatDriver) SetName(n string) { a.name = n }
 
 // Connection identifies the particular adapter object
-func (a *AdafruitMotorHatDriver) Connection() gobot.Connection { return a.connection.(gobot.Connection) }
+func (a *AdafruitMotorHatDriver) Connection() gobot.Connection { return a.connector.(gobot.Connection) }
 
-// NewAdafruitMotorHatDriver initializes the internal DCMotor and StepperMotor types.
-// Again the Adafruit Motor Hat supports up to four DC motors and up to two stepper motors.
-func NewAdafruitMotorHatDriver(a I2c) *AdafruitMotorHatDriver {
-	var dc []adaFruitDCMotor
-	var st []adaFruitStepperMotor
-	for i := 0; i < 4; i++ {
-		switch {
-		case i == 0:
-			dc = append(dc, adaFruitDCMotor{pwmPin: 8, in1Pin: 10, in2Pin: 9})
-			st = append(st, adaFruitStepperMotor{pwmPinA: 8, pwmPinB: 13,
-				ain1: 10, ain2: 9, bin1: 11, bin2: 12, revSteps: 200, secPerStep: 0.1})
-		case i == 1:
-			dc = append(dc, adaFruitDCMotor{pwmPin: 13, in1Pin: 11, in2Pin: 12})
-			st = append(st, adaFruitStepperMotor{pwmPinA: 2, pwmPinB: 7,
-				ain1: 4, ain2: 3, bin1: 5, bin2: 6, revSteps: 200, secPerStep: 0.1})
-		case i == 2:
-			dc = append(dc, adaFruitDCMotor{pwmPin: 2, in1Pin: 4, in2Pin: 3})
-		case i == 3:
-			dc = append(dc, adaFruitDCMotor{pwmPin: 7, in1Pin: 5, in2Pin: 6})
+func (a *AdafruitMotorHatDriver) startDriver(connection Connection) (err error) {
+	if err = a.setAllPWM(connection, 0, 0); err != nil {
+		return
+	}
+	reg := byte(_Mode2)
+	val := byte(_Outdrv)
+	if _, err = connection.Write([]byte{reg, val}); err != nil {
+		return
+	}
+	reg = byte(_Mode1)
+	val = byte(_AllCall)
+	if _, err = connection.Write([]byte{reg, val}); err != nil {
+		return
+	}
+	time.Sleep(5 * time.Millisecond)
+
+	// Read a byte from the I2C device.  Note: no ability to read from a specified reg?
+	mode1 := []byte{0}
+	_, rerr := connection.Read(mode1)
+	if rerr != nil {
+		return rerr
+	}
+	if len(mode1) > 0 {
+		reg = byte(_Mode1)
+		val = mode1[0] & _Sleep
+		if _, err = connection.Write([]byte{reg, val}); err != nil {
+			return
 		}
+		time.Sleep(5 * time.Millisecond)
 	}
-	driver := &AdafruitMotorHatDriver{
-		name:          "AdafruitMotorHat",
-		connection:    a,
-		Commander:     gobot.NewCommander(),
-		dcMotors:      dc,
-		stepperMotors: st,
-	}
-	// TODO: add API funcs?
-	return driver
+
+	return
 }
 
 // Start initializes both I2C-addressable Adafruit Motor HAT drivers
 func (a *AdafruitMotorHatDriver) Start() (err error) {
-	addrs := []int{motorHatAddress, servoHatAddress}
-	for i := range addrs {
+	bus := a.GetBusOrDefault(a.connector.GetDefaultBus())
 
-		if err = a.connection.I2cStart(addrs[i]); err != nil {
-			return
-		}
-		if err = a.setAllPWM(addrs[i], 0, 0); err != nil {
-			return
-		}
-		reg := byte(_Mode2)
-		val := byte(_Outdrv)
-		if err = a.connection.I2cWrite(addrs[i], []byte{reg, val}); err != nil {
-			return
-		}
-		reg = byte(_Mode1)
-		val = byte(_AllCall)
-		if err = a.connection.I2cWrite(addrs[i], []byte{reg, val}); err != nil {
-			return
-		}
-		time.Sleep(5 * time.Millisecond)
-
-		// Read a byte from the I2C device.  Note: no ability to read from a specified reg?
-		mode1, rerr := a.connection.I2cRead(addrs[i], 1)
-		if rerr != nil {
-			return rerr
-		}
-		if len(mode1) > 0 {
-			reg = byte(_Mode1)
-			val = mode1[0] & _Sleep
-			if err = a.connection.I2cWrite(addrs[i], []byte{reg, val}); err != nil {
-				return
-			}
-			time.Sleep(5 * time.Millisecond)
-		}
+	if a.servoHatConnection, err = a.connector.GetConnection(servoHatAddress, bus); err != nil {
+		return
 	}
+
+	if err = a.startDriver(a.servoHatConnection); err != nil {
+		return
+	}
+
+	if a.motorHatConnection, err = a.connector.GetConnection(motorHatAddress, bus); err != nil {
+		return
+	}
+
+	if err = a.startDriver(a.motorHatConnection); err != nil {
+		return
+	}
+
 	return
 }
 
@@ -201,7 +225,7 @@ func (a *AdafruitMotorHatDriver) Halt() (err error) { return }
 
 // setPWM sets the start (on) and end (off) of the high-segment of the PWM pulse
 // on the specific channel (pin).
-func (a *AdafruitMotorHatDriver) setPWM(i2cAddr int, pin byte, on, off int32) (err error) {
+func (a *AdafruitMotorHatDriver) setPWM(conn Connection, pin byte, on, off int32) (err error) {
 	// register and values to be written to that register
 	regVals := make(map[int][]byte)
 	regVals[0] = []byte{byte(_LedZeroOnL + 4*pin), byte(on & 0xff)}
@@ -209,7 +233,7 @@ func (a *AdafruitMotorHatDriver) setPWM(i2cAddr int, pin byte, on, off int32) (e
 	regVals[2] = []byte{byte(_LedZeroOffL + 4*pin), byte(off & 0xff)}
 	regVals[3] = []byte{byte(_LedZeroOffH + 4*pin), byte(off >> 8)}
 	for i := 0; i < len(regVals); i++ {
-		if err = a.connection.I2cWrite(i2cAddr, regVals[i]); err != nil {
+		if _, err = conn.Write(regVals[i]); err != nil {
 			return
 		}
 	}
@@ -218,7 +242,7 @@ func (a *AdafruitMotorHatDriver) setPWM(i2cAddr int, pin byte, on, off int32) (e
 
 // SetServoMotorFreq sets the frequency for the currently addressed PWM Servo HAT.
 func (a *AdafruitMotorHatDriver) SetServoMotorFreq(freq float64) (err error) {
-	if err = a.setPWMFreq(servoHatAddress, freq); err != nil {
+	if err = a.setPWMFreq(a.servoHatConnection, freq); err != nil {
 		return
 	}
 	return
@@ -227,7 +251,7 @@ func (a *AdafruitMotorHatDriver) SetServoMotorFreq(freq float64) (err error) {
 // SetServoMotorPulse is a convenience function to specify the 'tick' value,
 // between 0-4095, when the signal will turn on, and when it will turn off.
 func (a *AdafruitMotorHatDriver) SetServoMotorPulse(channel byte, on, off int32) (err error) {
-	if err = a.setPWM(servoHatAddress, channel, on, off); err != nil {
+	if err = a.setPWM(a.servoHatConnection, channel, on, off); err != nil {
 		return
 	}
 	return
@@ -237,7 +261,7 @@ func (a *AdafruitMotorHatDriver) SetServoMotorPulse(channel byte, on, off int32)
 // pulses per second are generated by the integrated circuit.  The frequency
 // determines how "long" each pulse is in duration from start to finish,
 // taking into account the high and low segments of the pulse.
-func (a *AdafruitMotorHatDriver) setPWMFreq(i2cAddr int, freq float64) (err error) {
+func (a *AdafruitMotorHatDriver) setPWMFreq(conn Connection, freq float64) (err error) {
 	// 25MHz
 	preScaleVal := 25000000.0
 	// 12-bit
@@ -251,7 +275,8 @@ func (a *AdafruitMotorHatDriver) setPWMFreq(i2cAddr int, freq float64) (err erro
 		log.Printf("Final pre-scale: 			%.2f", preScale)
 	}
 	// default (and only) reads register 0
-	oldMode, err := a.connection.I2cRead(i2cAddr, 1)
+	oldMode := []byte{0}
+	_, err = conn.Read(oldMode)
 	if err != nil {
 		return
 	}
@@ -259,20 +284,20 @@ func (a *AdafruitMotorHatDriver) setPWMFreq(i2cAddr int, freq float64) (err erro
 	if len(oldMode) > 0 {
 		newMode := (oldMode[0] & 0x7F) | 0x10
 		reg := byte(_Mode1)
-		if err = a.connection.I2cWrite(i2cAddr, []byte{reg, newMode}); err != nil {
+		if _, err = conn.Write([]byte{reg, newMode}); err != nil {
 			return
 		}
 		reg = byte(_Prescale)
 		val := byte(math.Floor(preScale))
-		if err = a.connection.I2cWrite(i2cAddr, []byte{reg, val}); err != nil {
+		if _, err = conn.Write([]byte{reg, val}); err != nil {
 			return
 		}
 		reg = byte(_Mode1)
-		if err = a.connection.I2cWrite(i2cAddr, []byte{reg, oldMode[0]}); err != nil {
+		if _, err = conn.Write([]byte{reg, oldMode[0]}); err != nil {
 			return
 		}
 		time.Sleep(5 * time.Millisecond)
-		if err = a.connection.I2cWrite(i2cAddr, []byte{reg, (oldMode[0] | 0x80)}); err != nil {
+		if _, err = conn.Write([]byte{reg, (oldMode[0] | 0x80)}); err != nil {
 			return
 		}
 	}
@@ -280,7 +305,7 @@ func (a *AdafruitMotorHatDriver) setPWMFreq(i2cAddr int, freq float64) (err erro
 }
 
 // setAllPWM sets all PWM channels for the given address
-func (a *AdafruitMotorHatDriver) setAllPWM(addr int, on, off int32) (err error) {
+func (a *AdafruitMotorHatDriver) setAllPWM(conn Connection, on, off int32) (err error) {
 	// register and values to be written to that register
 	regVals := make(map[int][]byte)
 	regVals[0] = []byte{byte(_AllLedOnL), byte(on & 0xff)}
@@ -288,26 +313,27 @@ func (a *AdafruitMotorHatDriver) setAllPWM(addr int, on, off int32) (err error) 
 	regVals[2] = []byte{byte(_AllLedOffL), byte(off & 0xFF)}
 	regVals[3] = []byte{byte(_AllLedOffH), byte(off >> 8)}
 	for i := 0; i < len(regVals); i++ {
-		if err = a.connection.I2cWrite(addr, regVals[i]); err != nil {
+		if _, err = conn.Write(regVals[i]); err != nil {
 			return
 		}
 	}
 	return
 }
-func (a *AdafruitMotorHatDriver) setPin(i2cAddr int, pin byte, value int32) (err error) {
+
+func (a *AdafruitMotorHatDriver) setPin(conn Connection, pin byte, value int32) (err error) {
 	if value == 0 {
-		return a.setPWM(i2cAddr, pin, 0, 4096)
+		return a.setPWM(conn, pin, 0, 4096)
 	}
 	if value == 1 {
-		return a.setPWM(i2cAddr, pin, 4096, 0)
+		return a.setPWM(conn, pin, 4096, 0)
 	}
-	return nil
+	return errors.New("Invalid pin")
 }
 
 // SetDCMotorSpeed will set the appropriate pins to run the specified DC motor
 // for the given speed.
 func (a *AdafruitMotorHatDriver) SetDCMotorSpeed(dcMotor int, speed int32) (err error) {
-	if err = a.setPWM(motorHatAddress, a.dcMotors[dcMotor].pwmPin, 0, speed*16); err != nil {
+	if err = a.setPWM(a.motorHatConnection, a.dcMotors[dcMotor].pwmPin, 0, speed*16); err != nil {
 		return
 	}
 	return
@@ -319,29 +345,30 @@ func (a *AdafruitMotorHatDriver) RunDCMotor(dcMotor int, dir AdafruitDirection) 
 
 	switch {
 	case dir == AdafruitForward:
-		if err = a.setPin(motorHatAddress, a.dcMotors[dcMotor].in2Pin, 0); err != nil {
+		if err = a.setPin(a.motorHatConnection, a.dcMotors[dcMotor].in2Pin, 0); err != nil {
 			return
 		}
-		if err = a.setPin(motorHatAddress, a.dcMotors[dcMotor].in1Pin, 1); err != nil {
+		if err = a.setPin(a.motorHatConnection, a.dcMotors[dcMotor].in1Pin, 1); err != nil {
 			return
 		}
 	case dir == AdafruitBackward:
-		if err = a.setPin(motorHatAddress, a.dcMotors[dcMotor].in1Pin, 0); err != nil {
+		if err = a.setPin(a.motorHatConnection, a.dcMotors[dcMotor].in1Pin, 0); err != nil {
 			return
 		}
-		if err = a.setPin(motorHatAddress, a.dcMotors[dcMotor].in2Pin, 1); err != nil {
+		if err = a.setPin(a.motorHatConnection, a.dcMotors[dcMotor].in2Pin, 1); err != nil {
 			return
 		}
 	case dir == AdafruitRelease:
-		if err = a.setPin(motorHatAddress, a.dcMotors[dcMotor].in1Pin, 0); err != nil {
+		if err = a.setPin(a.motorHatConnection, a.dcMotors[dcMotor].in1Pin, 0); err != nil {
 			return
 		}
-		if err = a.setPin(motorHatAddress, a.dcMotors[dcMotor].in2Pin, 0); err != nil {
+		if err = a.setPin(a.motorHatConnection, a.dcMotors[dcMotor].in2Pin, 0); err != nil {
 			return
 		}
 	}
 	return
 }
+
 func (a *AdafruitMotorHatDriver) oneStep(motor int, dir AdafruitDirection, style AdafruitStepStyle) (steps int, err error) {
 	pwmA := 255
 	pwmB := 255
@@ -419,10 +446,10 @@ func (a *AdafruitMotorHatDriver) oneStep(motor int, dir AdafruitDirection, style
 	a.stepperMotors[motor].currentStep %= stepperMicrosteps * 4
 
 	//only really used for microstepping, otherwise always on!
-	if err = a.setPWM(motorHatAddress, a.stepperMotors[motor].pwmPinA, 0, int32(pwmA*16)); err != nil {
+	if err = a.setPWM(a.motorHatConnection, a.stepperMotors[motor].pwmPinA, 0, int32(pwmA*16)); err != nil {
 		return
 	}
-	if err = a.setPWM(motorHatAddress, a.stepperMotors[motor].pwmPinB, 0, int32(pwmB*16)); err != nil {
+	if err = a.setPWM(a.motorHatConnection, a.stepperMotors[motor].pwmPinB, 0, int32(pwmB*16)); err != nil {
 		return
 	}
 	var coils []int32
@@ -447,16 +474,16 @@ func (a *AdafruitMotorHatDriver) oneStep(motor int, dir AdafruitDirection, style
 			currStep, (currStep / (stepperMicrosteps / 2)))
 		log.Printf("[adafruit_driver] coils state = %v", coils)
 	}
-	if err = a.setPin(motorHatAddress, a.stepperMotors[motor].ain2, coils[0]); err != nil {
+	if err = a.setPin(a.motorHatConnection, a.stepperMotors[motor].ain2, coils[0]); err != nil {
 		return
 	}
-	if err = a.setPin(motorHatAddress, a.stepperMotors[motor].bin1, coils[1]); err != nil {
+	if err = a.setPin(a.motorHatConnection, a.stepperMotors[motor].bin1, coils[1]); err != nil {
 		return
 	}
-	if err = a.setPin(motorHatAddress, a.stepperMotors[motor].ain1, coils[2]); err != nil {
+	if err = a.setPin(a.motorHatConnection, a.stepperMotors[motor].ain1, coils[2]); err != nil {
 		return
 	}
-	if err = a.setPin(motorHatAddress, a.stepperMotors[motor].bin2, coils[3]); err != nil {
+	if err = a.setPin(a.motorHatConnection, a.stepperMotors[motor].bin2, coils[3]); err != nil {
 		return
 	}
 	return a.stepperMotors[motor].currentStep, nil
@@ -501,4 +528,16 @@ func (a *AdafruitMotorHatDriver) Step(motor, steps int, dir AdafruitDirection, s
 		}
 	}
 	return
+}
+
+func init() {
+	stepperMicrostepCurve = []int{0, 50, 98, 142, 180, 212, 236, 250, 255}
+	step2coils[0] = []int32{1, 0, 0, 0}
+	step2coils[1] = []int32{1, 1, 0, 0}
+	step2coils[2] = []int32{0, 1, 0, 0}
+	step2coils[3] = []int32{0, 1, 1, 0}
+	step2coils[4] = []int32{0, 0, 1, 0}
+	step2coils[5] = []int32{0, 0, 1, 1}
+	step2coils[6] = []int32{0, 0, 0, 1}
+	step2coils[7] = []int32{1, 0, 0, 1}
 }

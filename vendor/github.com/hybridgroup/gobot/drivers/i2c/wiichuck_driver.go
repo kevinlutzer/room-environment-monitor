@@ -1,37 +1,55 @@
 package i2c
 
 import (
+	"sync"
 	"time"
 
 	"gobot.io/x/gobot"
+)
+
+const (
+	// Joystick event when the Wiichuck joystick is moved
+	Joystick = "joystick"
+
+	// C event when the Wiichuck "C" button is pressed
+	C = "c"
+
+	// Z event when the Wiichuck "C" button is pressed
+	Z = "z"
 )
 
 const wiichuckAddress = 0x52
 
 type WiichuckDriver struct {
 	name       string
-	connection I2c
-	interval   time.Duration
-	pauseTime  time.Duration
+	connector  Connector
+	connection Connection
+	Config
+	interval  time.Duration
+	pauseTime time.Duration
 	gobot.Eventer
+	mtx      sync.Mutex
 	joystick map[string]float64
 	data     map[string]float64
 }
 
 // NewWiichuckDriver creates a WiichuckDriver with specified i2c interface.
 //
-// It adds the following events:
-//	"z"- Gets triggered every interval amount of time if the z button is pressed
-//	"c" - Gets triggered every interval amount of time if the c button is pressed
-//	"joystick" - Gets triggered every "interval" amount of time if a joystick event occurred, you can access values x, y
-//	"error" - Gets triggered whenever the WiichuckDriver encounters an error
-func NewWiichuckDriver(a I2c, v ...time.Duration) *WiichuckDriver {
+// Params:
+//		conn Connector - the Adaptor to use with this Driver
+//
+// Optional params:
+//		i2c.WithBus(int):	bus to use with this driver
+//		i2c.WithAddress(int):	address to use with this driver
+//
+func NewWiichuckDriver(a Connector, options ...func(Config)) *WiichuckDriver {
 	w := &WiichuckDriver{
-		name:       "Wiichuck",
-		connection: a,
-		interval:   10 * time.Millisecond,
-		pauseTime:  1 * time.Millisecond,
-		Eventer:    gobot.NewEventer(),
+		name:      gobot.DefaultName("Wiichuck"),
+		connector: a,
+		Config:    NewConfig(),
+		interval:  10 * time.Millisecond,
+		pauseTime: 1 * time.Millisecond,
+		Eventer:   gobot.NewEventer(),
 		joystick: map[string]float64{
 			"sy_origin": -1,
 			"sx_origin": -1,
@@ -44,45 +62,57 @@ func NewWiichuckDriver(a I2c, v ...time.Duration) *WiichuckDriver {
 		},
 	}
 
-	if len(v) > 0 {
-		w.interval = v[0]
+	for _, option := range options {
+		option(w)
 	}
 
 	w.AddEvent(Z)
 	w.AddEvent(C)
 	w.AddEvent(Joystick)
 	w.AddEvent(Error)
+
 	return w
 }
-func (w *WiichuckDriver) Name() string                 { return w.name }
-func (w *WiichuckDriver) SetName(n string)             { w.name = n }
-func (w *WiichuckDriver) Connection() gobot.Connection { return w.connection.(gobot.Connection) }
+
+// Name returns the name of the device.
+func (w *WiichuckDriver) Name() string { return w.name }
+
+// SetName sets the name of the device.
+func (w *WiichuckDriver) SetName(n string) { w.name = n }
+
+// Connection returns the connection for the device.
+func (w *WiichuckDriver) Connection() gobot.Connection { return w.connector.(gobot.Connection) }
 
 // Start initilizes i2c and reads from adaptor
 // using specified interval to update with new value
-func (w *WiichuckDriver) Start() (errs error) {
-	if err := w.connection.I2cStart(wiichuckAddress); err != nil {
+func (w *WiichuckDriver) Start() (err error) {
+	bus := w.GetBusOrDefault(w.connector.GetDefaultBus())
+	address := w.GetAddressOrDefault(wiichuckAddress)
+
+	w.connection, err = w.connector.GetConnection(address, bus)
+	if err != nil {
 		return err
 	}
 
 	go func() {
 		for {
-			if err := w.connection.I2cWrite(wiichuckAddress, []byte{0x40, 0x00}); err != nil {
+			if _, err := w.connection.Write([]byte{0x40, 0x00}); err != nil {
 				w.Publish(w.Event(Error), err)
 				continue
 			}
 			time.Sleep(w.pauseTime)
-			if err := w.connection.I2cWrite(wiichuckAddress, []byte{0x00}); err != nil {
+			if _, err := w.connection.Write([]byte{0x00}); err != nil {
 				w.Publish(w.Event(Error), err)
 				continue
 			}
 			time.Sleep(w.pauseTime)
-			newValue, err := w.connection.I2cRead(wiichuckAddress, 6)
+			newValue := make([]byte, 6)
+			bytesRead, err := w.connection.Read(newValue)
 			if err != nil {
 				w.Publish(w.Event(Error), err)
 				continue
 			}
-			if len(newValue) == 6 {
+			if bytesRead == 6 {
 				if err = w.update(newValue); err != nil {
 					w.Publish(w.Event(Error), err)
 					continue
@@ -96,6 +126,16 @@ func (w *WiichuckDriver) Start() (errs error) {
 
 // Halt returns true if driver is halted successfully
 func (w *WiichuckDriver) Halt() (err error) { return }
+
+// Joystick returns the current value for the joystick
+func (w *WiichuckDriver) Joystick() map[string]float64 {
+	val := make(map[string]float64)
+	w.mtx.Lock()
+	defer w.mtx.Unlock()
+	val["sx_origin"] = w.joystick["sx_origin"]
+	val["sy_origin"] = w.joystick["sy_origin"]
+	return val
+}
 
 // update parses value to update buttons and joystick.
 // If value is encrypted, warning message is printed
@@ -113,6 +153,8 @@ func (w *WiichuckDriver) update(value []byte) (err error) {
 
 // setJoystickDefaultValue sets default value if value is -1
 func (w *WiichuckDriver) setJoystickDefaultValue(joystickAxis string, defaultValue float64) {
+	w.mtx.Lock()
+	defer w.mtx.Unlock()
 	if w.joystick[joystickAxis] == -1 {
 		w.joystick[joystickAxis] = defaultValue
 	}
@@ -154,9 +196,10 @@ func (w *WiichuckDriver) updateButtons() {
 
 // updateJoystick publishes event with current x and y values for joystick
 func (w *WiichuckDriver) updateJoystick() {
+	joy := w.Joystick()
 	w.Publish(w.Event(Joystick), map[string]float64{
-		"x": w.calculateJoystickValue(w.data["sx"], w.joystick["sx_origin"]),
-		"y": w.calculateJoystickValue(w.data["sy"], w.joystick["sy_origin"]),
+		"x": w.calculateJoystickValue(w.data["sx"], joy["sx_origin"]),
+		"y": w.calculateJoystickValue(w.data["sy"], joy["sy_origin"]),
 	})
 }
 
