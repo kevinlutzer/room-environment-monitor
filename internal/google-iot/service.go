@@ -15,8 +15,8 @@ import (
 	"github.com/kml183/room-environment-monitor/internal/sensors"
 )
 
-//Service represents the structure of the service layer
-type Service interface {
+//GoogleIOTService represents the structure of the service layer
+type GoogleIOTService interface {
 	//PublishSensorData fetches sensors data
 	PublishSensorData(ctx context.Context, data *sensors.SensorData) error
 	//PublishDeviceState fetches sensors data
@@ -32,14 +32,14 @@ type topics struct {
 }
 
 type service struct {
-	logger    *config.Logger
+	logger    config.LoggerService
 	topics    topics
 	certs     *config.SSLCerts
 	iotConfig *config.GoogleIOTConfig
 }
 
 // NewGoogleIOTService reurns a new service
-func NewGoogleIOTService(certs *config.SSLCerts, iotConfig *config.GoogleIOTConfig, logger *config.Logger) Service {
+func NewGoogleIOTService(certs *config.SSLCerts, iotConfig *config.GoogleIOTConfig, logger config.LoggerService) GoogleIOTService {
 
 	return &service{
 		certs:     certs,
@@ -121,11 +121,11 @@ func (s *service) PublishSensorData(ctx context.Context, d *sensors.SensorData) 
 	opts := MQTT.NewClientOptions()
 
 	opts.SetDefaultPublishHandler(func(client MQTT.Client, msg MQTT.Message) {
-		s.logger.StdOut.Printf("topic > %s\n", msg.Topic())
-		s.logger.StdOut.Printf("payload > %s\n", msg.Payload())
+		s.logger.StdOut("topic > %s\n", msg.Topic())
+		s.logger.StdOut("payload > %s\n", msg.Payload())
 	})
 
-	c, err := getMQTTClient(s.certs, s.iotConfig, s.logger.StdOut, opts)
+	c, err := getMQTTClient(s.certs, s.iotConfig, s.logger.GetStdOut(), opts)
 	if err != nil {
 		return err
 	}
@@ -149,7 +149,7 @@ func (s *service) PublishSensorData(ctx context.Context, d *sensors.SensorData) 
 	token.WaitTimeout(5 * time.Second)
 	err = token.Error()
 	if err != nil {
-		s.logger.StdErr.Printf("failed to publish the payload: %+s", err.Error())
+		s.logger.StdErr("failed to publish the payload: %v\n", err.Error())
 		return err
 	}
 
@@ -167,7 +167,7 @@ func (s *service) SubsribeToConfigChanges(ctx context.Context) (*ConfigMessage, 
 		choke <- [2]string{msg.Topic(), string(msg.Payload())}
 	})
 
-	c, err := getMQTTClient(s.certs, s.iotConfig, s.logger.StdOut, opts)
+	c, err := getMQTTClient(s.certs, s.iotConfig, s.logger.GetStdOut(), opts)
 	if err != nil {
 		return nil, err
 	}
@@ -185,13 +185,13 @@ func (s *service) SubsribeToConfigChanges(ctx context.Context) (*ConfigMessage, 
 	token.WaitTimeout(5 * time.Second)
 	err = token.Error()
 	if err != nil {
-		s.logger.StdErr.Println("failed to publish the payload")
+		s.logger.StdErr("failed to publish the payload\n")
 		return nil, err
 	}
 
 	for receiveCount < 1 {
 		incoming := <-choke
-		s.logger.StdOut.Printf("recieved message %s", incoming[1])
+		s.logger.StdOut("recieved message %s\n", incoming[1])
 		json.Unmarshal([]byte(incoming[1]), &cm)
 		receiveCount++
 	}
@@ -202,7 +202,7 @@ func (s *service) SubsribeToConfigChanges(ctx context.Context) (*ConfigMessage, 
 
 func (s *service) PublishDeviceState(ctx context.Context, status *DeviceStatus) error {
 
-	c, err := getMQTTClient(s.certs, s.iotConfig, s.logger.StdOut, MQTT.NewClientOptions())
+	c, err := getMQTTClient(s.certs, s.iotConfig, s.logger.GetStdOut(), MQTT.NewClientOptions())
 	if err != nil {
 		return err
 	}
@@ -226,7 +226,7 @@ func (s *service) PublishDeviceState(ctx context.Context, status *DeviceStatus) 
 	token.WaitTimeout(5 * time.Second)
 	err = token.Error()
 	if err != nil {
-		s.logger.StdErr.Println("failed to publish the payload")
+		s.logger.StdErr("failed to publish the payload\n")
 		return err
 	}
 

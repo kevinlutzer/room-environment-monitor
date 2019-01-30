@@ -15,7 +15,7 @@ import (
 )
 
 //Service represents the structure of the service layer
-type Service interface {
+type SensorsService interface {
 	//FetchSensorData fetches sensors data
 	FetchSensorData(ctx context.Context) (*SensorData, error)
 	//FetchCPUTemp fetches the cpu temp
@@ -29,7 +29,7 @@ type service struct {
 }
 
 // NewSensorService returns a new instance of the Service interface
-func NewSensorService(tsl2561Driver *i2c.TSL2561Driver, ccs811Driver *i2c.CCS811Driver, bme280Driver *i2c.BME280Driver) Service {
+func NewSensorService(tsl2561Driver *i2c.TSL2561Driver, ccs811Driver *i2c.CCS811Driver, bme280Driver *i2c.BME280Driver) SensorsService {
 	s := &service{
 		tsl2561Driver: tsl2561Driver,
 		ccs811Driver:  ccs811Driver,
