@@ -42,5 +42,5 @@
   unused-packages = true
 
 [[constraint]]
-  branch = "master"
+  branch = "dev"
   name = "gobot.io/x/gobot"

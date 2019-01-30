@@ -21,6 +21,22 @@
   version = "v1.1.1"
 
 [[projects]]
+  digest = "1:4b6a43ba3296f26ea01ae125e50951f141c215dd18b5b91e9f397117b2951eb1"
+  name = "github.com/gobuffalo/uuid"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "3f701655805f1ef76e9963d1b377497a0c66d7cd"
+  version = "v2.0.5"
+
+[[projects]]
+  digest = "1:bed9d72d596f94e65fff37f4d6c01398074a6bb1c3f3ceff963516bd01db6ff5"
+  name = "github.com/gofrs/uuid"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "6b08a5c5172ba18946672b49749cde22873dd7c2"
+  version = "v3.2.0"
+
+[[projects]]
   digest = "1:0ade334594e69404d80d9d323445d2297ff8161637f9b2d347cc6973d2d6f05b"
   name = "github.com/hashicorp/errwrap"
   packages = ["."]
@@ -61,8 +77,8 @@
   revision = "f19e41f79f8f006116f682c1af454591bc278ad4"
 
 [[projects]]
-  branch = "master"
-  digest = "1:a7b7a70cb661a270a236b9fe39f4307fd04919be8b283733be1288c67ba163e2"
+  branch = "dev"
+  digest = "1:4cede26681a81ab77d5ef5c616498cedd7e15b564e3f677d17f3456099a86c27"
   name = "gobot.io/x/gobot"
   packages = [
     ".",
@@ -73,7 +89,7 @@
     "sysfs",
   ]
   pruneopts = "UT"
-  revision = "58db149a40a113aec7d6068fb9418b7e05de1802"
+  revision = "e4920d62c5e99c9aaac3ae6217abcd99ec628dcb"
 
 [[projects]]
   branch = "master"
