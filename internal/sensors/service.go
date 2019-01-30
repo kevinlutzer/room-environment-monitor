@@ -4,7 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	i2c "github.com/hybridgroup/gobot/drivers/i2c"
+
+	i2c "gobot.io/x/gobot/drivers/i2c"
 
 	"os/exec"
 	"strconv"
@@ -24,7 +25,7 @@ type Service interface {
 type service struct {
 	tsl2561Driver *i2c.TSL2561Driver
 	// ccs811Driver  *i2c.CCS811Driver
-	bme280Driver  *i2c.BME280Driver
+	bme280Driver *i2c.BME280Driver
 }
 
 // NewSensorService returns a new instance of the Service interface
@@ -33,7 +34,7 @@ func NewSensorService(tsl2561Driver *i2c.TSL2561Driver, bme280Driver *i2c.BME280
 	s := &service{
 		tsl2561Driver: tsl2561Driver,
 		// ccs811Driver:  ccs811Driver,
-		bme280Driver:  bme280Driver,
+		bme280Driver: bme280Driver,
 	}
 
 	return s

@@ -37,14 +37,6 @@
   revision = "886a7fbe3eb1c874d46f623bfa70af45f425b3d1"
 
 [[projects]]
-  branch = "master"
-  digest = "1:0348d2ab26342f89da57e0cda7580547fba23c09fcdb9c83aac858ca822aa004"
-  name = "github.com/hybridgroup/gobot"
-  packages = ["drivers/i2c"]
-  pruneopts = "UT"
-  revision = "58db149a40a113aec7d6068fb9418b7e05de1802"
-
-[[projects]]
   digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
   name = "github.com/pkg/errors"
   packages = ["."]
@@ -130,7 +122,6 @@
   input-imports = [
     "github.com/dgrijalva/jwt-go",
     "github.com/eclipse/paho.mqtt.golang",
-    "github.com/hybridgroup/gobot/drivers/i2c",
     "gobot.io/x/gobot",
     "gobot.io/x/gobot/drivers/i2c",
     "gobot.io/x/gobot/platforms/raspi",

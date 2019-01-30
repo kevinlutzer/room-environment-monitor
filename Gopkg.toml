@@ -43,4 +43,4 @@
 
 [[constraint]]
   branch = "master"
-  name = "github.com/hybridgroup/gobot"
+  name = "gobot.io/x/gobot"
