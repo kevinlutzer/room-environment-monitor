@@ -28,7 +28,7 @@ func main() {
 	// Initialize Gobot and I2C drivers
 	r := raspi.NewAdaptor()
 	dl := i2c.NewTSL2561Driver(r)
-	dg := i2c.NewCCS811Driver(r)
+	// dg := i2c.NewCCS811Driver(r)
 	dt := i2c.NewBME280Driver(r)
 
 	// Create SSL Certs
@@ -46,7 +46,8 @@ func main() {
 	}
 
 	// Services
-	ss := sensors.NewSensorService(dl, dg, dt)
+	// ss := sensors.NewSensorService(dl, dg, dt)
+	ss := sensors.NewSensorService(dl, dt)
 	gs := googleiot.NewGoogleIOTService(certs, iotConfig, logger)
 	i := iot.NewIOTService(logger, ss, gs)
 	hs := httpserver.NewHTTPService(logger, ss, i)
@@ -80,7 +81,8 @@ func main() {
 	// Start gobot stuff
 	iotDevice := gobot.NewRobot("room-environment-monitor",
 		[]gobot.Connection{r},
-		[]gobot.Device{dl, dt, dg},
+		// []gobot.Device{dl, dt, dg},
+		[]gobot.Device{dl, dt},
 	)
 
 	iotDevice.Start()
