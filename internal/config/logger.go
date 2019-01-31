@@ -6,10 +6,11 @@ import (
 )
 
 type LoggerService interface {
+	GetStdOut() *log.Logger
 	StdOut(fmt string, opts ...interface{})
 	StdErr(fmt string, opts ...interface{})
 	StdWarn(fmt string, opts ...interface{})
-	GetStdOut() *log.Logger
+	StdErrFatal(fmt string, opts ...interface{})
 }
 
 type logger struct {
@@ -35,9 +36,13 @@ func (l *logger) StdOut(fmt string, opts ...interface{}) {
 }
 
 func (l *logger) StdErr(fmt string, opts ...interface{}) {
-	l.stdOut.Printf(fmt, opts...)
+	l.stdErr.Printf(fmt, opts...)
 }
 
 func (l *logger) StdWarn(fmt string, opts ...interface{}) {
-	l.stdOut.Printf(fmt, opts...)
+	l.stdWarn.Printf(fmt, opts...)
+}
+
+func (l *logger) StdErrFatal(fmt string, opts ...interface{}) {
+	l.stdErr.Fatalf(fmt, opts...)
 }

@@ -42,7 +42,7 @@ func main() {
 	iotConfig, err := config.GetGoogleIOTConfig()
 	if err != nil {
 		e := fmt.Sprintf("Failed to get the iot config > %+s ", err.Error())
-		logger.StdErr.Fatalln(e)
+		logger.StdErrFatal(e)
 	}
 
 	// Services
@@ -55,7 +55,7 @@ func main() {
 	ip, err := config.GetIPAddress()
 	if err != nil {
 		e := fmt.Sprintf("Failed to get the ip address > %+s ", err.Error())
-		logger.StdErr.Fatalln(e)
+		logger.StdErrFatal(e)
 	}
 
 	ctx := context.TODO()
@@ -63,7 +63,7 @@ func main() {
 	// Publish device status on startup
 	err = i.PublishDeviceStatus(ctx)
 	if err != nil {
-		logger.StdErr.Fatalln(err.Error())
+		logger.StdErrFatal(err.Error())
 	}
 
 	// Initialize the iot timed functions
@@ -73,7 +73,7 @@ func main() {
 	go func() {
 		err = hs.Start(ip)
 		if err != nil {
-			logger.StdErr.Fatalln(err.Error())
+			logger.StdErrFatal(err.Error())
 		}
 	}()
 
