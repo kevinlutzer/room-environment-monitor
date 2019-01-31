@@ -5,34 +5,22 @@ import (
 	"errors"
 	"fmt"
 	"os/exec"
-	"time"
-
-	"gobot.io/x/gobot"
 
 	"github.com/kml183/room-environment-monitor/internal/config"
 	googleiot "github.com/kml183/room-environment-monitor/internal/google-iot"
 	"github.com/kml183/room-environment-monitor/internal/sensors"
 )
 
-const (
-	DefaultDataPublishRate     = 15
-	DefaultConfigSubscribeRate = 1
-	DefaultStatusPublishRate   = 5 // rate of every 12 hours
-)
-
 type IOTServerService interface {
 	PublishSensorDataSnapshotHandler(context.Context) error
 	PublishDeviceStatus(context.Context) error
 	SubscribeToIOTCoreConfig(context.Context) error
-	IntializeIOTFunctions(ctx context.Context)
 }
 
 type iot struct {
-	sensors                     sensors.SensorsService
-	googleiot                   googleiot.GoogleIOTService
-	logger                      config.LoggerService
-	DataPublishRate             time.Duration
-	DataPublishTickerReferences *time.Ticker
+	sensors   sensors.SensorsService
+	googleiot googleiot.GoogleIOTService
+	logger    config.LoggerService
 }
 
 // NewIOTService returns a instance of the iot service
@@ -100,7 +88,7 @@ func (i *iot) SubscribeToIOTCoreConfig(ctx context.Context) error {
 		return errors.New(e)
 	}
 
-	err = i.handleIOTCOnfigMessage(msg, ctx)
+	err = i.handlePowerStatus(msg.PowerState)
 	if err != nil {
 		e := fmt.Sprintf("Failed to handle config update with %s\n", err.Error())
 		i.logger.StdErr(e)
@@ -109,64 +97,6 @@ func (i *iot) SubscribeToIOTCoreConfig(ctx context.Context) error {
 
 	i.logger.StdOut("subscribed to google iot config changes published the device status\n")
 	return nil
-}
-
-func (i *iot) IntializeIOTFunctions(ctx context.Context) {
-	i.logger.StdOut("initialize the base iot functions\n")
-	i.handleDataPublishRateUpdate(DefaultDataPublishRate, ctx)
-	i.setupDefaultTimedFunctions(ctx)
-}
-
-func (i *iot) handleIOTCOnfigMessage(msg *googleiot.ConfigMessage, ctx context.Context) error {
-	go func() {
-		i.logger.StdOut("handling data publish rate update\n")
-		i.handleDataPublishRateUpdate(msg.DataPublishRate, ctx)
-	}()
-
-	i.logger.StdOut("handling power status updates\n")
-	return i.handlePowerStatus(msg.PowerState)
-}
-
-func (i *iot) setupDefaultTimedFunctions(ctx context.Context) {
-	gobot.Every(DefaultStatusPublishRate*time.Minute, func() {
-		err := i.PublishDeviceStatus(ctx)
-		if err != nil {
-			i.logger.StdErr("Failed to publish the device status: %v\n", err.Error())
-			return
-		}
-	})
-
-	gobot.Every(DefaultConfigSubscribeRate*time.Minute, func() {
-		err := i.SubscribeToIOTCoreConfig(ctx)
-		if err != nil {
-			i.logger.StdErr("Failed to subscribe to the iot config: %v\n", err.Error())
-			return
-		}
-	})
-}
-
-func (i *iot) handleDataPublishRateUpdate(rate time.Duration, ctx context.Context) {
-	if rate == i.DataPublishRate {
-		i.logger.StdErr("Data publish rate is the same as current\n")
-		return
-	}
-
-	if rate == 0 {
-		i.logger.StdErr("Data publish rate is 0, do not act\n")
-		return
-	}
-
-	if i.DataPublishTickerReferences != nil {
-		i.DataPublishTickerReferences.Stop()
-	}
-
-	t := gobot.Every(rate*time.Minute, func() {
-		err := i.PublishSensorDataSnapshotHandler(ctx)
-		if err != nil {
-			i.logger.StdErr("Failed to publish the sensor data: %v\n", err.Error())
-		}
-	})
-	i.DataPublishTickerReferences = t
 }
 
 func (i *iot) handlePowerStatus(p googleiot.PowerState) error {

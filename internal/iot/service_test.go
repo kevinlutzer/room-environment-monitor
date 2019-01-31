@@ -1,33 +1,34 @@
 package iot
 
 import (
+	"context"
 	"testing"
+
+	"github.com/kml183/room-environment-monitor/internal/config"
+	googleiot "github.com/kml183/room-environment-monitor/internal/google-iot"
+	"github.com/kml183/room-environment-monitor/internal/sensors"
+	"github.com/stretchr/testify/suite"
 )
 
-func Test_PublishSensorDataSnapshotHandler(t *testing.T) {
-	// loggingMock := &mocks.LoggerService{}
-	// sensorServiceMock := &mocks.SensorsService{}
-	// googleIOTServiceMock := &mocks.GoogleIOTService{}
+type IOTServerServiceTestSuite struct {
+	suite.Suite
+	sensors   sensors.SensorsService
+	googleiot googleiot.GoogleIOTService
+	logger    config.LoggerService
+	iot       IOTServerService
+	ctx       context.Context
+}
 
-	// testService := NewIOTService(loggingMock, sensorServiceMock, googleIOTServiceMock)
-	// loggingMock.On()
+func (s *IOTServerServiceTestSuite) SetupTest() {
+	// s.iot = NewIOTService(mocks.LoggerService{}, mocks.SensorsService{}, mocks.GoogleIOTService{})
+}
 
-	// cases := []struct {
-	// 	name           string
-	// 	inputDrafts    string
-	// 	inputPublished string
-	// 	output         []string
-	// }{}
+func (s *IOTServerServiceTestSuite) TestReturnsError() {
+	// actual, actualErr := s.whitelabelService.GetWhitelabeledDomainNames(context.TODO(), "", []string{"", ""})
+	// s.Assert().Equal(expected, actual)
+	// s.Assert().Equal(expectedErr, actualErr)
+}
 
-	// for _, c := range cases {
-	// 	t.Run(c.name, func(t *testing.T) {
-	// 		loggingMock := &mocks.LoggerService{}
-	// 		sensorServiceMock := &mocks.SensorsService{}
-	// 		googleIOTServiceMock := &mocks.GoogleIOTService{}
-
-	// 		testService := NewIOTService(loggingMock, sensorServiceMock, googleIOTServiceMock)
-	// 		testService.IntializeIOTFunctions()
-	// 		assert.Equal(t, c.output, actual)
-	// 	})
-	// }
+func Test_IOTServerServiceTestSuite(t *testing.T) {
+	suite.Run(t, new(IOTServerServiceTestSuite))
 }
