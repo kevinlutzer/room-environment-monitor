@@ -12,6 +12,7 @@ import (
 	"github.com/kml183/room-environment-monitor/internal/config"
 	googleiot "github.com/kml183/room-environment-monitor/internal/google-iot"
 	httpserver "github.com/kml183/room-environment-monitor/internal/http-server"
+	cron "github.com/robfig/cron"
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/drivers/i2c"
 	"gobot.io/x/gobot/platforms/raspi"
@@ -84,4 +85,14 @@ func main() {
 	)
 
 	iotDevice.Start()
+}
+
+func SetupCRON(ctx context.Context, i iot.IOTServerService) {
+	c := cron.New()
+
+	c.AddFunc("0 30 * * * *", func() { i.PublishSensorDataSnapshotHandler(ctx) })
+	c.AddFunc("@hourly", func() { i.PublishDeviceStatus(ctx) })
+	c.AddFunc("@every 1h30m", func() { i.SubscribeToIOTCoreConfig(ctx) })
+
+	c.Start()
 }
