@@ -67,9 +67,6 @@ func main() {
 		logger.StdErrFatal(err.Error())
 	}
 
-	// Initialize the iot timed functions
-	go i.IntializeIOTFunctions(ctx)
-
 	// Asnycronously start server. If gobot stuff hasn't been initialized, some of the server methods will not work.
 	go func() {
 		err = hs.Start(ip)

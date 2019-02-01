@@ -19,7 +19,7 @@ type SensorsService interface {
 	//FetchSensorData fetches sensors data
 	FetchSensorData(ctx context.Context) (*SensorData, error)
 	//FetchCPUTemp fetches the cpu temp
-	FetchCPUTemp(cpuTemp *float32) error
+	FetchCPUTemp() (float32, error)
 }
 
 type service struct {
@@ -47,20 +47,29 @@ func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 	var co2, tvoc uint16
 
 	g, ctx := errgroup.WithContext(ctx)
+
 	g.Go(func() error {
-		return s.FetchCPUTemp(&cpuTemp)
+		var err error
+		cpuTemp, err = s.FetchCPUTemp()
+		return err
 	})
 
 	g.Go(func() error {
-		return s.fetchGasData(&co2, &tvoc)
+		var err error
+		co2, tvoc, err = s.fetchGasData()
+		return err
 	})
 
 	g.Go(func() error {
-		return s.fetchLightData(&lux)
+		var err error
+		lux, err = s.fetchLightData()
+		return err
 	})
 
 	g.Go(func() error {
-		return s.fetchHumidty(&pressure, &humidity, &roomTemp)
+		var err error
+		pressure, humidity, roomTemp, err = s.fetchHumidty()
+		return err
 	})
 
 	err := g.Wait()
@@ -71,35 +80,35 @@ func (s *service) FetchSensorData(ctx context.Context) (*SensorData, error) {
 	return NewSensorData(lux, cpuTemp, pressure, humidity, roomTemp, co2, tvoc), nil
 }
 
-func (s *service) fetchHumidty(pressure, humidity, roomTemp *float32) error {
-	var err error
-	*pressure, err = s.bme280Driver.Pressure()
+func (s *service) fetchHumidty() (float32, float32, float32, error) {
+
+	pressure, err := s.bme280Driver.Pressure()
 	if err != nil {
-		return err
+		return 0, 0, 0, err
 	}
 
-	*humidity, err = s.bme280Driver.Humidity()
+	humidity, err := s.bme280Driver.Humidity()
 	if err != nil {
-		return err
+		return 0, 0, 0, err
 	}
 
-	*roomTemp, err = s.bme280Driver.Temperature()
+	roomTemp, err := s.bme280Driver.Temperature()
 	if err != nil {
-		return err
+		return 0, 0, 0, err
 	}
 
-	return nil
+	return pressure, humidity, roomTemp, nil
 }
 
-func (s *service) FetchCPUTemp(cpuTemp *float32) error {
+func (s *service) FetchCPUTemp() (float32, error) {
 	cmd := exec.Command("sudo", "/opt/vc/bin/vcgencmd", "measure_temp")
 	val, err := cmd.Output()
 	if err != nil {
-		return errors.New(fmt.Sprintf("Could not execute command with args > %v", cmd.Args))
+		return 0, errors.New(fmt.Sprintf("Could not execute command with args > %v", cmd.Args))
 	}
 
 	if string(val) == "" {
-		return errors.New("There was no std output")
+		return 0, errors.New("There was no std output")
 	}
 
 	filteredVal := strings.Replace(string(val), "temp=", "", -1)
@@ -107,29 +116,26 @@ func (s *service) FetchCPUTemp(cpuTemp *float32) error {
 
 	floatTemp, err := strconv.ParseFloat(temp, 10)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	*cpuTemp = float32(floatTemp)
-	return nil
+	return float32(floatTemp), nil
 }
 
-func (s *service) fetchGasData(co2 *uint16, tvoc *uint16) error {
-	var err error
-	*co2, *tvoc, err = s.ccs811Driver.GetGasData()
+func (s *service) fetchGasData() (uint16, uint16, error) {
+	co2, tvoc, err := s.ccs811Driver.GetGasData()
 	if err != nil {
-		return err
+		return 0, 0, err
 	}
 
-	return nil
+	return co2, tvoc, nil
 }
 
-func (s *service) fetchLightData(ld *uint32) error {
+func (s *service) fetchLightData() (uint32, error) {
 	b, ir, err := s.tsl2561Driver.GetLuminocity()
 	if err != nil {
-		return err
+		return 0, err
 	}
-	*ld = s.tsl2561Driver.CalculateLux(b, ir)
-
-	return nil
+	ld := s.tsl2561Driver.CalculateLux(b, ir)
+	return ld, nil
 }

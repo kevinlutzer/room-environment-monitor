@@ -56,12 +56,10 @@ func (i *iot) PublishSensorDataSnapshotHandler(ctx context.Context) error {
 func (i *iot) PublishDeviceStatus(ctx context.Context) error {
 
 	i.logger.StdOut("fetching cpu temperature\n")
-	var cpuTemp float32
-	err := i.sensors.FetchCPUTemp(&cpuTemp)
+	cpuTemp, err := i.sensors.FetchCPUTemp()
 	if err != nil {
-		e := fmt.Sprintf("ERROR to get cpu temp: %v\n", err.Error())
-		i.logger.StdErr(e)
-		return errors.New(e)
+		i.logger.StdErr(err.Error())
+		return err
 	}
 
 	data := &googleiot.DeviceStatus{
@@ -69,9 +67,8 @@ func (i *iot) PublishDeviceStatus(ctx context.Context) error {
 	}
 
 	if err := i.googleiot.PublishDeviceState(ctx, data); err != nil {
-		e := fmt.Sprintf("failed to publish the device status to cloud iot: %s\n", err.Error())
-		i.logger.StdErr(e)
-		return errors.New(e)
+		i.logger.StdErr(err.Error())
+		return err
 	}
 
 	i.logger.StdOut("successfully published the device status\n")

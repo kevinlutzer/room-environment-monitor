@@ -11,18 +11,25 @@ type TSL2561DriverInterface struct {
 	mock.Mock
 }
 
-// FetchCPUTemp provides a mock function with given fields: cpuTemp
-func (_m *TSL2561DriverInterface) FetchCPUTemp(cpuTemp *float32) error {
-	ret := _m.Called(cpuTemp)
+// FetchCPUTemp provides a mock function with given fields:
+func (_m *TSL2561DriverInterface) FetchCPUTemp() (float32, error) {
+	ret := _m.Called()
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(*float32) error); ok {
-		r0 = rf(cpuTemp)
+	var r0 float32
+	if rf, ok := ret.Get(0).(func() float32); ok {
+		r0 = rf()
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(float32)
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // FetchSensorData provides a mock function with given fields: ctx

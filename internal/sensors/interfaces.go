@@ -8,7 +8,7 @@ type TSL2561DriverInterface interface {
 	// GetLuminocity
 	FetchSensorData(ctx context.Context) (*SensorData, error)
 	//FetchCPUTemp fetches the cpu temp
-	FetchCPUTemp(cpuTemp *float32) error
+	FetchCPUTemp() (float32, error)
 }
 
 // //Service represents the structure of the service layer
