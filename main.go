@@ -81,15 +81,36 @@ func main() {
 		[]gobot.Device{dl, dt, dg},
 	)
 
+	// Setup Cron
+	if err := SetupCRON(ctx, logger, i); err != nil {
+		logger.StdErrFatal(err.Error())
+	}
+
 	iotDevice.Start()
 }
 
-func SetupCRON(ctx context.Context, i iot.IOTServerService) {
+func SetupCRON(ctx context.Context, logger config.LoggerService, i iot.IOTServerService) error {
 	c := cron.New()
+	if err := c.AddFunc("0 30 * * * *", func() {
+		logger.StdOut("Publishing a new data snapshot")
+		i.PublishSensorDataSnapshot(ctx)
+	}); err != nil {
+		return err
+	}
 
-	c.AddFunc("0 30 * * * *", func() { i.PublishSensorDataSnapshot(ctx) })
-	c.AddFunc("@hourly", func() { i.PublishDeviceStatus(ctx) })
-	c.AddFunc("@every 1h30m", func() { i.SubscribeToIOTCoreConfig(ctx) })
+	if err := c.AddFunc("@hourly", func() {
+		logger.StdOut("Publishing the device status")
+		i.PublishDeviceStatus(ctx)
+	}); err != nil {
+		return err
+	}
 
+	if err := c.AddFunc("0 1 * * * *", func() {
+		logger.StdOut("Subscribing to configuration changes")
+		i.SubscribeToIOTCoreConfig(ctx)
+	}); err != nil {
+		return err
+	}
 	c.Start()
+	return nil
 }
