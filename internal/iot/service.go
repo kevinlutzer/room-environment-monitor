@@ -2,8 +2,6 @@ package iot
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"os/exec"
 
 	"github.com/kml183/room-environment-monitor/internal/config"
@@ -11,8 +9,16 @@ import (
 	"github.com/kml183/room-environment-monitor/internal/sensors"
 )
 
+type PowerConfigMessage string
+
+const (
+	OnMessage     PowerConfigMessage = "leave device on \n"
+	OffMessage    PowerConfigMessage = "turning device off \n"
+	RebootMessage PowerConfigMessage = "rebooting the device \n"
+)
+
 type IOTServerService interface {
-	PublishSensorDataSnapshotHandler(context.Context) error
+	PublishSensorDataSnapshot(context.Context) error
 	PublishDeviceStatus(context.Context) error
 	SubscribeToIOTCoreConfig(context.Context) error
 }
@@ -33,29 +39,21 @@ func NewIOTService(logger config.LoggerService, ss sensors.SensorsService, gs go
 	return i
 }
 
-func (i *iot) PublishSensorDataSnapshotHandler(ctx context.Context) error {
-
-	i.logger.StdOut("Fetching sensor data\n")
+func (i *iot) PublishSensorDataSnapshot(ctx context.Context) error {
 	data, err := i.sensors.FetchSensorData(ctx)
 	if err != nil {
-		e := fmt.Sprintf("failed to fetch the sensor data: %v\n", err.Error())
-		i.logger.StdErr(e)
-		return errors.New(e)
+		i.logger.StdErr(err.Error())
+		return err
 	}
 
 	if err := i.googleiot.PublishSensorData(ctx, data); err != nil {
-		e := fmt.Sprintf("failed to publish the sensor data to cloud iot: %v\n", err.Error())
-		i.logger.StdErr(e)
-		return errors.New(e)
+		i.logger.StdErr(err.Error())
+		return err
 	}
-
-	i.logger.StdOut("Successfully published the sensor data\n")
 	return nil
 }
 
 func (i *iot) PublishDeviceStatus(ctx context.Context) error {
-
-	i.logger.StdOut("fetching cpu temperature\n")
 	cpuTemp, err := i.sensors.FetchCPUTemp()
 	if err != nil {
 		i.logger.StdErr(err.Error())
@@ -70,14 +68,10 @@ func (i *iot) PublishDeviceStatus(ctx context.Context) error {
 		i.logger.StdErr(err.Error())
 		return err
 	}
-
-	i.logger.StdOut("successfully published the device status\n")
 	return nil
 }
 
 func (i *iot) SubscribeToIOTCoreConfig(ctx context.Context) error {
-	i.logger.StdOut("subscribing to google iot config changes\n")
-
 	msg, err := i.googleiot.SubsribeToConfigChanges(ctx)
 	if err != nil {
 		i.logger.StdErr(err.Error())
@@ -89,8 +83,6 @@ func (i *iot) SubscribeToIOTCoreConfig(ctx context.Context) error {
 		i.logger.StdErr(err.Error())
 		return err
 	}
-
-	i.logger.StdOut("subscribed to google iot config changes published the device status\n")
 	return nil
 }
 
@@ -98,17 +90,17 @@ func (i *iot) handlePowerStatus(p googleiot.PowerState) error {
 	var err error
 	if p != "" {
 		if p == googleiot.Off {
-			i.logger.StdOut("turn off device\n")
+			i.logger.StdOut(string(OffMessage))
 			err = i.turnOffDevice()
 		}
 
 		if p == googleiot.Reboot {
-			i.logger.StdOut("reboot device\n")
+			i.logger.StdOut(string(RebootMessage))
 			err = i.rebootTheDevice()
 		}
 
 		if p == googleiot.On {
-			i.logger.StdOut("leave device on\n")
+			i.logger.StdOut(string(OnMessage))
 		}
 	} else {
 		i.logger.StdOut("Message does not have a valid power status\n")
@@ -116,14 +108,16 @@ func (i *iot) handlePowerStatus(p googleiot.PowerState) error {
 	return err
 }
 
+var execCommand = exec.Command
+
 func (i *iot) turnOffDevice() error {
-	cmd := exec.Command("sudo", "/sbin/shutdown", "-P", "now")
+	cmd := execCommand("sudo", "/sbin/shutdown", "-P", "now")
 	_, err := cmd.Output()
 	return err
 }
 
 func (i *iot) rebootTheDevice() error {
-	cmd := exec.Command("sudo", "/sbin/reboot")
+	cmd := execCommand("sudo", "/sbin/reboot")
 	_, err := cmd.Output()
 	return err
 }

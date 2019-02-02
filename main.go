@@ -87,7 +87,7 @@ func main() {
 func SetupCRON(ctx context.Context, i iot.IOTServerService) {
 	c := cron.New()
 
-	c.AddFunc("0 30 * * * *", func() { i.PublishSensorDataSnapshotHandler(ctx) })
+	c.AddFunc("0 30 * * * *", func() { i.PublishSensorDataSnapshot(ctx) })
 	c.AddFunc("@hourly", func() { i.PublishDeviceStatus(ctx) })
 	c.AddFunc("@every 1h30m", func() { i.SubscribeToIOTCoreConfig(ctx) })
 

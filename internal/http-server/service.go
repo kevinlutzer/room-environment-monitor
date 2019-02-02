@@ -79,7 +79,7 @@ func (s *httpService) publishSensorDataSnapshotHandler(wr http.ResponseWriter, r
 	ctx := r.Context()
 	s.logger.StdOut("http: calling handler publishSensorDataSnapshotHandler\n")
 
-	err := s.iot.PublishSensorDataSnapshotHandler(ctx)
+	err := s.iot.PublishSensorDataSnapshot(ctx)
 	if err != nil {
 		s.logger.StdErr("http: %v\n", err.Error())
 		s.setStringResponse(wr, "could't publish the sensor data", 500)
