@@ -1,9 +1,5 @@
 package googleiot
 
-import (
-	"time"
-)
-
 type PowerState string
 
 const (
@@ -13,8 +9,7 @@ const (
 )
 
 type ConfigMessage struct {
-	PowerState      PowerState    `json:"power_state"`
-	DataPublishRate time.Duration `json:"data_publish_rate"`
+	PowerState PowerState `json:"power_state"`
 }
 
 type DeviceStatus struct {

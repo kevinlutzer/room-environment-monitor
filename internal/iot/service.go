@@ -80,16 +80,14 @@ func (i *iot) SubscribeToIOTCoreConfig(ctx context.Context) error {
 
 	msg, err := i.googleiot.SubsribeToConfigChanges(ctx)
 	if err != nil {
-		e := fmt.Sprintf("failed to subscribe to the config changes: %s\n", err.Error())
-		i.logger.StdErr(e)
-		return errors.New(e)
+		i.logger.StdErr(err.Error())
+		return err
 	}
 
 	err = i.handlePowerStatus(msg.PowerState)
 	if err != nil {
-		e := fmt.Sprintf("Failed to handle config update with %s\n", err.Error())
-		i.logger.StdErr(e)
-		return errors.New(e)
+		i.logger.StdErr(err.Error())
+		return err
 	}
 
 	i.logger.StdOut("subscribed to google iot config changes published the device status\n")

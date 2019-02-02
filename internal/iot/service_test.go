@@ -52,6 +52,28 @@ func (s *IOTServerServiceTestSuite) Test_PublishDeviceStatus_ShouldReturnErrorWh
 	s.Assert().Equal(publishDeviceStateErr, err)
 }
 
+func (s *IOTServerServiceTestSuite) Test_SubscribeToIOTCoreConfig_ShouldReturnErrorWhenSubsribeToConfigChangesErrors() {
+	subscribeToIOTCoreConfigErr := errors.New("Something It doesn't matter")
+	s.logger.On("StdOut", mock.Anything)
+	s.logger.On("StdErr", mock.Anything)
+	s.googleiot.On("SubsribeToConfigChanges", mock.Anything).Return(nil, subscribeToIOTCoreConfigErr)
+
+	err := s.iot.SubscribeToIOTCoreConfig(s.ctx)
+	s.Assert().Equal(subscribeToIOTCoreConfigErr, err)
+}
+
+// func (s *IOTServerServiceTestSuite) Test_SubscribeToIOTCoreConfig_ShouldReturnErrorWhenSubsribeToConfigChangesErrors() {
+
+// 	msg := &googleiot.ConfigMessage{
+// 		PowerState: googleiot.On,
+// 	}
+// 	s.logger.On("StdOut", mock.Anything)
+// 	s.logger.On("StdErr", mock.Anything)
+// 	s.googleiot.On("SubsribeToConfigChanges", mock.Anything).Return(msg, nil)
+// 	err := s.iot.SubscribeToIOTCoreConfig(s.ctx)
+// 	s.Assert().Equal(subscribeToIOTCoreConfigErr, err)
+// }
+
 func Test_IOTServerServiceTestSuite(t *testing.T) {
 	suite.Run(t, new(IOTServerServiceTestSuite))
 }
