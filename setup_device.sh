@@ -1,15 +1,16 @@
 if [ $# -eq 0 ]
   then
-    echo "The name of the device and the config file directory must be passed as argument 1 and 2 respectively "
+    echo "The name of the device must be passed as argument 1"
     exit 0
 fi
 
 # constants
+defaultConfigDir=certs
 project=iot-klutzer
 region=us-central1
 registry=devices-klutzer
 device=$1
-configDirName=$2
+configDirName=$defaultConfigDir
 
 
 # # create directory if it doen't exist to hold auth files

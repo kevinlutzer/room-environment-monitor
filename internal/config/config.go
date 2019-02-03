@@ -1,12 +1,8 @@
 package config
 
 import (
-	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
-	"os/exec"
-	"strings"
 )
 
 var (
@@ -35,18 +31,19 @@ type GoogleIOTConfig struct {
 }
 
 func GetIPAddress() (string, error) {
-	cmd := exec.Command("hostname", "-I")
-	val, err := cmd.Output()
-	if err != nil {
-		return "", errors.New(fmt.Sprintf("Could not execute command with args > %v", cmd.Args))
-	}
+	// cmd := exec.Command("hostname", "-I")
+	// val, err := cmd.Output()
+	// if err != nil {
+	// 	return "", errors.New(fmt.Sprintf("Could not execute command with args > %v", cmd.Args))
+	// }
 
-	if string(val) == "" {
-		return "", errors.New("Failed to get hostname")
-	}
+	// if string(val) == "" {
+	// 	return "", errors.New("Failed to get hostname")
+	// }
 
-	filteredVal := strings.Replace(string(val), " \n", "", -1)
-	return filteredVal, nil
+	// filteredVal := strings.Replace(string(val), " \n", "", -1)
+	// return filteredVal, nil
+	return "10.0.0.88", nil
 }
 
 func GetGoogleIOTConfig() (*GoogleIOTConfig, error) {

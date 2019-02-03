@@ -202,13 +202,16 @@ func (s *service) SubsribeToConfigChanges(ctx context.Context) (*ConfigMessage, 
 
 func (s *service) PublishDeviceState(ctx context.Context, status *DeviceStatus) error {
 
+	s.logger.StdOut("About to get mqtt client")
 	c, err := getMQTTClient(s.certs, s.iotConfig, s.logger.GetStdOut(), MQTT.NewClientOptions())
 	if err != nil {
+		s.logger.StdErr("Failed TO GET MQTT CLIENT, > %v", err)
 		return err
 	}
 
+	s.logger.StdOut("About to connect to the server")
 	if token := c.Connect(); token.Wait() && token.Error() != nil {
-		log.Fatal(token.Error().Error())
+		s.logger.StdErr("Error stuff erorr > %v", token.Error())
 		return token.Error()
 	}
 
