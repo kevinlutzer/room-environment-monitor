@@ -104,7 +104,7 @@ func main() {
 
 func SetupCRON(ctx context.Context, logger config.LoggerService, i iot.IOTServerService) error {
 	c := cron.New()
-	if err := c.AddFunc("0 30 * * * *", func() {
+	if err := c.AddFunc("0 5 * * * *", func() {
 		logger.StdOut("Publishing a new data snapshot")
 		i.PublishSensorDataSnapshot(ctx)
 	}); err != nil {
