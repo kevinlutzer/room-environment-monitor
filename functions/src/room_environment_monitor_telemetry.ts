@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 
-import {RoomEnvironmentMonitorTelemetryInterface, RoomEnvironmentMonitorPubsubMessageInterface, Convert, MODEL} from './room_environment_telemetry.interface';
+import {RoomEnvironmentMonitorTelemetryInterface, RoomEnvironmentMonitorPubsubMessageInterface, Convert, MODEL} from './room_environment_monitor_telemetry.interface';
 import {ExtractInterfaceFromPubsubMessage} from './pubsub.util';
 
 // Handlers
