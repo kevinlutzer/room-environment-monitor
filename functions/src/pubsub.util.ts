@@ -1,6 +1,6 @@
-import {IOTPubsubMessageInterface} from '../model/iot_pubsub_message.interface';
+import * as functions from 'firebase-functions';
 
-export function ExtractInterfaceFromPubsubMessage(message: IOTPubsubMessageInterface): any {
+export function ExtractInterfaceFromPubsubMessage(message: functions.pubsub.Message): any {
     let rawData: any;
     try {
         rawData = JSON.parse(message.data ? Buffer.from(message.data, 'base64').toString() : null);

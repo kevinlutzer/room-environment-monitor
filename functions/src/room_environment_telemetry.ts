@@ -1,20 +1,15 @@
 import * as admin   from 'firebase-admin';
+import * as functions from 'firebase-functions';
 
 import {Request, Response} from 'express';
 
 import {RoomEnvironmentMonitorTelemetryInterface, RoomEnvironmentMonitorPubsubMessageInterface, RoomEnvironmentMonitorListApiRequestInteface, Convert} from '../model/room_environment_telemetry.interface';
-import {IOTPubsubMessageInterface} from '../model/iot_pubsub_message.interface';
 import {RoomEnvironmentTelemetryModel} from '../config';
 import {ExtractInterfaceFromPubsubMessage} from '../util/pubsub';
 
-const db = admin.firestore();
-try {
-    db.settings({timestampsInSnapshots: true});
-} catch {}
-
 // Handlers
-export async function PubsubHandler(message: IOTPubsubMessageInterface) {
-
+export async function PubsubHandler(message: functions.pubsub.Message, db: FirebaseFirestore.Firestore) {
+    console.log(message);
     const rawData = ExtractInterfaceFromPubsubMessage(message) as RoomEnvironmentMonitorPubsubMessageInterface;
 
     // Becasue the id is based on the timestamp, if the timestamp is passed null or undefined the same entity will be updated
@@ -24,10 +19,10 @@ export async function PubsubHandler(message: IOTPubsubMessageInterface) {
     
     const data = Convert(deviceId, sysDate, rawData)
 
-    return createRoomEnvironmentMonitorTelemetryEntity(id, data);
+    return createRoomEnvironmentMonitorTelemetryEntity(id, data, db);
 }
 
-async function createRoomEnvironmentMonitorTelemetryEntity(id: string, data: RoomEnvironmentMonitorTelemetryInterface) {
+async function createRoomEnvironmentMonitorTelemetryEntity(id: string, data: RoomEnvironmentMonitorTelemetryInterface, db: FirebaseFirestore.Firestore) {
     return db
     .collection(RoomEnvironmentTelemetryModel)
     .doc(id)
@@ -38,7 +33,7 @@ async function createRoomEnvironmentMonitorTelemetryEntity(id: string, data: Roo
     );
 }
 
-export async function DataList(req: Request, res: Response) {
+export async function DataList(req: Request, res: Response, db: FirebaseFirestore.Firestore) {
 
     const params = req.query as RoomEnvironmentMonitorListApiRequestInteface;
     const cursor = params.cursor ? parseInt(params.cursor, 10): 0;

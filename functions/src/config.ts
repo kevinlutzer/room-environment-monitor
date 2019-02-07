@@ -7,13 +7,8 @@ export const CloudConfig = {
 
 // Room Environment Telemetry 
 export const RoomEnvironmentTelemetryModel = 'RoomEnvironmentTelemetry';
-export const RoomEnvironmentTelemetryPubsubTopic = 'room-environment-telemetry';
+export const RoomEnvironmentTelemetryPubsubTopic = 'room-environment-monitor-telemetry';
 
 // Room Environment Monitor Device Status
 export const RoomEnvironmentMonitorDeviceStatusModel = 'RoomEnvironmentMonitorDeviceStatusModel';
 export const RoomEnvironmentMonitorDeviceStatusPubsubTopic = 'room-environment-monitor-device-status';
-export const RoomEnvironmentMonitorDeviceCPUTempThreshold = 45;
-export let RoomEnvironmentMonitoryDeviceStatusRecieptors = ['kevinlutzer9@gmail.com', 'kml183@mail.usask.ca'];
-
-// Send Grid Credentials 
-export const SendGridApiKey = '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';
