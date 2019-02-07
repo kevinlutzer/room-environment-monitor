@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as admin   from 'firebase-admin';
 
-import {PubsubHandler as TelemetryPubsubHandler} from './room_environment_telemetry';
+import {PubsubHandler as TelemetryPubsubHandler} from './room_environment_monitor_telemetry';
 import {PubsubHandler as StatusPubsubHandler} from './room_environment_monitor_status';
 
 
