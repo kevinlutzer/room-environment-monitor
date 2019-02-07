@@ -5,8 +5,14 @@ import {ExtractInterfaceFromPubsubMessage} from './pubsub.util';
 
 // Handlers
 export async function PubsubHandler(message: functions.pubsub.Message, db: FirebaseFirestore.Firestore) {
-    console.log(message);
     const rawData = ExtractInterfaceFromPubsubMessage(message) as RoomEnvironmentMonitorTelemetryPubsubMessageInterface;
+
+    if (!rawData) {
+        console.error("The raw data could not be abstracted fro the pubsub message.");
+        return
+    }
+
+    console.log(rawData);
 
     // Becasue the id is based on the timestamp, if the timestamp is passed null or undefined the same entity will be updated
     const sysDate = new Date(rawData.timestamp || "");

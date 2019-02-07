@@ -17,11 +17,9 @@ export async function PubsubHandler(message: functions.pubsub.Message, db: Fireb
     // Becasue the id is based on the timestamp, if the timestamp is passed null or undefined the same entity will be updated
     const sysDate = new Date(rawData.timestamp || "");
     const deviceId = message.attributes.deviceId;
-    const id = deviceId + ":" + sysDate.getTime().toString();
-    
     const data = Convert(deviceId, sysDate, rawData)
 
-    return createRoomEnvironmentMonitorStatusEntity(id, data, db);
+    return createRoomEnvironmentMonitorStatusEntity(deviceId, data, db);
 }
 
 async function createRoomEnvironmentMonitorStatusEntity(id: string, data: RoomEnvironmentMonitorStatusInterface, db: FirebaseFirestore.Firestore) {
