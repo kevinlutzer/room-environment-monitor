@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin';
 
-export const MODEL = "RoomEnvironmentMonitorTelemetry";
+export const MODEL = "RoomEnvironmentTelemetry";
 
 export interface RoomEnvironmentMonitorPubsubMessageInterface {
     lux: number;
