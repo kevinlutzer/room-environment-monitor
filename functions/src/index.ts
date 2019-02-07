@@ -4,8 +4,8 @@ import * as express from 'express';
 import * as cors from 'cors';
 
 import {DataList, PubsubHandler} from './controllers/room_environment_telemetry';
-import {RoomEnvironmentTelemetryPubsubTopic} from './config';
 
+export const RoomEnvironmentTelemetryPubsubTopic = 'room-environment-monitor-telemetry';
 
 // import {Create} from './api/visitor';
 

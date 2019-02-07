@@ -1,11 +1,8 @@
 import * as admin   from 'firebase-admin';
 import * as functions from 'firebase-functions';
 
-import {Request, Response} from 'express';
-
-import {RoomEnvironmentMonitorTelemetryInterface, RoomEnvironmentMonitorPubsubMessageInterface, RoomEnvironmentMonitorListApiRequestInteface, Convert} from '../model/room_environment_telemetry.interface';
-import {RoomEnvironmentTelemetryModel} from '../config';
-import {ExtractInterfaceFromPubsubMessage} from '../util/pubsub';
+import {RoomEnvironmentMonitorTelemetryInterface, RoomEnvironmentMonitorPubsubMessageInterface, RoomEnvironmentMonitorListApiRequestInteface, Convert, MODEL} from './room_environment_telemetry.interface';
+import {ExtractInterfaceFromPubsubMessage} from './pubsub.util';
 
 // Handlers
 export async function PubsubHandler(message: functions.pubsub.Message, db: FirebaseFirestore.Firestore) {
@@ -24,7 +21,7 @@ export async function PubsubHandler(message: functions.pubsub.Message, db: Fireb
 
 async function createRoomEnvironmentMonitorTelemetryEntity(id: string, data: RoomEnvironmentMonitorTelemetryInterface, db: FirebaseFirestore.Firestore) {
     return db
-    .collection(RoomEnvironmentTelemetryModel)
+    .collection(MODEL)
     .doc(id)
     .set(data)
     .then(
@@ -33,28 +30,3 @@ async function createRoomEnvironmentMonitorTelemetryEntity(id: string, data: Roo
     );
 }
 
-export async function DataList(req: Request, res: Response, db: FirebaseFirestore.Firestore) {
-
-    const params = req.query as RoomEnvironmentMonitorListApiRequestInteface;
-    const cursor = params.cursor ? parseInt(params.cursor, 10): 0;
-    const pageSize = params.page_size ? parseInt(params.page_size, 10): 1000;
-    const deviceId = params.device_id;
-
-    const base = db
-        .collection(RoomEnvironmentTelemetryModel)
-        .offset(cursor)
-        .limit(pageSize)
-
-    if (deviceId && deviceId !== "") {
-        base.where("deviceId", "==", deviceId)
-    }
-
-    const results = await base.get()
-
-    const telemetry = results.docs && results.docs.length ? results.docs.map((v) => (v.data())) : [];
-
-    res.json({
-        telemetry: telemetry
-    })
-
-}
