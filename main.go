@@ -104,26 +104,27 @@ func main() {
 
 func SetupCRON(ctx context.Context, logger config.LoggerService, i iot.IOTServerService) error {
 	c := cron.New()
-	if err := c.AddFunc("0 5 * * * *", func() {
+	if _, err := c.AddFunc("* 5 * * * *", func() {
 		logger.StdOut("Publishing a new data snapshot")
 		i.PublishSensorDataSnapshot(ctx)
 	}); err != nil {
 		return err
 	}
 
-	if err := c.AddFunc("@hourly", func() {
+	if _, err := c.AddFunc("30 * * * * *", func() {
+		logger.StdOut("Subscribing to configuration changes")
+		i.SubscribeToIOTCoreConfig(ctx)
+	}); err != nil {
+		return err
+	}
+
+	if _, err := c.AddFunc("@hourly", func() {
 		logger.StdOut("Publishing the device status")
 		i.PublishDeviceStatus(ctx)
 	}); err != nil {
 		return err
 	}
 
-	if err := c.AddFunc("0 1 * * * *", func() {
-		logger.StdOut("Subscribing to configuration changes")
-		i.SubscribeToIOTCoreConfig(ctx)
-	}); err != nil {
-		return err
-	}
 	c.Start()
 	return nil
 }

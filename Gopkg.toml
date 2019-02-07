@@ -24,6 +24,10 @@
 #   go-tests = true
 #   unused-packages = true
 
+[prune]
+  go-tests = true
+  unused-packages = true
+  non-go = true
 
 [[constraint]]
   name = "github.com/dgrijalva/jwt-go"
@@ -36,10 +40,6 @@
 [[constraint]]
   branch = "master"
   name = "golang.org/x/sync"
-
-[prune]
-  go-tests = true
-  unused-packages = true
 
 [[constraint]]
   branch = "dev"

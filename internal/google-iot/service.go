@@ -191,7 +191,6 @@ func (s *service) SubsribeToConfigChanges(ctx context.Context) (*ConfigMessage, 
 
 	for receiveCount < 1 {
 		incoming := <-choke
-		s.logger.StdOut("recieved message %s\n", incoming[1])
 		json.Unmarshal([]byte(incoming[1]), &cm)
 		receiveCount++
 	}
