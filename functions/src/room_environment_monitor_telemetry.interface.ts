@@ -2,7 +2,7 @@ import * as admin from 'firebase-admin';
 
 export const MODEL = "RoomEnvironmentTelemetry";
 
-export interface RoomEnvironmentMonitorPubsubMessageInterface {
+export interface RoomEnvironmentMonitorTelemetryPubsubMessageInterface {
     lux: number;
     co2: number;
     tvoc: number;
@@ -25,7 +25,7 @@ export interface RoomEnvironmentMonitorTelemetryInterface {
     deviceId: string;
 }
 
-export function Convert(deviceId: string, sysDate: Date, data: RoomEnvironmentMonitorPubsubMessageInterface): RoomEnvironmentMonitorTelemetryInterface {
+export function Convert(deviceId: string, sysDate: Date, data: RoomEnvironmentMonitorTelemetryPubsubMessageInterface): RoomEnvironmentMonitorTelemetryInterface {
     return {
         lux: data.lux || 0,
         co2: data.co2 || 0,
@@ -37,10 +37,4 @@ export function Convert(deviceId: string, sysDate: Date, data: RoomEnvironmentMo
         timestamp: admin.firestore.Timestamp.fromDate(sysDate),
         deviceId: deviceId,
     } as RoomEnvironmentMonitorTelemetryInterface
-}
-
-export interface RoomEnvironmentMonitorListApiRequestInteface {
-    cursor?: string;
-    page_size?: string;
-    device_id?: string;
 }

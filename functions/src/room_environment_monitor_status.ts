@@ -1,12 +1,18 @@
 import * as functions from 'firebase-functions';
 
-import {RoomEnvironmentMonitorTelemetryInterface, RoomEnvironmentMonitorTelemetryPubsubMessageInterface, Convert, MODEL} from './room_environment_monitor_telemetry.interface';
+import {RoomEnvironmentMonitorStatusInterface, RoomEnvironmentMonitorStatusPubsubMessageInterface, Convert, MODEL} from './room_environment_monitor_status.interface';
 import {ExtractInterfaceFromPubsubMessage} from './pubsub.util';
 
 // Handlers
 export async function PubsubHandler(message: functions.pubsub.Message, db: FirebaseFirestore.Firestore) {
-    console.log(message);
-    const rawData = ExtractInterfaceFromPubsubMessage(message) as RoomEnvironmentMonitorTelemetryPubsubMessageInterface;
+    const rawData = ExtractInterfaceFromPubsubMessage(message) as RoomEnvironmentMonitorStatusPubsubMessageInterface;
+
+    if (!rawData) {
+        console.error("The raw data could not be abstracted fro the pubsub message.");
+        return
+    }
+
+    console.log(rawData);
 
     // Becasue the id is based on the timestamp, if the timestamp is passed null or undefined the same entity will be updated
     const sysDate = new Date(rawData.timestamp || "");
@@ -15,10 +21,10 @@ export async function PubsubHandler(message: functions.pubsub.Message, db: Fireb
     
     const data = Convert(deviceId, sysDate, rawData)
 
-    return createRoomEnvironmentMonitorTelemetryEntity(id, data, db);
+    return createRoomEnvironmentMonitorStatusEntity(id, data, db);
 }
 
-async function createRoomEnvironmentMonitorTelemetryEntity(id: string, data: RoomEnvironmentMonitorTelemetryInterface, db: FirebaseFirestore.Firestore) {
+async function createRoomEnvironmentMonitorStatusEntity(id: string, data: RoomEnvironmentMonitorStatusInterface, db: FirebaseFirestore.Firestore) {
     return db
     .collection(MODEL)
     .doc(id)
