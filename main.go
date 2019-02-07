@@ -14,7 +14,7 @@ import (
 
 	"github.com/kml183/room-environment-monitor/internal/config"
 	googleiot "github.com/kml183/room-environment-monitor/internal/google-iot"
-	cron "github.com/robfig/cron"
+	cron "gopkg.in/robfig/cron.v2"
 )
 
 func main() {

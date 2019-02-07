@@ -59,12 +59,6 @@
   version = "v1.0.0"
 
 [[projects]]
-  name = "github.com/robfig/cron"
-  packages = ["."]
-  revision = "b41be1df696709bb6395fe435af20370037c0b4c"
-  version = "v1.1"
-
-[[projects]]
   branch = "master"
   name = "github.com/sigurn/crc8"
   packages = ["."]
@@ -86,7 +80,9 @@
   name = "github.com/stretchr/testify"
   packages = [
     "assert",
-    "mock"
+    "mock",
+    "require",
+    "suite"
   ]
   revision = "ffdc059bfe9ce6a4e144ba849dbedead332c6053"
   version = "v1.3.0"
@@ -121,6 +117,12 @@
   revision = "37e7f081c4d4c64e13b10787722085407fe5d15f"
 
 [[projects]]
+  branch = "v2"
+  name = "gopkg.in/robfig/cron.v2"
+  packages = ["."]
+  revision = "be2e0b0deed5a68ffee390b4583a13aff8321535"
+
+[[projects]]
   name = "periph.io/x/periph"
   packages = [
     ".",
@@ -142,6 +144,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "933f43b7ac078dedbeb268f5129986bbb2663f58219d6205da5bc318f48bb0d2"
+  inputs-digest = "4bf1206bf39b26e565ecae620f572f6145f259cda15b723c67cf6fea0341cb7f"
   solver-name = "gps-cdcl"
   solver-version = 1
