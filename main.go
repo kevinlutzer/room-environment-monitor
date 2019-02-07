@@ -2,25 +2,37 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"runtime"
 
+	httpserver "github.com/kml183/room-environment-monitor/internal/http-server"
 	"github.com/kml183/room-environment-monitor/internal/iot"
 	"github.com/kml183/room-environment-monitor/internal/sensors"
-
-	"fmt"
-
-	"github.com/kml183/room-environment-monitor/internal/config"
-	googleiot "github.com/kml183/room-environment-monitor/internal/google-iot"
-	httpserver "github.com/kml183/room-environment-monitor/internal/http-server"
-	cron "github.com/robfig/cron"
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/drivers/i2c"
 	"gobot.io/x/gobot/platforms/raspi"
+
+	"github.com/kml183/room-environment-monitor/internal/config"
+	googleiot "github.com/kml183/room-environment-monitor/internal/google-iot"
+	cron "github.com/robfig/cron"
 )
 
 func main() {
 
 	logger := config.NewLogger()
+
+	// Get Command Line Args
+	args, err := config.GetCommandLineArgs()
+	if err != nil {
+		logger.StdErrFatal(err.Error())
+	}
+	logger.StdOut("Successfully get the command line argument")
+
+	m, err := json.Marshal(args)
+	if err != nil {
+		logger.StdErrFatal(err.Error())
+	}
+	logger.StdOut("The command line args are: %s", string(m))
 
 	// Setup max proccesses to be 8
 	if val := runtime.GOMAXPROCS(8); val < -1 {
@@ -36,14 +48,14 @@ func main() {
 	logger.StdOut("Successfully setup the gobot drivers")
 
 	// Create SSL Certs
-	certs, err := config.GetSSLCerts()
+	certs, err := config.GetSSLCerts(args)
 	if err != nil {
 		logger.StdErrFatal("Failed to fetch the ssl cert files > %s", err.Error())
 	}
 	logger.StdOut("Successfully fetch the ssl cert files")
 
 	// Fetch Google IOT Config
-	iotConfig, err := config.GetGoogleIOTConfig()
+	iotConfig, err := config.GetGoogleIOTConfig(args.DeviceID)
 	if err != nil {
 		logger.StdErrFatal("Failed to get the iot config > %+s ", err.Error())
 	}
@@ -56,14 +68,6 @@ func main() {
 	hs := httpserver.NewHTTPService(logger, ss, i)
 	logger.StdOut("Successfully setup services")
 
-	// Get IP Address
-	ip, err := config.GetIPAddress()
-	if err != nil {
-		e := fmt.Sprintf("Failed to get the ip address > %+s ", err.Error())
-		logger.StdErrFatal(e)
-	}
-	logger.StdOut("Successfully get ip address")
-
 	ctx := context.TODO()
 
 	// Publish device status on startup
@@ -73,9 +77,11 @@ func main() {
 	}
 	logger.StdOut("Successfully published the device status initially")
 
+	err = gs.PublishDeviceState(ctx, &googleiot.DeviceStatus{CpuTemp: 0})
+
 	// Asnycronously start server. If gobot stuff hasn't been initialized, some of the server methods will not work.
 	go func() {
-		err = hs.Start(ip)
+		err = hs.Start(args.IP)
 		if err != nil {
 			logger.StdErrFatal(err.Error())
 		}
