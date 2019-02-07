@@ -1,5 +1,7 @@
 package googleiot
 
+import "time"
+
 type PowerState string
 
 const (
@@ -13,5 +15,6 @@ type ConfigMessage struct {
 }
 
 type DeviceStatus struct {
-	CpuTemp float32 `json:"cpu_temp"`
+	CpuTemp   float32   `json:"cpu_temp"`
+	TimeStamp time.Time `json:"timestamp"`
 }
