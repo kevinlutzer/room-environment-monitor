@@ -1,9 +1,29 @@
 import * as functions from 'firebase-functions';
 
-import {RoomEnvironmentMonitorTelemetryInterface, RoomEnvironmentMonitorTelemetryPubsubMessageInterface, Convert, MODEL} from './room_environment_monitor_telemetry.interface';
+import {RoomEnvironmentMonitorTelemetryInterface, RoomEnvironmentMonitorTelemetryPubsubMessageInterface, 
+    ConvertPubsubMessage, BuildRoomEnvironmentTelemetryListRequest, MODEL, ConvertQuerySnapshotDocument} from './room_environment_monitor_telemetry.interface';
 import {ExtractInterfaceFromPubsubMessage} from './pubsub.util';
+import { Response, Request, NextFunction } from 'express';
 
 // Handlers
+export async function List(req: Request, res: Response, next: NextFunction, db: FirebaseFirestore.Firestore) {
+    const r = BuildRoomEnvironmentTelemetryListRequest(req);
+    r.deviceId
+    return db
+        .collection(MODEL)
+        .where('deviceId', '==', r.deviceId)
+        .limit(r.pageSize)
+        .offset(r.cursor)
+        .get()
+        .then(results => handleListResponse(res, results))
+        .catch(next);
+}
+
+function handleListResponse(res: Response, s: FirebaseFirestore.QuerySnapshot) {
+    const telemetry = (s.docs || []).map(ConvertQuerySnapshotDocument)
+    res.json(telemetry)
+}
+
 export async function PubsubHandler(message: functions.pubsub.Message, db: FirebaseFirestore.Firestore) {
     const rawData = ExtractInterfaceFromPubsubMessage(message) as RoomEnvironmentMonitorTelemetryPubsubMessageInterface;
 
@@ -19,12 +39,12 @@ export async function PubsubHandler(message: functions.pubsub.Message, db: Fireb
     const deviceId = message.attributes.deviceId;
     const id = deviceId + ":" + sysDate.getTime().toString();
     
-    const data = Convert(deviceId, sysDate, rawData)
+    const data = ConvertPubsubMessage(deviceId, sysDate, rawData)
 
-    return createRoomEnvironmentMonitorTelemetryEntity(id, data, db);
+    return create(id, data, db);
 }
 
-async function createRoomEnvironmentMonitorTelemetryEntity(id: string, data: RoomEnvironmentMonitorTelemetryInterface, db: FirebaseFirestore.Firestore) {
+async function create(id: string, data: RoomEnvironmentMonitorTelemetryInterface, db: FirebaseFirestore.Firestore) {
     return db
     .collection(MODEL)
     .doc(id)
@@ -34,4 +54,5 @@ async function createRoomEnvironmentMonitorTelemetryEntity(id: string, data: Roo
         err => console.error("Failed to create entity: ", err)
     );
 }
+
 

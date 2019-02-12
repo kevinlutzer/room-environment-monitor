@@ -1,6 +1,13 @@
 import * as admin from 'firebase-admin';
+import { Request } from 'express';
 
-export const MODEL = "RoomEnvironmentTelemetry";
+export const MODEL = 'RoomEnvironmentTelemetry';
+
+export interface RoomEnvironmentMonitorTelemetryListRequestInterface {
+    deviceId: string;
+    cursor: number;
+    pageSize: number;
+}
 
 export interface RoomEnvironmentMonitorTelemetryPubsubMessageInterface {
     lux: number;
@@ -25,7 +32,7 @@ export interface RoomEnvironmentMonitorTelemetryInterface {
     deviceId: string;
 }
 
-export function Convert(deviceId: string, sysDate: Date, data: RoomEnvironmentMonitorTelemetryPubsubMessageInterface): RoomEnvironmentMonitorTelemetryInterface {
+export function ConvertPubsubMessage(deviceId: string, sysDate: Date, data: RoomEnvironmentMonitorTelemetryPubsubMessageInterface): RoomEnvironmentMonitorTelemetryInterface {
     return {
         lux: data.lux || 0,
         co2: data.co2 || 0,
@@ -37,4 +44,27 @@ export function Convert(deviceId: string, sysDate: Date, data: RoomEnvironmentMo
         timestamp: admin.firestore.Timestamp.fromDate(sysDate),
         deviceId: deviceId,
     } as RoomEnvironmentMonitorTelemetryInterface
+}
+
+export function BuildRoomEnvironmentTelemetryListRequest(req: Request): RoomEnvironmentMonitorTelemetryListRequestInterface {
+    return {
+        deviceId: req.query.deviceId as string || '',
+        cursor: req.query.cursor as number || 0,
+        pageSize: req.query.pageSize as number || 1000
+    }
+}
+
+export function ConvertQuerySnapshotDocument(snapshot: FirebaseFirestore.QueryDocumentSnapshot): RoomEnvironmentMonitorTelemetryInterface {
+    const data = snapshot.data();
+    return {
+        lux: data.lux,
+        co2: data.co2,
+        tvoc: data.tvoc,
+        roomTemp: data.roomTemp,
+        cpuTemp: data.cpuTemp,
+        pressure: data.pressure,
+        humidity: data.humidity,
+        timestamp: data.timestamp ? data.timestamp.toDate() : new Date(),
+        deviceId: data.deviceId,
+    }
 }
