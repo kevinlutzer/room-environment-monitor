@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 
 import {RoomEnvironmentMonitorTelemetryInterface, RoomEnvironmentMonitorTelemetryPubsubMessageInterface, 
-    ConvertPubsubMessage, BuildRoomEnvironmentTelemetryListRequest, MODEL, ConvertQuerySnapshotDocument} from './room_environment_monitor_telemetry.interface';
+    ConvertPubsubMessage, BuildRoomEnvironmentTelemetryListRequest, MODEL, ConvertQuerySnapshotDocument, RoomEnvironmentMonitorTelemetryListRequestInterface} from './room_environment_monitor_telemetry.interface';
 import {ExtractInterfaceFromPubsubMessage} from './pubsub.util';
 import { Response, Request, NextFunction } from 'express';
 
@@ -15,13 +15,17 @@ export async function List(req: Request, res: Response, next: NextFunction, db: 
         .limit(r.pageSize)
         .offset(r.cursor)
         .get()
-        .then(results => handleListResponse(res, results))
+        .then(results => handleListResponse(r, res, results))
         .catch(next);
 }
 
-function handleListResponse(res: Response, s: FirebaseFirestore.QuerySnapshot) {
-    const telemetry = (s.docs || []).map(ConvertQuerySnapshotDocument)
-    res.json(telemetry)
+function handleListResponse(r: RoomEnvironmentMonitorTelemetryListRequestInterface, res: Response, s: FirebaseFirestore.QuerySnapshot) {
+    const hasMore = r.pageSize === s.size;
+    res.json({
+        data: (s.docs || []).map(ConvertQuerySnapshotDocument),
+        hasMore: hasMore,
+        nextCursor: hasMore ? r.pageSize + r.cursor : 0
+    })
 }
 
 export async function PubsubHandler(message: functions.pubsub.Message, db: FirebaseFirestore.Firestore) {

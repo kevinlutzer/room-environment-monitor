@@ -49,8 +49,8 @@ export function ConvertPubsubMessage(deviceId: string, sysDate: Date, data: Room
 export function BuildRoomEnvironmentTelemetryListRequest(req: Request): RoomEnvironmentMonitorTelemetryListRequestInterface {
     return {
         deviceId: req.query.deviceId as string || '',
-        cursor: req.query.cursor as number || 0,
-        pageSize: req.query.pageSize as number || 1000
+        cursor: parseInt(req.query.cursor, 10) || 0,
+        pageSize: parseInt(req.query.pageSize, 10) || 1000
     }
 }
 
