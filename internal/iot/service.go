@@ -3,6 +3,7 @@ package iot
 import (
 	"context"
 	"os/exec"
+	"time"
 
 	"github.com/kml183/room-environment-monitor/internal/config"
 	googleiot "github.com/kml183/room-environment-monitor/internal/google-iot"
@@ -61,7 +62,8 @@ func (i *iot) PublishDeviceStatus(ctx context.Context) error {
 	}
 
 	data := &googleiot.DeviceStatus{
-		CpuTemp: cpuTemp,
+		CpuTemp:   cpuTemp,
+		TimeStamp: time.Now(),
 	}
 
 	if err := i.googleiot.PublishDeviceState(ctx, data); err != nil {

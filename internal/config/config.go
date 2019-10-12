@@ -1,20 +1,23 @@
 package config
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
-)
-
-var (
-	rootsPath      = "/home/pi/certs/roots.pem"
-	rsaCertPath    = "/home/pi/certs/rsa_cert.pem"
-	rsaPrivatePath = "/home/pi/certs/rsa_private.pem"
 )
 
 type SSLCerts struct {
 	Roots      string
 	RsaCert    string
 	RSAPrivate string
+}
+
+type CommandLineArguments struct {
+	RootPath       string `json:"root_path"`
+	RsaCertPath    string `json:"rsa_cert_path"`
+	RsaPrivatePath string `json:"rsa_private_path"`
+	IP             string `json:"ip"`
+	DeviceID       string `json:"device_id"`
 }
 
 type Bridge struct {
@@ -30,31 +33,23 @@ type GoogleIOTConfig struct {
 	Region     string
 }
 
-func GetIPAddress() (string, error) {
-	// cmd := exec.Command("hostname", "-I")
-	// val, err := cmd.Output()
-	// if err != nil {
-	// 	return "", errors.New(fmt.Sprintf("Could not execute command with args > %v", cmd.Args))
-	// }
-
-	// if string(val) == "" {
-	// 	return "", errors.New("Failed to get hostname")
-	// }
-
-	// filteredVal := strings.Replace(string(val), " \n", "", -1)
-	// return filteredVal, nil
-	return "10.0.0.88", nil
+func GetCommandLineArgs() (*CommandLineArguments, error) {
+	if len(os.Args) == 1 || len(os.Args) < 5 {
+		return nil, fmt.Errorf("Please pass in the ip, device_id, rsa_cert path, rsa_key path, root path in that order")
+	}
+	return &CommandLineArguments{
+		IP:             os.Args[1],
+		DeviceID:       os.Args[2],
+		RsaCertPath:    os.Args[3],
+		RsaPrivatePath: os.Args[4],
+		RootPath:       os.Args[5],
+	}, nil
 }
 
-func GetGoogleIOTConfig() (*GoogleIOTConfig, error) {
-
-	h, err := os.Hostname()
-	if err != nil {
-		return nil, err
-	}
+func GetGoogleIOTConfig(deviceID string) (*GoogleIOTConfig, error) {
 
 	return &GoogleIOTConfig{
-		DeviceID: h,
+		DeviceID: deviceID,
 		Bridge: &Bridge{
 			Host: "mqtt.googleapis.com",
 			Port: "8883",
@@ -65,19 +60,19 @@ func GetGoogleIOTConfig() (*GoogleIOTConfig, error) {
 	}, nil
 }
 
-func GetSSLCerts() (*SSLCerts, error) {
+func GetSSLCerts(cliConfig *CommandLineArguments) (*SSLCerts, error) {
 
-	rs, err := ioutil.ReadFile(rootsPath)
+	rs, err := ioutil.ReadFile(cliConfig.RootPath)
 	if err != nil {
 		return nil, err
 	}
 
-	rsc, err := ioutil.ReadFile(rsaCertPath)
+	rsc, err := ioutil.ReadFile(cliConfig.RsaCertPath)
 	if err != nil {
 		return nil, err
 	}
 
-	rscp, err := ioutil.ReadFile(rsaPrivatePath)
+	rscp, err := ioutil.ReadFile(cliConfig.RsaPrivatePath)
 	if err != nil {
 		return nil, err
 	}

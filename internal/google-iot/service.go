@@ -191,7 +191,6 @@ func (s *service) SubsribeToConfigChanges(ctx context.Context) (*ConfigMessage, 
 
 	for receiveCount < 1 {
 		incoming := <-choke
-		s.logger.StdOut("recieved message %s\n", incoming[1])
 		json.Unmarshal([]byte(incoming[1]), &cm)
 		receiveCount++
 	}
@@ -201,11 +200,9 @@ func (s *service) SubsribeToConfigChanges(ctx context.Context) (*ConfigMessage, 
 }
 
 func (s *service) PublishDeviceState(ctx context.Context, status *DeviceStatus) error {
-
-	s.logger.StdOut("About to get mqtt client")
 	c, err := getMQTTClient(s.certs, s.iotConfig, s.logger.GetStdOut(), MQTT.NewClientOptions())
 	if err != nil {
-		s.logger.StdErr("Failed TO GET MQTT CLIENT, > %v", err)
+		s.logger.StdErr("Failed to get MQTT client, > %v", err)
 		return err
 	}
 
