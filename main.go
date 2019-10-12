@@ -28,7 +28,7 @@ func main() {
 	}
 	logger.StdOut("Successfully setup the amount of go processes")
 
-	// Initialize Gobot and I2C drivers
+	// // Initialize Gobot and I2C drivers
 	r := raspi.NewAdaptor()
 	dl := i2c.NewTSL2561Driver(r)
 	dg := i2c.NewCCS811Driver(r)
@@ -67,11 +67,11 @@ func main() {
 	ctx := context.TODO()
 
 	// Publish device status on startup
-	err = i.PublishDeviceStatus(ctx)
-	if err != nil {
-		logger.StdErrFatal(err.Error())
-	}
-	logger.StdOut("Successfully published the device status initially")
+	// err = i.PublishDeviceStatus(ctx)
+	// if err != nil {
+	// 	logger.StdErrFatal(err.Error())
+	// }
+	// logger.StdOut("Successfully published the device status initially")
 
 	// Asnycronously start server. If gobot stuff hasn't been initialized, some of the server methods will not work.
 	go func() {

@@ -52,8 +52,8 @@ func NewHTTPService(logger config.LoggerService, sensors sensors.SensorsService,
 
 func (s *httpService) Start(ip string) error {
 	//Start the http server (blocking)
-	port := fmt.Sprintf("%+s:8080", ip)
-	fmt.Printf("Started HTTP handler on port %+s\n", port)
+	port := fmt.Sprintf("%s:8080", ip)
+	fmt.Printf("Started HTTP handler on port %s\n", port)
 	if err := http.ListenAndServe(port, s.mux); err != nil {
 		return err
 	}
