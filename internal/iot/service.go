@@ -18,12 +18,6 @@ const (
 	RebootMessage PowerConfigMessage = "rebooting the device \n"
 )
 
-type IOTServerService interface {
-	PublishSensorDataSnapshot(context.Context) error
-	PublishDeviceStatus(context.Context) error
-	SubscribeToIOTCoreConfig(context.Context) error
-}
-
 type iot struct {
 	sensors   sensors.SensorsService
 	googleiot googleiot.GoogleIOTService
