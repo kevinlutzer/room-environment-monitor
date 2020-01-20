@@ -104,6 +104,10 @@ func (i *iot) handlePowerStatus(p googleiot.PowerState) error {
 	return err
 }
 
+func (i *iot) FetchSensorDataSnapshot(ctx context.Context) (*sensors.SensorData, error) {
+	return i.sensors.FetchSensorData(ctx)
+}
+
 var execCommand = exec.Command
 
 func (i *iot) turnOffDevice() error {

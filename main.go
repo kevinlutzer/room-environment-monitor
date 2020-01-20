@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"os"
 	"runtime"
 
 	httpserver "github.com/kml183/room-environment-monitor/internal/http-server"
@@ -25,18 +26,17 @@ func main() {
 	args, err := config.GetCommandLineArgs()
 	if err != nil {
 		logger.StdErrFatal(err.Error())
+		os.Exit(failedToGetCommandLineArguments)
 	}
 	logger.StdOut("Successfully get the command line argument")
 
-	m, err := json.Marshal(args)
-	if err != nil {
-		logger.StdErrFatal(err.Error())
-	}
+	m, _ := json.Marshal(args)
 	logger.StdOut("The command line args are: %s", string(m))
 
 	// Setup max proccesses to be 8
 	if val := runtime.GOMAXPROCS(8); val < -1 {
 		logger.StdErrFatal("Could not set the max processes, value recieved > %d \n", val)
+		os.Exit(failedToSetGoProcesses)
 	}
 	logger.StdOut("Successfully setup the amount of go processes")
 
@@ -51,6 +51,7 @@ func main() {
 	certs, err := config.GetSSLCerts(args)
 	if err != nil {
 		logger.StdErrFatal("Failed to fetch the ssl cert files > %s", err.Error())
+		os.Exit(failedToGetSSLCerts)
 	}
 	logger.StdOut("Successfully fetch the ssl cert files")
 
@@ -58,6 +59,7 @@ func main() {
 	iotConfig, err := config.GetGoogleIOTConfig(args.DeviceID)
 	if err != nil {
 		logger.StdErrFatal("Failed to get the iot config > %+s ", err.Error())
+		os.Exit(failedToGetIOTConfig)
 	}
 	logger.StdOut("Successfully created google iot config")
 
@@ -65,7 +67,7 @@ func main() {
 	ss := sensors.NewSensorService(dl, dg, dt)
 	gs := googleiot.NewGoogleIOTService(certs, iotConfig, logger)
 	i := iot.NewIOTService(logger, ss, gs)
-	hs := httpserver.NewHTTPService(logger, ss, i)
+	hs := httpserver.NewHTTPService(logger, i)
 	logger.StdOut("Successfully setup services")
 
 	ctx := context.TODO()
@@ -74,16 +76,16 @@ func main() {
 	err = i.PublishDeviceStatus(ctx)
 	if err != nil {
 		logger.StdErrFatal(err.Error())
+		os.Exit(failedToPublishDeviceStatus)
 	}
 	logger.StdOut("Successfully published the device status initially")
-
-	err = gs.PublishDeviceState(ctx, &googleiot.DeviceStatus{CpuTemp: 0})
 
 	// Asnycronously start server. If gobot stuff hasn't been initialized, some of the server methods will not work.
 	go func() {
 		err = hs.Start(args.IP)
 		if err != nil {
 			logger.StdErrFatal(err.Error())
+			os.Exit(failedToStartHTTPService)
 		}
 	}()
 
@@ -94,15 +96,16 @@ func main() {
 	)
 
 	// Setup Cron
-	if err := SetupCRON(ctx, logger, i); err != nil {
+	if err := setupCRON(ctx, logger, i); err != nil {
 		logger.StdErrFatal(err.Error())
+		os.Exit(failedToSetupCRON)
 	}
 	logger.StdOut("Successfully setup the CRON")
 
 	iotDevice.Start()
 }
 
-func SetupCRON(ctx context.Context, logger config.LoggerService, i iot.IOTServerService) error {
+func setupCRON(ctx context.Context, logger config.LoggerService, i iot.IOTServerService) error {
 	c := cron.New()
 	if _, err := c.AddFunc("* 5 * * * *", func() {
 		logger.StdOut("Publishing a new data snapshot")

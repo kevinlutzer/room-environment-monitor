@@ -2,7 +2,8 @@ package iot
 
 import (
 	"context"
-	googleiot "github.com/kml183/room-environment-monitor/internal/google-iot"
+	"github.com/kml183/room-environment-monitor/internal/sensors"
+	"time"
 )
 
 type stub struct {
@@ -26,6 +27,15 @@ func (i *stub) SubscribeToIOTCoreConfig(ctx context.Context) error {
 	return nil
 }
 
-func (i *stub) handlePowerStatus(p googleiot.PowerState) error {
-	return nil
+func (i *stub) FetchSensorDataSnapshot(ctx context.Context) (*sensors.SensorData, error) {
+	return &sensors.SensorData{
+		Lux:       1635,
+		Pressure:  102456,
+		Humidity:  123,
+		RoomTemp:  23.5,
+		CO2:       10923,
+		TVOC:      532,
+		CPUTemp:   45.6,
+		TimeStamp: time.Now(),
+	}, nil
 }

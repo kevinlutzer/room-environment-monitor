@@ -31,11 +31,10 @@ type httpService struct {
 }
 
 // NewHTTPService returns a instance of the http service
-func NewHTTPService(logger config.LoggerService, sensors sensors.SensorsService, iot iot.IOTServerService) HttpServerService {
+func NewHTTPService(logger config.LoggerService, iot iot.IOTServerService) HttpServerService {
 
 	s := &httpService{
 		iot:     iot,
-		sensors: sensors,
 		logger:  logger,
 	}
 
@@ -65,7 +64,7 @@ func (s *httpService) getSensorDataSnapshotHandler(wr http.ResponseWriter, r *ht
 	ctx := r.Context()
 	s.logger.StdOut("http: calling handler getSensorDataSnapshotHandler\n")
 
-	d, err := s.sensors.FetchSensorData(ctx)
+	d, err := s.iot.FetchSensorDataSnapshot(ctx)
 	if err != nil {
 		s.logger.StdErr("http: %v\n", err.Error())
 		s.setStringResponse(wr, "could't fetch the sensor data", 500)
