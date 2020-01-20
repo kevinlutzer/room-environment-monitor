@@ -9,8 +9,8 @@ import (
 type stub struct {
 }
 
-// NewIOTServiceStub returns a stub version of the IOTServerService.
-func NewIOTServiceStub() IOTServerService {
+// NewIOTServiceStub returns a stub version of the Interface.
+func NewIOTServiceStub() Interface {
 	return &stub{
 	}
 }

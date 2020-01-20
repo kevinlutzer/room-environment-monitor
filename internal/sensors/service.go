@@ -21,7 +21,7 @@ type service struct {
 }
 
 // NewSensorService returns a new instance of the Service interface
-func NewSensorService(tsl2561Driver *i2c.TSL2561Driver, ccs811Driver *i2c.CCS811Driver, bme280Driver *i2c.BME280Driver) SensorsService {
+func NewSensorService(tsl2561Driver *i2c.TSL2561Driver, ccs811Driver *i2c.CCS811Driver, bme280Driver *i2c.BME280Driver) Interface {
 	s := &service{
 		tsl2561Driver: tsl2561Driver,
 		ccs811Driver:  ccs811Driver,

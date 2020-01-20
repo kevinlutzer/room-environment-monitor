@@ -16,7 +16,6 @@ type CommandLineArguments struct {
 	RootPath       string `json:"root_path"`
 	RsaCertPath    string `json:"rsa_cert_path"`
 	RsaPrivatePath string `json:"rsa_private_path"`
-	IP             string `json:"ip"`
 	DeviceID       string `json:"device_id"`
 }
 
@@ -38,11 +37,10 @@ func GetCommandLineArgs() (*CommandLineArguments, error) {
 		return nil, fmt.Errorf("Please pass in the ip, device_id, rsa_cert path, rsa_key path, root path in that order")
 	}
 	return &CommandLineArguments{
-		IP:             os.Args[1],
-		DeviceID:       os.Args[2],
-		RsaCertPath:    os.Args[3],
-		RsaPrivatePath: os.Args[4],
-		RootPath:       os.Args[5],
+		DeviceID:       os.Args[1],
+		RsaCertPath:    os.Args[2],
+		RsaPrivatePath: os.Args[3],
+		RootPath:       os.Args[4],
 	}, nil
 }
 

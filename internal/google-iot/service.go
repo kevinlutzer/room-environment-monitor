@@ -29,7 +29,7 @@ type service struct {
 }
 
 // NewGoogleIOTService reurns a new service
-func NewGoogleIOTService(certs *config.SSLCerts, iotConfig *config.GoogleIOTConfig, logger config.LoggerService) GoogleIOTService {
+func NewGoogleIOTService(certs *config.SSLCerts, iotConfig *config.GoogleIOTConfig, logger config.LoggerService) Interface {
 
 	return &service{
 		certs:     certs,

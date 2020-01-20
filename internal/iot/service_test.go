@@ -16,7 +16,7 @@ type IOTServerServiceTestSuite struct {
 	sensors   mocks.SensorsService
 	googleiot mocks.GoogleIOTService
 	logger    mocks.LoggerService
-	iot       IOTServerService
+	iot       Interface
 	ctx       context.Context
 }
 

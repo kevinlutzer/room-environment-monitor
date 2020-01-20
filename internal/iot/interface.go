@@ -5,7 +5,7 @@ import (
 	"github.com/kml183/room-environment-monitor/internal/sensors"
 )
 
-type IOTServerService interface {
+type Interface interface {
 	PublishSensorDataSnapshot(context.Context) error
 	PublishDeviceStatus(context.Context) error
 	SubscribeToIOTCoreConfig(context.Context) error

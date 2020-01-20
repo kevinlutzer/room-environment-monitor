@@ -19,13 +19,13 @@ const (
 )
 
 type iot struct {
-	sensors   sensors.SensorsService
-	googleiot googleiot.GoogleIOTService
+	sensors   sensors.Interface
+	googleiot googleiot.Interface
 	logger    config.LoggerService
 }
 
 // NewIOTService returns a instance of the iot service
-func NewIOTService(logger config.LoggerService, ss sensors.SensorsService, gs googleiot.GoogleIOTService) IOTServerService {
+func NewIOTService(logger config.LoggerService, ss sensors.Interface, gs googleiot.Interface) Interface {
 	i := &iot{
 		sensors:   ss,
 		googleiot: gs,

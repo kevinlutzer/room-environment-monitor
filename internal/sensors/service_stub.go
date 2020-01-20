@@ -8,7 +8,7 @@ import (
 type stub struct {}
 
 // NewSensorService returns a new instance of the Service interface
-func NewSensorServiceStub() SensorsService {
+func NewSensorServiceStub() Interface {
 	return &stub{}
 }
 
