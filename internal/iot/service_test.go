@@ -44,7 +44,7 @@ func (s *IOTServerServiceTestSuite) Test_PublishSensorDataSnapshot_ShouldReturnE
 
 	publishSensorDataErr := errors.New("Something It doesn't matter")
 
-	s.sensors.On("FetchSensorData", mock.Anything).Return(nil, publishSensorDataErr)
+	s.sensors.On("FetchSensorData", mock.Anything).Return(&sensors2.SensorData{}, nil)
 	s.googleiot.On("PublishSensorData", mock.Anything, mock.Anything).Return(publishSensorDataErr)
 	err := s.iot.PublishSensorDataSnapshot(s.ctx)
 	s.Assert().Equal(publishSensorDataErr, err)
