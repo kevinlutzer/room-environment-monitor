@@ -18,5 +18,5 @@ export function Convert(deviceId: string, sysDate: Date, data: RoomEnvironmentMo
         cpuTemp: data.cpu_temp || 0,
         timestamp: admin.firestore.Timestamp.fromDate(sysDate),
         deviceId: deviceId,
-    } as RoomEnvironmentMonitorStatusInterface
+    } as RoomEnvironmentMonitorStatusInterface;
 }

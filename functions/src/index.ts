@@ -16,7 +16,7 @@ db.settings({timestampsInSnapshots: true});
 
 const RoomEnvironmentTelemetryExpressApp = express();
 
-RoomEnvironmentTelemetryExpressApp.get('/api/list', (req, res, next) => TelemetryListHandler(req, res, next, db))
+RoomEnvironmentTelemetryExpressApp.get('/api/room-environment-monitor-telemetry/list', (req, res, next) => TelemetryListHandler(req, res, next, db))
 
 export const RoomEnvironmentTelemetryPubsubHandler = functions.pubsub.topic(RoomEnvironmentTelemetryPubsubTopic).onPublish(msg => TelemetryPubsubHandler(msg, db))
 export const RoomEnvironmentStatusPubsubHandler = functions.pubsub.topic(RoomEnvironmentTelemetryPubsubTopic).onPublish(msg => StatusPubsubHandler(msg, db))
