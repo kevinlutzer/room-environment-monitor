@@ -18,20 +18,14 @@ const (
 	RebootMessage PowerConfigMessage = "rebooting the device \n"
 )
 
-type IOTServerService interface {
-	PublishSensorDataSnapshot(context.Context) error
-	PublishDeviceStatus(context.Context) error
-	SubscribeToIOTCoreConfig(context.Context) error
-}
-
 type iot struct {
-	sensors   sensors.SensorsService
-	googleiot googleiot.GoogleIOTService
+	sensors   sensors.Interface
+	googleiot googleiot.Interface
 	logger    config.LoggerService
 }
 
 // NewIOTService returns a instance of the iot service
-func NewIOTService(logger config.LoggerService, ss sensors.SensorsService, gs googleiot.GoogleIOTService) IOTServerService {
+func NewIOTService(logger config.LoggerService, ss sensors.Interface, gs googleiot.Interface) Interface {
 	i := &iot{
 		sensors:   ss,
 		googleiot: gs,
@@ -108,6 +102,10 @@ func (i *iot) handlePowerStatus(p googleiot.PowerState) error {
 		i.logger.StdOut("Message does not have a valid power status\n")
 	}
 	return err
+}
+
+func (i *iot) FetchSensorDataSnapshot(ctx context.Context) (*sensors.SensorData, error) {
+	return i.sensors.FetchSensorData(ctx)
 }
 
 var execCommand = exec.Command

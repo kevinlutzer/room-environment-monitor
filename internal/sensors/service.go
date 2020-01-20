@@ -14,14 +14,6 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-//Service represents the structure of the service layer
-type SensorsService interface {
-	//FetchSensorData fetches sensors data
-	FetchSensorData(ctx context.Context) (*SensorData, error)
-	//FetchCPUTemp fetches the cpu temp
-	FetchCPUTemp() (float32, error)
-}
-
 type service struct {
 	tsl2561Driver *i2c.TSL2561Driver
 	ccs811Driver  *i2c.CCS811Driver
@@ -29,7 +21,7 @@ type service struct {
 }
 
 // NewSensorService returns a new instance of the Service interface
-func NewSensorService(tsl2561Driver *i2c.TSL2561Driver, ccs811Driver *i2c.CCS811Driver, bme280Driver *i2c.BME280Driver) SensorsService {
+func NewSensorService(tsl2561Driver *i2c.TSL2561Driver, ccs811Driver *i2c.CCS811Driver, bme280Driver *i2c.BME280Driver) Interface {
 	s := &service{
 		tsl2561Driver: tsl2561Driver,
 		ccs811Driver:  ccs811Driver,

@@ -19,23 +19,22 @@ type DataMessage struct {
 	Data    *sensors.SensorData `json:"data"`
 }
 
-type HttpServerService interface {
+type Interface interface {
 	Start(ip string) error
 }
 
-type httpService struct {
-	iot     iot.IOTServerService
-	sensors sensors.SensorsService
+type server struct {
+	iot     iot.Interface
+	sensors sensors.Interface
 	logger  config.LoggerService
 	mux     *http.ServeMux
 }
 
 // NewHTTPService returns a instance of the http service
-func NewHTTPService(logger config.LoggerService, sensors sensors.SensorsService, iot iot.IOTServerService) HttpServerService {
+func NewHTTPService(logger config.LoggerService, iot iot.Interface) Interface {
 
-	s := &httpService{
+	s := &server{
 		iot:     iot,
-		sensors: sensors,
 		logger:  logger,
 	}
 
@@ -50,7 +49,7 @@ func NewHTTPService(logger config.LoggerService, sensors sensors.SensorsService,
 	return s
 }
 
-func (s *httpService) Start(ip string) error {
+func (s *server) Start(ip string) error {
 	//Start the http server (blocking)
 	port := fmt.Sprintf("%+s:8080", ip)
 	fmt.Printf("Started HTTP handler on port %+s\n", port)
@@ -61,11 +60,11 @@ func (s *httpService) Start(ip string) error {
 }
 
 // Handler is the main http handler for the room environment monitor app
-func (s *httpService) getSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Request) {
+func (s *server) getSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	s.logger.StdOut("http: calling handler getSensorDataSnapshotHandler\n")
 
-	d, err := s.sensors.FetchSensorData(ctx)
+	d, err := s.iot.FetchSensorDataSnapshot(ctx)
 	if err != nil {
 		s.logger.StdErr("http: %v\n", err.Error())
 		s.setStringResponse(wr, "could't fetch the sensor data", 500)
@@ -75,7 +74,7 @@ func (s *httpService) getSensorDataSnapshotHandler(wr http.ResponseWriter, r *ht
 	s.setDataResponse(wr, d, 200)
 }
 
-func (s *httpService) publishSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Request) {
+func (s *server) publishSensorDataSnapshotHandler(wr http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	s.logger.StdOut("http: calling handler publishSensorDataSnapshotHandler\n")
 
@@ -90,7 +89,7 @@ func (s *httpService) publishSensorDataSnapshotHandler(wr http.ResponseWriter, r
 
 }
 
-func (s *httpService) publishDeviceStatusHandler(wr http.ResponseWriter, r *http.Request) {
+func (s *server) publishDeviceStatusHandler(wr http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	s.logger.StdOut("http: calling handler publishDeviceStatusHandler\n")
 
@@ -104,7 +103,7 @@ func (s *httpService) publishDeviceStatusHandler(wr http.ResponseWriter, r *http
 	s.setStringResponse(wr, "published the status", 200)
 }
 
-func (s *httpService) subscribeToIOTCoreConfigHandler(wr http.ResponseWriter, r *http.Request) {
+func (s *server) subscribeToIOTCoreConfigHandler(wr http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	s.logger.StdOut("http: calling handler subscribeToIOTCoreConfigHandler\n")
 
@@ -118,7 +117,7 @@ func (s *httpService) subscribeToIOTCoreConfigHandler(wr http.ResponseWriter, r 
 	s.setStringResponse(wr, "subscribed to the iot config", 200)
 }
 
-func (s *httpService) setStringResponse(wr http.ResponseWriter, message string, statusCode int) {
+func (s *server) setStringResponse(wr http.ResponseWriter, message string, statusCode int) {
 	msg := &Message{Message: message}
 	b, _ := json.Marshal(msg)
 
@@ -128,7 +127,7 @@ func (s *httpService) setStringResponse(wr http.ResponseWriter, message string, 
 	return
 }
 
-func (s *httpService) setDataResponse(wr http.ResponseWriter, data *sensors.SensorData, statusCode int) {
+func (s *server) setDataResponse(wr http.ResponseWriter, data *sensors.SensorData, statusCode int) {
 
 	msg := &DataMessage{
 		Message: "successfuly fetched data from the sensors",
