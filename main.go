@@ -72,14 +72,6 @@ func main() {
 
 	ctx := context.TODO()
 
-	// Publish device status on startup
-	err = i.PublishDeviceStatus(ctx)
-	if err != nil {
-		logger.StdErrFatal(err.Error())
-		os.Exit(failedToPublishDeviceStatus)
-	}
-	logger.StdOut("Successfully published the device status initially")
-
 	// Asnycronously start server. If gobot stuff hasn't been initialized, some of the server methods will not work.
 	go func() {
 		err = hs.Start(args.IP)
@@ -102,7 +94,18 @@ func main() {
 	}
 	logger.StdOut("Successfully setup the CRON")
 
-	iotDevice.Start()
+	// Publish device status on startup
+	if err := i.PublishDeviceStatus(ctx); err != nil {
+		logger.StdErrFatal(err.Error())
+		os.Exit(failedToPublishDeviceStatus)
+	}
+	logger.StdOut("Successfully published the device status initially")
+
+	if err := iotDevice.Start(); err != nil {
+		logger.StdErr("Failed to start iod device: %s", err.Error())
+		os.Exit(failedToStartGoBotService)
+	}
+
 }
 
 func setupCRON(ctx context.Context, logger config.LoggerService, i iot.IOTServerService) error {

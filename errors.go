@@ -8,4 +8,5 @@ const (
 	failedToPublishDeviceStatus = 8
 	failedToStartHTTPService = 9
 	failedToSetupCRON = 10
+	failedToStartGoBotService = 11
 )
