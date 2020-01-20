@@ -15,16 +15,6 @@ import (
 	"github.com/kml183/room-environment-monitor/internal/sensors"
 )
 
-//GoogleIOTService represents the structure of the service layer
-type GoogleIOTService interface {
-	//PublishSensorData fetches sensors data
-	PublishSensorData(ctx context.Context, data *sensors.SensorData) error
-	//PublishDeviceState fetches sensors data
-	PublishDeviceState(ctx context.Context, status *DeviceStatus) error
-	//SubsribeToConfigChanges subscribe to any config changes
-	SubsribeToConfigChanges(ctx context.Context) (*ConfigMessage, error)
-}
-
 type topics struct {
 	state     string
 	telemetry string
@@ -89,7 +79,7 @@ func getTLSConfig(rootsCert string) *tls.Config {
 	}
 }
 
-func getMQTTClient(certs *config.SSLCerts, iotConfig *config.GoogleIOTConfig, logger *log.Logger, opts *MQTT.ClientOptions) (MQTT.Client, error) {
+func getMQTTClient(certs *config.SSLCerts, iotConfig *config.GoogleIOTConfig, opts *MQTT.ClientOptions) (MQTT.Client, error) {
 
 	clientID := fmt.Sprintf("projects/%v/locations/%v/registries/%v/devices/%v",
 		iotConfig.ProjectID,
@@ -125,7 +115,7 @@ func (s *service) PublishSensorData(ctx context.Context, d *sensors.SensorData) 
 		s.logger.StdOut("payload > %s\n", msg.Payload())
 	})
 
-	c, err := getMQTTClient(s.certs, s.iotConfig, s.logger.GetStdOut(), opts)
+	c, err := getMQTTClient(s.certs, s.iotConfig, opts)
 	if err != nil {
 		return err
 	}
@@ -167,7 +157,7 @@ func (s *service) SubsribeToConfigChanges(ctx context.Context) (*ConfigMessage, 
 		choke <- [2]string{msg.Topic(), string(msg.Payload())}
 	})
 
-	c, err := getMQTTClient(s.certs, s.iotConfig, s.logger.GetStdOut(), opts)
+	c, err := getMQTTClient(s.certs, s.iotConfig, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -200,7 +190,7 @@ func (s *service) SubsribeToConfigChanges(ctx context.Context) (*ConfigMessage, 
 }
 
 func (s *service) PublishDeviceState(ctx context.Context, status *DeviceStatus) error {
-	c, err := getMQTTClient(s.certs, s.iotConfig, s.logger.GetStdOut(), MQTT.NewClientOptions())
+	c, err := getMQTTClient(s.certs, s.iotConfig, MQTT.NewClientOptions())
 	if err != nil {
 		s.logger.StdErr("Failed to get MQTT client, > %v", err)
 		return err

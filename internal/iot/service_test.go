@@ -3,7 +3,6 @@ package iot
 import (
 	"context"
 	"errors"
-	"os/exec"
 	"testing"
 
 	"github.com/stretchr/testify/mock"
@@ -86,25 +85,6 @@ func (s *IOTServerServiceTestSuite) Test_SubscribeToIOTCoreConfig_ShouldReturnEr
 	err := s.iot.SubscribeToIOTCoreConfig(s.ctx)
 	s.Assert().Equal(subscribeToIOTCoreConfigErr, err)
 }
-
-func fakeExecCommand(command string, args ...string) *exec.Cmd {
-	return exec.Command("")
-}
-
-// func (s *IOTServerServiceTestSuite) Test_SubscribeToIOTCoreConfig_ShouldTurnOffDeviceSubsribeToConfigChangesMessageIsOff() {
-// 	msg := &googleiot.ConfigMessage{
-// 		PowerState: googleiot.On,
-// 	}
-// 	s.logger.On("StdOut", mock.Anything)
-// 	s.logger.On("StdErr", mock.Anything)
-// 	s.googleiot.On("SubsribeToConfigChanges", mock.Anything).Return(msg, nil)
-
-// 	execCommand = fakeExecCommand
-// 	defer func() { execCommand = exec.Command }()
-// 	err := s.iot.SubscribeToIOTCoreConfig(s.ctx)
-// 	s.logger.AssertCalled(s.T(), "StdOut")
-// 	s.Assert().Equal(nil, err)
-// }
 
 func Test_IOTServerServiceTestSuite(t *testing.T) {
 	suite.Run(t, new(IOTServerServiceTestSuite))

@@ -18,8 +18,12 @@ import (
 	cron "gopkg.in/robfig/cron.v2"
 )
 
-func main() {
+const (
+	useIOTServiceStub = "USEIOTSERVICESTUB"
+	useSensorStub = "USESENSORSTUB"
+)
 
+func main() {
 	logger := config.NewLogger()
 
 	// Get Command Line Args
@@ -65,8 +69,18 @@ func main() {
 
 	// Services
 	ss := sensors.NewSensorService(dl, dg, dt)
+	if os.Getenv(useSensorStub) == "true" {
+		ss = sensors.NewSensorServiceStub()
+		logger.StdOut("Use Stub Sensor Service")
+	}
+
 	gs := googleiot.NewGoogleIOTService(certs, iotConfig, logger)
+
 	i := iot.NewIOTService(logger, ss, gs)
+	if os.Getenv(useIOTServiceStub) == "true" {
+		i = iot.NewIOTServiceStub()
+	}
+
 	hs := httpserver.NewHTTPService(logger, i)
 	logger.StdOut("Successfully setup services")
 
