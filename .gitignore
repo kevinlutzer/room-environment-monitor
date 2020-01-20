@@ -2,7 +2,6 @@
 # certs and key files
 auth-files
 certs*
-main
 api_key.txt
 
 # compiled pi files
