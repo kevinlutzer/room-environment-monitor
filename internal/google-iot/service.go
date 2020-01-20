@@ -9,9 +9,9 @@ import (
 	"log"
 	"time"
 
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
-	"github.com/kml183/room-environment-monitor/internal/config"
+	"github.com/kml183/room-environment-monitor/internal/logger"
 	"github.com/kml183/room-environment-monitor/internal/sensors"
 )
 
@@ -22,14 +22,14 @@ type topics struct {
 }
 
 type service struct {
-	logger    config.LoggerService
+	logger    logger.LoggerService
 	topics    topics
-	certs     *config.SSLCerts
-	iotConfig *config.GoogleIOTConfig
+	certs     *SSLCerts
+	iotConfig *GoogleIOTConfig
 }
 
 // NewGoogleIOTService reurns a new service
-func NewGoogleIOTService(certs *config.SSLCerts, iotConfig *config.GoogleIOTConfig, logger config.LoggerService) Interface {
+func NewGoogleIOTService(certs *SSLCerts, iotConfig *GoogleIOTConfig, logger logger.LoggerService) Interface {
 
 	return &service{
 		certs:     certs,
@@ -38,7 +38,7 @@ func NewGoogleIOTService(certs *config.SSLCerts, iotConfig *config.GoogleIOTConf
 		topics: topics{
 			telemetry: fmt.Sprintf("/devices/%v/events", iotConfig.DeviceID),
 			state:     fmt.Sprintf("/devices/%v/state", iotConfig.DeviceID),
-			config:    fmt.Sprintf("/devices/%v/config", iotConfig.DeviceID),
+			config:    fmt.Sprintf("/devices/%v/logger", iotConfig.DeviceID),
 		},
 	}
 }
@@ -79,7 +79,7 @@ func getTLSConfig(rootsCert string) *tls.Config {
 	}
 }
 
-func getMQTTClient(certs *config.SSLCerts, iotConfig *config.GoogleIOTConfig, opts *MQTT.ClientOptions) (MQTT.Client, error) {
+func getMQTTClient(certs *SSLCerts, iotConfig *GoogleIOTConfig, opts *MQTT.ClientOptions) (MQTT.Client, error) {
 
 	clientID := fmt.Sprintf("projects/%v/locations/%v/registries/%v/devices/%v",
 		iotConfig.ProjectID,

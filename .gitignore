@@ -12,5 +12,5 @@ sever/*.pyc
 
 # index files from wget
 
-# ide config files
+# ide logger files
 .idea

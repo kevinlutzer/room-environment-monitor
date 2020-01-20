@@ -5,6 +5,7 @@ import (
 	"github.com/kml183/room-environment-monitor/internal/sensors"
 )
 
+//go:generate mockery -inpkg -name Interface -case underscore
 type Interface interface {
 	PublishSensorDataSnapshot(context.Context) error
 	PublishDeviceStatus(context.Context) error

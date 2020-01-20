@@ -5,7 +5,7 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/kml183/room-environment-monitor/internal/config"
+	"github.com/kml183/room-environment-monitor/internal/logger"
 	googleiot "github.com/kml183/room-environment-monitor/internal/google-iot"
 	"github.com/kml183/room-environment-monitor/internal/sensors"
 )
@@ -21,11 +21,11 @@ const (
 type iot struct {
 	sensors   sensors.Interface
 	googleiot googleiot.Interface
-	logger    config.LoggerService
+	logger    logger.LoggerService
 }
 
 // NewIOTService returns a instance of the iot service
-func NewIOTService(logger config.LoggerService, ss sensors.Interface, gs googleiot.Interface) Interface {
+func NewIOTService(logger logger.LoggerService, ss sensors.Interface, gs googleiot.Interface) Interface {
 	i := &iot{
 		sensors:   ss,
 		googleiot: gs,

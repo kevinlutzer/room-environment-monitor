@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/kml183/room-environment-monitor/internal/config"
+	"github.com/kml183/room-environment-monitor/internal/logger"
 	"github.com/kml183/room-environment-monitor/internal/iot"
 	"github.com/kml183/room-environment-monitor/internal/sensors"
 )
@@ -26,12 +26,12 @@ type Interface interface {
 type server struct {
 	iot     iot.Interface
 	sensors sensors.Interface
-	logger  config.LoggerService
+	logger  logger.LoggerService
 	mux     *http.ServeMux
 }
 
 // NewHTTPService returns a instance of the http service
-func NewHTTPService(logger config.LoggerService, iot iot.Interface) Interface {
+func NewHTTPService(logger logger.LoggerService, iot iot.Interface) Interface {
 
 	s := &server{
 		iot:     iot,
@@ -43,7 +43,7 @@ func NewHTTPService(logger config.LoggerService, iot iot.Interface) Interface {
 	mux.HandleFunc("/get-sensor-data-snapshot", s.getSensorDataSnapshotHandler)
 	mux.HandleFunc("/publish-sensor-data-snapshot", s.publishSensorDataSnapshotHandler)
 	mux.HandleFunc("/publish-device-status", s.publishDeviceStatusHandler)
-	mux.HandleFunc("/subscribe-iot-config", s.subscribeToIOTCoreConfigHandler)
+	mux.HandleFunc("/subscribe-iot-logger", s.subscribeToIOTCoreConfigHandler)
 
 	s.mux = mux
 	return s
@@ -110,11 +110,11 @@ func (s *server) subscribeToIOTCoreConfigHandler(wr http.ResponseWriter, r *http
 	err := s.iot.SubscribeToIOTCoreConfig(ctx)
 	if err != nil {
 		s.logger.StdErr("http: %v\n", err.Error())
-		s.setStringResponse(wr, "could't subscribe to the iot config", 500)
+		s.setStringResponse(wr, "could't subscribe to the iot logger", 500)
 		return
 	}
 
-	s.setStringResponse(wr, "subscribed to the iot config", 200)
+	s.setStringResponse(wr, "subscribed to the iot logger", 200)
 }
 
 func (s *server) setStringResponse(wr http.ResponseWriter, message string, statusCode int) {
