@@ -23,8 +23,7 @@ RoomEnvironmentTelemetryExpressApp.post('/api/v1/set-config', (req, res, next) =
 
 RoomEnvironmentStatusExpressApp.get('/api/v1/list', (req, res, next) => StatusListHandler(req, res, next, db))
 
-export const RoomEnvironmentStatusHandler = functions.https.onRequest(RoomEnvironmentStatusExpressApp);
-export const RoomEnvironmentTelemetryPubsubHandler = functions.pubsub.topic(RoomEnvironmentTelemetryPubsubTopic).onPublish(msg => TelemetryPubsubHandler(msg, db))
-export const RoomEnvironmentStatusPubsubHandler = functions.pubsub.topic(RoomEnvironmentTelemetryPubsubTopic).onPublish(msg => StatusPubsubHandler(msg, db))
-export const RoomEnvironmentTelemetryHandler = functions.https.onRequest(RoomEnvironmentTelemetryExpressApp);
-
+exports.RoomEnvironmentTelemetryPubsubHandler = functions.pubsub.topic(RoomEnvironmentTelemetryPubsubTopic).onPublish(msg => TelemetryPubsubHandler(msg, db))
+exports.RoomEnvironmentStatusPubsubHandler = functions.pubsub.topic(RoomEnvironmentTelemetryPubsubTopic).onPublish(msg => StatusPubsubHandler(msg, db))
+exports.RoomEnvironmentTelemetryHandler = functions.https.onRequest(RoomEnvironmentTelemetryExpressApp);
+exports.RoomEnvironmentStatusHandler = functions.https.onRequest(RoomEnvironmentStatusExpressApp);

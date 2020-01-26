@@ -1,5 +1,4 @@
 import * as admin from 'firebase-admin';
-import { Request } from 'express';
 
 export const MODEL = "RoomEnvironmentMonitorStatus";
 
@@ -20,22 +19,6 @@ export function Convert(deviceId: string, sysDate: Date, data: RoomEnvironmentMo
         timestamp: admin.firestore.Timestamp.fromDate(sysDate),
         deviceId: deviceId,
     } as RoomEnvironmentMonitorStatusInterface;
-}
-
-export interface RoomEnvironmentMonitorStatusListRequest {
-    cursor: number;
-    pageSize: number;
-} 
-
-export function BuildRoomEnvironmentStatusListRequest(req: Request<any>): RoomEnvironmentMonitorStatusListRequest {
-    // return {
-    //     cursor: parseInt(req.query.cursor, 10) || 0,
-    //     pageSize: parseInt(req.query.pageSize, 10) || 1000
-    // }
-    return {
-        cursor: 0,
-        pageSize: 1000
-    }
 }
 
 export function ConvertQuerySnapshotDocument(snapshot: FirebaseFirestore.QueryDocumentSnapshot): RoomEnvironmentMonitorStatusInterface {
