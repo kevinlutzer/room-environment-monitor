@@ -27,10 +27,14 @@ export interface RoomEnvironmentMonitorStatusListRequest {
     pageSize: number;
 } 
 
-export function BuildRoomEnvironmentStatusListRequest(req: Request): RoomEnvironmentMonitorStatusListRequest {
+export function BuildRoomEnvironmentStatusListRequest(req: Request<any>): RoomEnvironmentMonitorStatusListRequest {
+    // return {
+    //     cursor: parseInt(req.query.cursor, 10) || 0,
+    //     pageSize: parseInt(req.query.pageSize, 10) || 1000
+    // }
     return {
-        cursor: parseInt(req.query.cursor, 10) || 0,
-        pageSize: parseInt(req.query.pageSize, 10) || 1000
+        cursor: 0,
+        pageSize: 1000
     }
 }
 

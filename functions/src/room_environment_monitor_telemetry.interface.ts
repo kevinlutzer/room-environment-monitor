@@ -48,10 +48,15 @@ export function ConvertPubsubMessage(deviceId: string, sysDate: Date, data: Room
 
 export function BuildRoomEnvironmentTelemetryListRequest(req: Request): RoomEnvironmentMonitorTelemetryListRequestInterface {
     return {
-        deviceId: req.query.deviceId as string || '',
-        cursor: parseInt(req.query.cursor, 10) || 0,
-        pageSize: parseInt(req.query.pageSize, 10) || 1000
+        deviceId: '',
+        cursor: 0,
+        pageSize: 1000
     }
+    // return {
+    //     deviceId: req.query.deviceId as string || '',
+    //     cursor: parseInt(req.query.cursor, 10) || 0,
+    //     pageSize: parseInt(req.query.pageSize, 10) || 1000
+    // }
 }
 
 export function ConvertQuerySnapshotDocument(snapshot: FirebaseFirestore.QueryDocumentSnapshot): RoomEnvironmentMonitorTelemetryInterface {

@@ -13,9 +13,9 @@
   "dependencies": {
     "@google-cloud/firestore": "^0.17.0",
     "@types/cors": "^2.8.4",
-    "@types/express": "^4.16.0",
+    "@types/express": "^4.17.2",
     "@types/moment": "^2.13.0",
-    "express": "^4.16.4",
+    "express": "^4.17.1",
     "firebase": "^5.11.1",
     "firebase-admin": "^8.9.2",
     "firebase-functions": "^3.3.0",
@@ -23,7 +23,10 @@
   },
   "devDependencies": {
     "tslint": "~5.8.0",
-    "typescript": "~2.8.3"
+    "typescript": "^3.7.3"
   },
-  "private": true
+  "private": true,
+  "engines": {
+    "node": "8"
+  }
 }

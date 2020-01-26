@@ -35,17 +35,18 @@ async function createRoomEnvironmentMonitorStatusEntity(id: string, data: RoomEn
 
 // Handlers
 export async function List(req: Request, res: Response, next: NextFunction, db: FirebaseFirestore.Firestore) {
-    const r = BuildRoomEnvironmentStatusListRequest(req);
+    res.status(415)
+    //     const r = BuildRoomEnvironmentStatusListRequest(req);
     
-res.status
+// res.status
 
-    return db
-        .collection(MODEL)
-        .limit(r.pageSize)
-        .offset(r.cursor)
-        .get()
-        .then(results => handleListResponse(r, res, results))
-        .catch(next);
+//     return db
+//         .collection(MODEL)
+//         .limit(r.pageSize)
+//         .offset(r.cursor)
+//         .get()
+//         .then(results => handleListResponse(r, res, results))
+//         .catch(next);
 }
 
 function handleListResponse(r: RoomEnvironmentMonitorStatusListRequest, res: Response, s: FirebaseFirestore.QuerySnapshot) {

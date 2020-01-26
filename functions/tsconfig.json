@@ -1,14 +1,21 @@
 {
   "compilerOptions": {
-    "lib": ["es6"],
+    "target": "es5",
     "module": "commonjs",
-    "noImplicitReturns": true,
-    "outDir": "lib",
     "sourceMap": true,
-    "target": "es6"
+    "strict": false,
+    "noImplicitAny": false,
+    "strictPropertyInitialization": false,
+    "esModuleInterop": true,
+    "types": [],
+    "outDir": "dist",
+    "lib": ["es2018", "dom"],
+    "skipLibCheck": true
   },
-  "compileOnSave": true,
   "include": [
-    "src"
+    "src/*"
+  ],
+  "exclude": [
+    "node_modules/*",
   ]
 }
