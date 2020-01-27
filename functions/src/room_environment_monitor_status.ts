@@ -37,7 +37,7 @@ async function createRoomEnvironmentMonitorStatusEntity(id: string, data: RoomEn
 // Handlers
 export async function List(req: Request, res: Response, next: NextFunction, db: FirebaseFirestore.Firestore) {
     const r = ApiRequest.fromRequest(req);
-    console.log("REQUEST", r)
+
     return db
         .collection(MODEL)
         .limit(r.pageSize)
@@ -49,6 +49,5 @@ export async function List(req: Request, res: Response, next: NextFunction, db: 
 
 function handleListResponse(req: ApiRequest, res: Response, s: FirebaseFirestore.QuerySnapshot) {
     const data = (s.docs || []).map(ConvertQuerySnapshotDocument);
-    console.log('DOCS', s.docs);
     (new ApiResponse<RoomEnvironmentMonitorStatusInterface>(data, req)).toReponse(res);
 }
