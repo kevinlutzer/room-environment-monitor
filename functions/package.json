@@ -9,7 +9,7 @@
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log"
   },
-  "main": "dist/index.js",
+  "main": "lib/index.js",
   "dependencies": {
     "@google-cloud/firestore": "^0.17.0",
     "express": "^4.17.1",

@@ -1,5 +1,4 @@
 */lib/*
-**node_modules/
-functions/node_modules/
-functions/dist/
-**firestore-debug.log**
+*/node_modules/*
+*/dist/*
+*firestore-debug.log*
