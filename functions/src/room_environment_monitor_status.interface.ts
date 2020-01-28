@@ -20,3 +20,12 @@ export function Convert(deviceId: string, sysDate: Date, data: RoomEnvironmentMo
         deviceId: deviceId,
     } as RoomEnvironmentMonitorStatusInterface;
 }
+
+export function ConvertQuerySnapshotDocument(snapshot: FirebaseFirestore.QueryDocumentSnapshot): RoomEnvironmentMonitorStatusInterface {
+    const data = snapshot.data();
+    return {
+        cpuTemp: data.cpuTemp,
+        timestamp: data.timestamp ? data.timestamp.toDate() : new Date(),
+        deviceId: data.deviceId,
+    }
+}

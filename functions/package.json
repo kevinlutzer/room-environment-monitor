@@ -3,26 +3,32 @@
   "scripts": {
     "lint": "tslint --project tsconfig.json",
     "build": "tsc",
-    "serve": "npm run build && firebase serve --only functions",
+    "serve": "tsc && firebase serve --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log"
   },
-  "main": "lib/index.js",
+  "main": "dist/index.js",
   "dependencies": {
     "@google-cloud/firestore": "^0.17.0",
-    "@types/cors": "^2.8.4",
-    "@types/express": "^4.16.0",
-    "express": "^4.16.4",
-    "firebase": "^5.5.0",
-    "firebase-admin": "~5.13.0",
-    "firebase-functions": "^2.0.0",
-    "firestore": "^1.1.6"
+    "express": "^4.17.1",
+    "firebase": "^5.11.1",
+    "firebase-admin": "^8.9.2",
+    "firebase-functions": "^3.3.0",
+    "firestore": "^1.1.6",
+    "request": "^2.88.0"
   },
   "devDependencies": {
     "tslint": "~5.8.0",
-    "typescript": "~2.8.3"
+    "typescript": "^3.7.3",
+    "@types/express": "^4.17.1",
+    "@types/express-flash": "0.0.1",
+    "@types/express-session": "^1.15.14",
+    "@types/express-serve-static-core": "^4.17.2"
   },
-  "private": true
+  "private": true,
+  "engines": {
+    "node": "8"
+  }
 }

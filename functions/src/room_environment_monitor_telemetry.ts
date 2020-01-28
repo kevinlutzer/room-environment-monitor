@@ -1,32 +1,36 @@
 import * as functions from 'firebase-functions';
 
-import {RoomEnvironmentMonitorTelemetryInterface, RoomEnvironmentMonitorTelemetryPubsubMessageInterface, 
-    ConvertPubsubMessage, BuildRoomEnvironmentTelemetryListRequest, MODEL, ConvertQuerySnapshotDocument, RoomEnvironmentMonitorTelemetryListRequestInterface} from './room_environment_monitor_telemetry.interface';
-import {ExtractInterfaceFromPubsubMessage} from './pubsub.util';
+import { RoomEnvironmentMonitorTelemetryInterface, RoomEnvironmentMonitorTelemetryPubsubMessageInterface, 
+    ConvertPubsubMessage, MODEL, 
+    ConvertQuerySnapshotDocument } from './room_environment_monitor_telemetry.interface';
+import { ExtractInterfaceFromPubsubMessage } from './pubsub.util';
 import { Response, Request, NextFunction } from 'express';
+import { ApiRequest, ApiResponse } from './api.interface';
 
 // Handlers
 export async function List(req: Request, res: Response, next: NextFunction, db: FirebaseFirestore.Firestore) {
-    const r = BuildRoomEnvironmentTelemetryListRequest(req);
-    r.deviceId
-    return db
+    const r = ApiRequest.fromRequest(req);
+
+    let q = db
         .collection(MODEL)
-        .where('deviceId', '==', r.deviceId)
         .limit(r.pageSize)
         .offset(r.cursor)
+
+    if (r.searchTerm) {
+        q = q.where('deviceId', '==', r.searchTerm);
+    }    
+
+    return q
         .get()
         .then(results => handleListResponse(r, res, results))
         .catch(next);
 }
 
-function handleListResponse(r: RoomEnvironmentMonitorTelemetryListRequestInterface, res: Response, s: FirebaseFirestore.QuerySnapshot) {
-    const hasMore = r.pageSize === s.size;
-    res.json({
-        data: (s.docs || []).map(ConvertQuerySnapshotDocument),
-        hasMore: hasMore,
-        nextCursor: hasMore ? r.pageSize + r.cursor : 0
-    })
+function handleListResponse(req: ApiRequest, res: Response, s: FirebaseFirestore.QuerySnapshot) {
+    const data = (s.docs || []).map(ConvertQuerySnapshotDocument);
+    (new ApiResponse<RoomEnvironmentMonitorTelemetryInterface>(data, req)).toReponse(res);
 }
+
 
 export async function PubsubHandler(message: functions.pubsub.Message, db: FirebaseFirestore.Firestore) {
     const rawData = ExtractInterfaceFromPubsubMessage(message) as RoomEnvironmentMonitorTelemetryPubsubMessageInterface;
@@ -35,8 +39,6 @@ export async function PubsubHandler(message: functions.pubsub.Message, db: Fireb
         console.error("The raw data could not be abstracted fro the pubsub message.");
         return
     }
-
-    console.log(rawData);
 
     // Becasue the id is based on the timestamp, if the timestamp is passed null or undefined the same entity will be updated
     const sysDate = new Date(rawData.timestamp || "");
