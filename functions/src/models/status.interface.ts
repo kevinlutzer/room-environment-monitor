@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin';
 
-export const MODEL = "RoomEnvironmentMonitorStatus";
+export const StatusModel = "RoomEnvironmentMonitorStatus";
 
 export interface RoomEnvironmentMonitorStatusPubsubMessageInterface {
     cpu_temp: number;

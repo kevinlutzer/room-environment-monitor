@@ -2,9 +2,8 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const express = require('express');
 
-import {PubsubHandler as TelemetryPubsubHandler, List as TelemetryListHandler} from './room_environment_monitor_telemetry';
-import {PubsubHandler as StatusPubsubHandler, List as StatusListHandler} from './room_environment_monitor_status';
-import { SetConfig } from './room_environment_monitor_config_webhook';
+import { TelemetryCreatePubsubHandler, TelemetryList,
+    StatusUpdatePubsubHandler, StatusList} from './controllers';
 
 
 export const RoomEnvironmentTelemetryPubsubTopic = 'room-environment-monitor-telemetry';
@@ -15,15 +14,11 @@ admin.initializeApp(functions.config().firebase);
 const db = admin.firestore();
 db.settings({timestampsInSnapshots: true});
 
-const RoomEnvironmentTelemetryExpressApp = express();
-const RoomEnvironmentStatusExpressApp = express();
+const RoomEnvironmentMonitor = express();
 
-RoomEnvironmentTelemetryExpressApp.get('/api/v1/list', (req, res, next) => TelemetryListHandler(req, res, next, db))
-RoomEnvironmentTelemetryExpressApp.post('/api/v1/set-config', (req, res, next) => SetConfig(req, res, next, db))
+RoomEnvironmentMonitor.get('/api/telemetry/list', (req, res, next) => TelemetryList(req, res, next, db))
+RoomEnvironmentMonitor.get('/api/status/list', (req, res, next) => StatusList(req, res, next, db))
 
-RoomEnvironmentStatusExpressApp.get('/api/v1/list', (req, res, next) => StatusListHandler(req, res, next, db))
-
-exports.RoomEnvironmentTelemetryPubsubHandler = functions.pubsub.topic(RoomEnvironmentTelemetryPubsubTopic).onPublish(msg => TelemetryPubsubHandler(msg, db))
-exports.RoomEnvironmentStatusPubsubHandler = functions.pubsub.topic(RoomEnvironmentTelemetryPubsubTopic).onPublish(msg => StatusPubsubHandler(msg, db))
-exports.RoomEnvironmentTelemetryHandler = functions.https.onRequest(RoomEnvironmentTelemetryExpressApp);
-exports.RoomEnvironmentStatusHandler = functions.https.onRequest(RoomEnvironmentStatusExpressApp);
+exports.RoomEnvironmentTelemetryPubsubHandler = functions.pubsub.topic(RoomEnvironmentTelemetryPubsubTopic).onPublish(msg => TelemetryCreatePubsubHandler(msg, db))
+exports.RoomEnvironmentStatusPubsubHandler = functions.pubsub.topic(RoomEnvironmentTelemetryPubsubTopic).onPublish(msg => StatusUpdatePubsubHandler(msg, db))
+exports.RoomEnvironmentMonitor = functions.https.onRequest(RoomEnvironmentMonitor);

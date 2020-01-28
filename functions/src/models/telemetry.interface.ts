@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
 import { Request } from 'express';
 
-export const MODEL = 'RoomEnvironmentTelemetry';
+export const TelemetryModel = 'RoomEnvironmentTelemetry';
 
 export interface RoomEnvironmentMonitorTelemetryListRequestInterface {
     deviceId: string;
@@ -52,11 +52,6 @@ export function BuildRoomEnvironmentTelemetryListRequest(req: Request): RoomEnvi
         cursor: 0,
         pageSize: 1000
     }
-    // return {
-    //     deviceId: req.query.deviceId as string || '',
-    //     cursor: parseInt(req.query.cursor, 10) || 0,
-    //     pageSize: parseInt(req.query.pageSize, 10) || 1000
-    // }
 }
 
 export function ConvertQuerySnapshotDocument(snapshot: FirebaseFirestore.QueryDocumentSnapshot): RoomEnvironmentMonitorTelemetryInterface {

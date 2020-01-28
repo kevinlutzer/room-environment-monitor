@@ -1,18 +1,18 @@
 import * as functions from 'firebase-functions';
 
 import { RoomEnvironmentMonitorTelemetryInterface, RoomEnvironmentMonitorTelemetryPubsubMessageInterface, 
-    ConvertPubsubMessage, MODEL, 
-    ConvertQuerySnapshotDocument } from './room_environment_monitor_telemetry.interface';
+    ConvertPubsubMessage, TelemetryModel, 
+    ConvertQuerySnapshotDocument } from '../models/telemetry.interface';
 import { ExtractInterfaceFromPubsubMessage } from './pubsub.util';
 import { Response, Request, NextFunction } from 'express';
 import { ApiRequest, ApiResponse } from './api.interface';
 
 // Handlers
-export async function List(req: Request, res: Response, next: NextFunction, db: FirebaseFirestore.Firestore) {
+export async function TelemetryList(req: Request, res: Response, next: NextFunction, db: FirebaseFirestore.Firestore) {
     const r = ApiRequest.fromRequest(req);
 
     let q = db
-        .collection(MODEL)
+        .collection(TelemetryModel)
         .limit(r.pageSize)
         .offset(r.cursor)
 
@@ -32,7 +32,7 @@ function handleListResponse(req: ApiRequest, res: Response, s: FirebaseFirestore
 }
 
 
-export async function PubsubHandler(message: functions.pubsub.Message, db: FirebaseFirestore.Firestore) {
+export async function TelemetryCreatePubsubHandler(message: functions.pubsub.Message, db: FirebaseFirestore.Firestore) {
     const rawData = ExtractInterfaceFromPubsubMessage(message) as RoomEnvironmentMonitorTelemetryPubsubMessageInterface;
 
     if (!rawData) {
@@ -52,7 +52,7 @@ export async function PubsubHandler(message: functions.pubsub.Message, db: Fireb
 
 async function create(id: string, data: RoomEnvironmentMonitorTelemetryInterface, db: FirebaseFirestore.Firestore) {
     return db
-    .collection(MODEL)
+    .collection(TelemetryModel)
     .doc(id)
     .set(data)
     .then(
