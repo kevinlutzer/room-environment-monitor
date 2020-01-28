@@ -21,6 +21,3 @@ RoomEnvironmentMonitor.get('/api/status/list', (req, res, next) => StatusList(re
 exports.TelemetryCreatePubsubHandler = functions.pubsub.topic(RoomEnvironmentTelemetryPubsubTopic).onPublish(msg => TelemetryCreatePubsubHandler(msg, db))
 exports.StatusUpsertPubsubHandler = functions.pubsub.topic(RoomEnvironmentTelemetryPubsubTopic).onPublish(msg => StatusUpdatePubsubHandler(msg, db))
 exports.RoomEnvironmentMonitor = functions.https.onRequest(RoomEnvironmentMonitor);
-exports.StatusResolutionPubsubHandler = functions.pubsub.schedule('* * * * *').onRun((context) => {
-    console.log('This will be run every 1 second');
-  });
