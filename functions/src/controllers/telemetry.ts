@@ -6,31 +6,33 @@ import { RoomEnvironmentMonitorTelemetryInterface, RoomEnvironmentMonitorTelemet
 import { ExtractInterfaceFromPubsubMessage } from './pubsub.util';
 import { Response, Request, NextFunction } from 'express';
 import { ApiRequest, ApiResponse } from './api.interface';
+import { QuerySnapshot } from '@google-cloud/firestore';
 
 // Handlers
 export async function TelemetryList(req: Request, res: Response, next: NextFunction, db: FirebaseFirestore.Firestore) {
     const r = ApiRequest.fromRequest(req);
 
+    return list(r.cursor, r.pageSize, r.searchTerm, db)
+        .then(results => {
+            const data = (results.docs || []).map(ConvertQuerySnapshotDocument);
+            (new ApiResponse<RoomEnvironmentMonitorTelemetryInterface>(data, r)).toReponse(res);
+        })
+        .catch(err => console.error(err));
+}
+
+function list(cursor: number, pageSize: number, searchTerm: string, db: FirebaseFirestore.Firestore): Promise<QuerySnapshot<FirebaseFirestore.DocumentData>> {
     let q = db
         .collection(TelemetryModel)
-        .limit(r.pageSize)
-        .offset(r.cursor)
+        .limit(pageSize)
+        .offset(cursor)
 
-    if (r.searchTerm) {
-        q = q.where('deviceId', '==', r.searchTerm);
+    if (searchTerm) {
+        q = q.where('deviceId', '==', searchTerm);
     }    
 
     return q
         .get()
-        .then(results => handleListResponse(r, res, results))
-        .catch(next);
 }
-
-function handleListResponse(req: ApiRequest, res: Response, s: FirebaseFirestore.QuerySnapshot) {
-    const data = (s.docs || []).map(ConvertQuerySnapshotDocument);
-    (new ApiResponse<RoomEnvironmentMonitorTelemetryInterface>(data, req)).toReponse(res);
-}
-
 
 export async function TelemetryCreatePubsubHandler(message: functions.pubsub.Message, db: FirebaseFirestore.Firestore) {
     const rawData = ExtractInterfaceFromPubsubMessage(message) as RoomEnvironmentMonitorTelemetryPubsubMessageInterface;

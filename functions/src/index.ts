@@ -18,6 +18,9 @@ const RoomEnvironmentMonitor = express();
 RoomEnvironmentMonitor.get('/api/telemetry/list', (req, res, next) => TelemetryList(req, res, next, db))
 RoomEnvironmentMonitor.get('/api/status/list', (req, res, next) => StatusList(req, res, next, db))
 
-exports.RoomEnvironmentTelemetryPubsubHandler = functions.pubsub.topic(RoomEnvironmentTelemetryPubsubTopic).onPublish(msg => TelemetryCreatePubsubHandler(msg, db))
-exports.RoomEnvironmentStatusPubsubHandler = functions.pubsub.topic(RoomEnvironmentTelemetryPubsubTopic).onPublish(msg => StatusUpdatePubsubHandler(msg, db))
+exports.TelemetryCreatePubsubHandler = functions.pubsub.topic(RoomEnvironmentTelemetryPubsubTopic).onPublish(msg => TelemetryCreatePubsubHandler(msg, db))
+exports.StatusUpsertPubsubHandler = functions.pubsub.topic(RoomEnvironmentTelemetryPubsubTopic).onPublish(msg => StatusUpdatePubsubHandler(msg, db))
 exports.RoomEnvironmentMonitor = functions.https.onRequest(RoomEnvironmentMonitor);
+exports.StatusResolutionPubsubHandler = functions.pubsub.schedule('* * * * *').onRun((context) => {
+    console.log('This will be run every 1 second');
+  });

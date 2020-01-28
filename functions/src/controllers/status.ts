@@ -1,13 +1,12 @@
 import * as functions from 'firebase-functions';
-import { SetOptions } from 'firestore';
 
 import { RoomEnvironmentMonitorStatusInterface, RoomEnvironmentMonitorStatusPubsubMessageInterface,
     Convert, StatusModel, ConvertQuerySnapshotDocument } from '../models/status.interface';
 import { ExtractInterfaceFromPubsubMessage } from './pubsub.util';
 import { Response, Request, NextFunction } from 'express';
 import { ApiResponse, ApiRequest } from './api.interface'; 
+import { SetOptions, QuerySnapshot } from '@google-cloud/firestore';
 
-// Handlers
 export async function StatusUpdatePubsubHandler(message: functions.pubsub.Message, db: FirebaseFirestore.Firestore) {
     const rawData = ExtractInterfaceFromPubsubMessage(message) as RoomEnvironmentMonitorStatusPubsubMessageInterface;
 
@@ -21,14 +20,14 @@ export async function StatusUpdatePubsubHandler(message: functions.pubsub.Messag
     const deviceId = message.attributes.deviceId;
     const data = Convert(deviceId, sysDate, rawData)
 
-    return upsert(deviceId, data, db, {} as SetOptions);
+    return upsert(deviceId, data, db);
 }
 
-async function upsert(id: string, data: RoomEnvironmentMonitorStatusInterface, db: FirebaseFirestore.Firestore, options: SetOptions) {
+async function upsert(id: string, data: RoomEnvironmentMonitorStatusInterface, db: FirebaseFirestore.Firestore) {
     return db
     .collection(StatusModel)
     .doc(id)
-    .set(data, options)
+    .set(data, {mergeFields: ["cpuTemp", "timestamp"]} as SetOptions)
     .catch(err => console.error(err));
 }
 
@@ -36,14 +35,18 @@ async function upsert(id: string, data: RoomEnvironmentMonitorStatusInterface, d
 export async function StatusList(req: Request, res: Response, next: NextFunction, db: FirebaseFirestore.Firestore) {
     const r = ApiRequest.fromRequest(req);
 
-    return db
-        .collection(StatusModel)
-        .limit(r.pageSize)
-        .offset(r.cursor)
-        .get()
+    return list(r.cursor, r.pageSize, db)
         .then(results => {
             const data = (results.docs || []).map(ConvertQuerySnapshotDocument);
             (new ApiResponse<RoomEnvironmentMonitorStatusInterface>(data, r)).toReponse(res);
         })
         .catch(err => console.error(err));
+}
+
+function list(cursor: number, pageSize: number, db: FirebaseFirestore.Firestore): Promise<QuerySnapshot<FirebaseFirestore.DocumentData>> {
+    return db
+    .collection(StatusModel)
+    .limit(pageSize)
+    .offset(cursor)
+    .get()
 }
