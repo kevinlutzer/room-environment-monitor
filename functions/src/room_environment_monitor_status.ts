@@ -1,4 +1,5 @@
 import * as functions from 'firebase-functions';
+import { SetOptions } from 'firestore';
 
 import { RoomEnvironmentMonitorStatusInterface, RoomEnvironmentMonitorStatusPubsubMessageInterface,
     Convert, MODEL, ConvertQuerySnapshotDocument } from './room_environment_monitor_status.interface';
@@ -20,18 +21,15 @@ export async function PubsubHandler(message: functions.pubsub.Message, db: Fireb
     const deviceId = message.attributes.deviceId;
     const data = Convert(deviceId, sysDate, rawData)
 
-    return createRoomEnvironmentMonitorStatusEntity(deviceId, data, db);
+    return upsert(deviceId, data, db, {});
 }
 
-async function createRoomEnvironmentMonitorStatusEntity(id: string, data: RoomEnvironmentMonitorStatusInterface, db: FirebaseFirestore.Firestore) {
+async function upsert(id: string, data: RoomEnvironmentMonitorStatusInterface, db: FirebaseFirestore.Firestore, options: SetOptions) {
     return db
     .collection(MODEL)
     .doc(id)
-    .set(data)
-    .then(
-        resp => console.log("Added new entity with id: ", id, " and resp: ", resp),
-        err => console.error("Failed to create entity: ", err)
-    );
+    .set(data, options)
+    .catch(err => console.error(err));
 }
 
 // Handlers
