@@ -1,2 +1,2 @@
 export { StatusList, StatusUpdatePubsubHandler } from './status';
-export { TelemetryList, TelemetryCreatePubsubHandler} from './telemetry';
+export { TelemetryList, TelemetryCreatePubsubHandler, TelemetryGetLatest} from './telemetry';

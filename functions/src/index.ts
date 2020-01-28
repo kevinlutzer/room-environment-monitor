@@ -3,7 +3,7 @@ const admin = require('firebase-admin');
 const express = require('express');
 
 import { TelemetryCreatePubsubHandler, TelemetryList,
-    StatusUpdatePubsubHandler, StatusList} from './controllers';
+    StatusUpdatePubsubHandler, StatusList, TelemetryGetLatest} from './controllers';
 
 export const RoomEnvironmentTelemetryPubsubTopic = 'room-environment-monitor-telemetry';
 export const RoomEnvironmentStatusPubsubTopic = 'room-environment-monitor-status';
@@ -15,6 +15,7 @@ db.settings({timestampsInSnapshots: true});
 
 const RoomEnvironmentMonitor = express();
 
+RoomEnvironmentMonitor.get('/api/telemetry/get', (req, res, next) => TelemetryGetLatest(req, res, next, db))
 RoomEnvironmentMonitor.get('/api/telemetry/list', (req, res, next) => TelemetryList(req, res, next, db))
 RoomEnvironmentMonitor.get('/api/status/list', (req, res, next) => StatusList(req, res, next, db))
 

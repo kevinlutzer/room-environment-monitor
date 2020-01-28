@@ -4,7 +4,7 @@ import { RoomEnvironmentMonitorStatusInterface, RoomEnvironmentMonitorStatusPubs
     Convert, StatusModel, ConvertQuerySnapshotDocument } from '../models/status.interface';
 import { ExtractInterfaceFromPubsubMessage } from './pubsub.util';
 import { Response, Request, NextFunction } from 'express';
-import { ApiResponse, ApiRequest } from './api.interface'; 
+import { ApiListResponse, ApiListRequest } from './api.interface'; 
 import { SetOptions, QuerySnapshot } from '@google-cloud/firestore';
 
 export async function StatusUpdatePubsubHandler(message: functions.pubsub.Message, db: FirebaseFirestore.Firestore) {
@@ -33,12 +33,12 @@ async function upsert(id: string, data: RoomEnvironmentMonitorStatusInterface, d
 
 // Handlers
 export async function StatusList(req: Request, res: Response, next: NextFunction, db: FirebaseFirestore.Firestore) {
-    const r = ApiRequest.fromRequest(req);
+    const r = ApiListRequest.fromRequest(req);
 
     return list(r.cursor, r.pageSize, db)
         .then(results => {
             const data = (results.docs || []).map(ConvertQuerySnapshotDocument);
-            (new ApiResponse<RoomEnvironmentMonitorStatusInterface>(data, r)).toReponse(res);
+            (new ApiListResponse<RoomEnvironmentMonitorStatusInterface>(data, r)).toReponse(res);
         })
         .catch(err => console.error(err));
 }

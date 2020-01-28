@@ -5,17 +5,45 @@ import { RoomEnvironmentMonitorTelemetryInterface, RoomEnvironmentMonitorTelemet
     ConvertQuerySnapshotDocument } from '../models/telemetry.interface';
 import { ExtractInterfaceFromPubsubMessage } from './pubsub.util';
 import { Response, Request, NextFunction } from 'express';
-import { ApiRequest, ApiResponse } from './api.interface';
+import { ApiListRequest, ApiListResponse, ApiError } from './api.interface';
 import { QuerySnapshot } from '@google-cloud/firestore';
+
+export async function TelemetryGetLatest(req: Request, res: Response, next: NextFunction, db: FirebaseFirestore.Firestore) {
+    const deviceId = req.query.deviceId || '';
+    return getLatest(deviceId, db)
+        .then(result => {
+            if (!result.docs || result.docs.length < 1) {
+                const msg = `device with id ${deviceId} has no telemtery`
+                console.warn(msg);
+                (new ApiError(msg, 404)).toApi(res)
+                return
+            }
+            res.json({
+                telemetry: ConvertQuerySnapshotDocument(result.docs[0])
+            })
+        }).catch(err => {
+            console.error(err);
+            (new ApiError(err, 500)).toApi(res)
+        })
+}
+
+function getLatest(deviceId: string, db: FirebaseFirestore.Firestore): Promise<QuerySnapshot<FirebaseFirestore.DocumentData>> {
+    return db
+        .collection(TelemetryModel)
+        .limit(1)
+        .where('deviceId', '==', deviceId)
+        .orderBy('timestamp', 'desc')
+        .get()
+}
 
 // Handlers
 export async function TelemetryList(req: Request, res: Response, next: NextFunction, db: FirebaseFirestore.Firestore) {
-    const r = ApiRequest.fromRequest(req);
+    const r = ApiListRequest.fromRequest(req);
 
     return list(r.cursor, r.pageSize, r.searchTerm, db)
         .then(results => {
             const data = (results.docs || []).map(ConvertQuerySnapshotDocument);
-            (new ApiResponse<RoomEnvironmentMonitorTelemetryInterface>(data, r)).toReponse(res);
+            (new ApiListResponse<RoomEnvironmentMonitorTelemetryInterface>(data, r)).toReponse(res);
         })
         .catch(err => console.error(err));
 }
