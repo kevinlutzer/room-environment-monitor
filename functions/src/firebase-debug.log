@@ -1,0 +1,191 @@
+[debug] [2020-01-28T01:38:18.941Z] ----------------------------------------------------------------------
+[debug] [2020-01-28T01:38:18.945Z] Command:       /Users/kevin/.nvm/versions/node/v8.13.0/bin/node /Users/kevin/.nvm/versions/node/v8.13.0/bin/firebase emulators:start
+[debug] [2020-01-28T01:38:18.945Z] CLI Version:   7.12.1
+[debug] [2020-01-28T01:38:18.945Z] Platform:      darwin
+[debug] [2020-01-28T01:38:18.945Z] Node Version:  v8.13.0
+[debug] [2020-01-28T01:38:18.946Z] Time:          Mon Jan 27 2020 19:38:18 GMT-0600 (CST)
+[debug] [2020-01-28T01:38:18.946Z] ----------------------------------------------------------------------
+[debug] [2020-01-28T01:38:18.946Z] 
+[debug] [2020-01-28T01:38:18.964Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-01-28T01:38:18.965Z] > authorizing via signed-in user
+[info] i  emulators: Starting emulators: functions, firestore
+[info] ✔  functions: Using node@8 from host.
+[info] ✔  functions: Emulator started at http://localhost:5001
+[info] i  firestore: Serving ALL traffic (including WebChannel) on http://localhost:8080
+[warn] ⚠  firestore: Support for WebChannel on a separate port (8081) is DEPRECATED and will go away soon. Please use port above instead.
+[debug] [2020-01-28T01:38:19.338Z] Ignoring unsupported arg: projectId
+[debug] [2020-01-28T01:38:19.338Z] Ignoring unsupported arg: auto_download
+[debug] [2020-01-28T01:38:19.338Z] Starting emulator firestore with command {"binary":"java","args":["-Duser.language=en","-jar","/Users/kevin/.cache/firebase/emulators/cloud-firestore-emulator-v1.10.2.jar","--host","localhost","--port",8080,"--rules","/Users/kevin/ProjectV2/room-environment-monitor-gcf/firestore.rules","--functions_emulator","localhost:5001","--webchannel_port",8081],"optionalArgs":["port","webchannel_port","host","rules","functions_emulator"],"joinArgs":false}
+[info] i  firestore: Emulator logging to firestore-debug.log
+[debug] [2020-01-28T01:38:23.943Z] API endpoint: http://
+[debug] [2020-01-28T01:38:23.944Z] localhost
+[debug] [2020-01-28T01:38:23.945Z] :
+[debug] [2020-01-28T01:38:23.945Z] 8080
+If you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:
+
+[debug] [2020-01-28T01:38:23.946Z] 
+   export FIRESTORE_EMULATOR_HOST=localhost:8080
+
+Dev App Server is now running.
+
+
+[info] ✔  firestore: Emulator started at http://localhost:8080
+[info] i  firestore: For testing set FIRESTORE_EMULATOR_HOST=localhost:8080
+[info] i  functions: Watching "/Users/kevin/ProjectV2/room-environment-monitor-gcf/functions" for Cloud Functions...
+[debug] [2020-01-28T01:38:24.172Z] [worker-pool] addWorker(~diagnostic~)
+[debug] [2020-01-28T01:38:24.173Z] [worker-pool] Adding worker with key ~diagnostic~, total=1
+[debug] [2020-01-28T01:38:24.173Z] [worker-pool] submitWork(triggerId=)
+[debug] [2020-01-28T01:38:24.174Z] [worker-~diagnostic~-a718a19a-5bfc-42f9-aee0-49889aca9172]: Assigning socketPath: /var/folders/j2/07tr89tn2r16dm4cxglllf3h0000gn/T/fire_emu_13931.sock
+[debug] [2020-01-28T01:38:24.175Z] [worker-~diagnostic~-a718a19a-5bfc-42f9-aee0-49889aca9172]: BUSY
+[debug] [2020-01-28T01:38:25.448Z] [runtime-status] [13931] Functions runtime initialized. {"cwd":"/Users/kevin/ProjectV2/room-environment-monitor-gcf/functions","node_version":"8.13.0"}
+[debug] [2020-01-28T01:38:25.456Z] [runtime-status] [13931] Disabled runtime features: undefined
+[debug] [2020-01-28T01:38:25.459Z] [runtime-status] [13931] Resolved module firebase-admin {"declared":true,"installed":true,"version":"8.9.2","resolution":"/Users/kevin/ProjectV2/room-environment-monitor-gcf/functions/node_modules/firebase-admin/lib/index.js"}
+[debug] [2020-01-28T01:38:25.465Z] [runtime-status] [13931] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.3.0","resolution":"/Users/kevin/ProjectV2/room-environment-monitor-gcf/functions/node_modules/firebase-functions/lib/index.js"}
+[warn] ⚠  functions: Your GOOGLE_APPLICATION_CREDENTIALS environment variable points to /Users/kevin/google-key/iot-klutzer-ead9bdfe4ce8.json. Non-emulated services will access production using these credentials. Be careful!
+[debug] [2020-01-28T01:38:26.785Z] [runtime-status] [13931] Found google-gax at /Users/kevin/ProjectV2/room-environment-monitor-gcf/functions/node_modules/google-gax/build/src/index.js
+[debug] [2020-01-28T01:38:26.785Z] [runtime-status] [13931] Outgoing network have been stubbed. [{"name":"http","status":"mocked"},{"name":"http","status":"mocked"},{"name":"https","status":"mocked"},{"name":"https","status":"mocked"},{"name":"net","status":"mocked"},{"name":"google-gax","status":"mocked"}]
+[debug] [2020-01-28T01:38:26.905Z] [runtime-status] [13931] Checked functions.config() {"config":{}}
+[debug] [2020-01-28T01:38:26.907Z] [runtime-status] [13931] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.3.0","resolution":"/Users/kevin/ProjectV2/room-environment-monitor-gcf/functions/node_modules/firebase-functions/lib/index.js"}
+[debug] [2020-01-28T01:38:26.909Z] [runtime-status] [13931] Resolved module firebase-admin {"declared":true,"installed":true,"version":"8.9.2","resolution":"/Users/kevin/ProjectV2/room-environment-monitor-gcf/functions/node_modules/firebase-admin/lib/index.js"}
+[debug] [2020-01-28T01:38:26.910Z] [runtime-status] [13931] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.3.0","resolution":"/Users/kevin/ProjectV2/room-environment-monitor-gcf/functions/node_modules/firebase-functions/lib/index.js"}
+[debug] [2020-01-28T01:38:27.611Z] [runtime-status] [13931] firebase-admin has been stubbed. {"adminResolution":{"declared":true,"installed":true,"version":"8.9.2","resolution":"/Users/kevin/ProjectV2/room-environment-monitor-gcf/functions/node_modules/firebase-admin/lib/index.js"}}
+[debug] [2020-01-28T01:38:27.933Z] [runtime-status] [13931] config() parent accessed! {"parentKey":"firebase","parentConfig":{}}
+[debug] [2020-01-28T01:38:28.067Z] [runtime-status] [13931] initializeApp(DEFAULT) {"databaseURL":"https://iot-klutzer.firebaseio.com","storageBucket":"iot-klutzer.appspot.com","projectId":"iot-klutzer"}
+[debug] [2020-01-28T01:38:28.207Z] [set-firestore-settings]  {"projectId":"iot-klutzer","port":8080,"servicePath":"localhost","service":"firestore.googleapis.com","sslCreds":false,"customHeaders":{"Authorization":"Bearer owner"},"timestampsInSnapshots":true}
+[info] ✔  functions[RoomEnvironmentMonitor]: http function initialized (http://localhost:5001/iot-klutzer/us-central1/RoomEnvironmentMonitor).
+[info] i  functions[RoomEnvironmentTelemetryPubsubHandler]: function ignored because the pubsub emulator does not exist or is not running.
+[info] i  functions[RoomEnvironmentStatusPubsubHandler]: function ignored because the pubsub emulator does not exist or is not running.
+[info] ✔  All emulators started, it is now safe to connect.
+[debug] [2020-01-28T01:38:28.218Z] [worker-~diagnostic~-a718a19a-5bfc-42f9-aee0-49889aca9172]: IDLE
+[debug] [2020-01-28T01:39:48.036Z] [work-queue] {"queueLength":1,"workRunningCount":0}
+[debug] [2020-01-28T01:39:48.037Z] [work-queue] {"queueLength":0,"workRunningCount":1}
+[debug] [2020-01-28T01:39:48.038Z] Accepted request GET /iot-klutzer/us-central1/RoomEnvironmentMonitor/api/status/list --> RoomEnvironmentMonitor
+[debug] [2020-01-28T01:39:48.044Z] [worker-pool] addWorker(RoomEnvironmentMonitor)
+[debug] [2020-01-28T01:39:48.044Z] [worker-pool] Adding worker with key RoomEnvironmentMonitor, total=1
+[debug] [2020-01-28T01:39:48.044Z] [worker-pool] submitWork(triggerId=RoomEnvironmentMonitor)
+[debug] [2020-01-28T01:39:48.044Z] [worker-RoomEnvironmentMonitor-43fcc75c-3eb1-4880-b8df-68083dfcabfc]: Assigning socketPath: /var/folders/j2/07tr89tn2r16dm4cxglllf3h0000gn/T/fire_emu_13946.sock
+[debug] [2020-01-28T01:39:48.045Z] [worker-RoomEnvironmentMonitor-43fcc75c-3eb1-4880-b8df-68083dfcabfc]: BUSY
+[debug] [2020-01-28T01:39:49.038Z] [runtime-status] [13946] Functions runtime initialized. {"cwd":"/Users/kevin/ProjectV2/room-environment-monitor-gcf/functions","node_version":"8.13.0"}
+[debug] [2020-01-28T01:39:49.040Z] [runtime-status] [13946] Disabled runtime features: undefined
+[debug] [2020-01-28T01:39:49.045Z] [runtime-status] [13946] Resolved module firebase-admin {"declared":true,"installed":true,"version":"8.9.2","resolution":"/Users/kevin/ProjectV2/room-environment-monitor-gcf/functions/node_modules/firebase-admin/lib/index.js"}
+[debug] [2020-01-28T01:39:49.048Z] [runtime-status] [13946] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.3.0","resolution":"/Users/kevin/ProjectV2/room-environment-monitor-gcf/functions/node_modules/firebase-functions/lib/index.js"}
+[warn] ⚠  functions: Your GOOGLE_APPLICATION_CREDENTIALS environment variable points to /Users/kevin/google-key/iot-klutzer-ead9bdfe4ce8.json. Non-emulated services will access production using these credentials. Be careful!
+[debug] [2020-01-28T01:39:50.329Z] [runtime-status] [13946] Found google-gax at /Users/kevin/ProjectV2/room-environment-monitor-gcf/functions/node_modules/google-gax/build/src/index.js
+[debug] [2020-01-28T01:39:50.329Z] [runtime-status] [13946] Outgoing network have been stubbed. [{"name":"http","status":"mocked"},{"name":"http","status":"mocked"},{"name":"https","status":"mocked"},{"name":"https","status":"mocked"},{"name":"net","status":"mocked"},{"name":"google-gax","status":"mocked"}]
+[debug] [2020-01-28T01:39:50.452Z] [runtime-status] [13946] Checked functions.config() {"config":{}}
+[debug] [2020-01-28T01:39:50.455Z] [runtime-status] [13946] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.3.0","resolution":"/Users/kevin/ProjectV2/room-environment-monitor-gcf/functions/node_modules/firebase-functions/lib/index.js"}
+[debug] [2020-01-28T01:39:50.457Z] [runtime-status] [13946] Resolved module firebase-admin {"declared":true,"installed":true,"version":"8.9.2","resolution":"/Users/kevin/ProjectV2/room-environment-monitor-gcf/functions/node_modules/firebase-admin/lib/index.js"}
+[debug] [2020-01-28T01:39:50.457Z] [runtime-status] [13946] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.3.0","resolution":"/Users/kevin/ProjectV2/room-environment-monitor-gcf/functions/node_modules/firebase-functions/lib/index.js"}
+[debug] [2020-01-28T01:39:51.183Z] [runtime-status] [13946] firebase-admin has been stubbed. {"adminResolution":{"declared":true,"installed":true,"version":"8.9.2","resolution":"/Users/kevin/ProjectV2/room-environment-monitor-gcf/functions/node_modules/firebase-admin/lib/index.js"}}
+[debug] [2020-01-28T01:39:51.511Z] [runtime-status] [13946] config() parent accessed! {"parentKey":"firebase","parentConfig":{}}
+[debug] [2020-01-28T01:39:51.659Z] [runtime-status] [13946] initializeApp(DEFAULT) {"databaseURL":"https://iot-klutzer.firebaseio.com","storageBucket":"iot-klutzer.appspot.com","projectId":"iot-klutzer"}
+[debug] [2020-01-28T01:39:51.815Z] [set-firestore-settings]  {"projectId":"iot-klutzer","port":8080,"servicePath":"localhost","service":"firestore.googleapis.com","sslCreds":false,"customHeaders":{"Authorization":"Bearer owner"},"timestampsInSnapshots":true}
+[debug] [2020-01-28T01:39:51.823Z] [runtime-status] [13946] Trigger "RoomEnvironmentMonitor" has been found, beginning invocation!
+[info] i  functions: Beginning execution of "RoomEnvironmentMonitor"
+[debug] [2020-01-28T01:39:51.824Z] [runtime-status] [13946] triggerDefinition {"httpsTrigger":{},"name":"RoomEnvironmentMonitor","entryPoint":"RoomEnvironmentMonitor"}
+[debug] [2020-01-28T01:39:51.824Z] [runtime-status] [13946] Running RoomEnvironmentMonitor in mode HTTPS
+[debug] [2020-01-28T01:39:51.829Z] [runtime-status] [13946] Attempting to listen to socketPath: /var/folders/j2/07tr89tn2r16dm4cxglllf3h0000gn/T/fire_emu_13946.sock
+[debug] [2020-01-28T01:39:51.834Z] [functions] Runtime ready! Sending request!
+[debug] [2020-01-28T01:39:51.878Z] [runtime-status] [13946] Ephemeral server handling GET request
+[debug] [2020-01-28T01:39:51.888Z] [runtime-status] [13946] Ephemeral server survived.
+[debug] [2020-01-28T01:39:52.160Z] Jan. 27, 2020 7:39:52 P.M. io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+
+[debug] [2020-01-28T01:39:52.187Z] Jan. 27, 2020 7:39:52 P.M. io.gapi.emulators.netty.NotFoundHandler handleRequest
+INFO: Unknown request URI: /bad-request
+
+[debug] [2020-01-28T01:39:55.162Z] Jan. 27, 2020 7:39:55 P.M. io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+
+[debug] [2020-01-28T01:39:55.165Z] Jan. 27, 2020 7:39:55 P.M. io.gapi.emulators.netty.NotFoundHandler handleRequest
+INFO: Unknown request URI: /bad-request
+
+[debug] [2020-01-28T01:39:59.354Z] Jan. 27, 2020 7:39:59 P.M. io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+
+[debug] [2020-01-28T01:39:59.358Z] Jan. 27, 2020 7:39:59 P.M. io.gapi.emulators.netty.NotFoundHandler handleRequest
+INFO: Unknown request URI: /bad-request
+
+[debug] [2020-01-28T01:40:00.402Z] Jan. 27, 2020 7:40:00 P.M. io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+
+[debug] [2020-01-28T01:40:00.405Z] Jan. 27, 2020 7:40:00 P.M. io.gapi.emulators.netty.NotFoundHandler handleRequest
+INFO: Unknown request URI: /bad-request
+
+[debug] [2020-01-28T01:40:03.295Z] Jan. 27, 2020 7:40:03 P.M. io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+
+[debug] [2020-01-28T01:40:03.297Z] Jan. 27, 2020 7:40:03 P.M. io.gapi.emulators.netty.NotFoundHandler handleRequest
+INFO: Unknown request URI: /bad-request
+
+[debug] [2020-01-28T01:40:07.423Z] Jan. 27, 2020 7:40:07 P.M. io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+
+[debug] [2020-01-28T01:40:07.426Z] Jan. 27, 2020 7:40:07 P.M. io.gapi.emulators.netty.NotFoundHandler handleRequest
+INFO: Unknown request URI: /bad-request
+
+[debug] [2020-01-28T01:40:09.044Z] Jan. 27, 2020 7:40:09 P.M. io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+
+[debug] [2020-01-28T01:40:09.046Z] Jan. 27, 2020 7:40:09 P.M. io.gapi.emulators.netty.NotFoundHandler handleRequest
+INFO: Unknown request URI: /bad-request
+
+[debug] [2020-01-28T01:40:11.207Z] Jan. 27, 2020 7:40:11 P.M. io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+
+[debug] [2020-01-28T01:40:11.210Z] Jan. 27, 2020 7:40:11 P.M. io.gapi.emulators.netty.NotFoundHandler handleRequest
+INFO: Unknown request URI: /bad-request
+
+[debug] [2020-01-28T01:40:15.791Z] Jan. 27, 2020 7:40:15 P.M. io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+
+[debug] [2020-01-28T01:40:15.796Z] Jan. 27, 2020 7:40:15 P.M. io.gapi.emulators.netty.NotFoundHandler handleRequest
+INFO: Unknown request URI: /bad-request
+
+[debug] [2020-01-28T01:40:19.154Z] Jan. 27, 2020 7:40:19 P.M. io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+
+[debug] [2020-01-28T01:40:19.156Z] Jan. 27, 2020 7:40:19 P.M. io.gapi.emulators.netty.NotFoundHandler handleRequest
+INFO: Unknown request URI: /bad-request
+
+[debug] [2020-01-28T01:40:21.754Z] Jan. 27, 2020 7:40:21 P.M. io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+
+[debug] [2020-01-28T01:40:21.758Z] Jan. 27, 2020 7:40:21 P.M. io.gapi.emulators.netty.NotFoundHandler handleRequest
+INFO: Unknown request URI: /bad-request
+
+[debug] [2020-01-28T01:40:26.460Z] Jan. 27, 2020 7:40:26 P.M. io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+
+[debug] [2020-01-28T01:40:26.462Z] Jan. 27, 2020 7:40:26 P.M. io.gapi.emulators.netty.NotFoundHandler handleRequest
+INFO: Unknown request URI: /bad-request
+
+[debug] [2020-01-28T01:40:31.180Z] Jan. 27, 2020 7:40:31 P.M. io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+
+[debug] [2020-01-28T01:40:31.181Z] Jan. 27, 2020 7:40:31 P.M. io.gapi.emulators.netty.NotFoundHandler handleRequest
+INFO: Unknown request URI: /bad-request
+
+[debug] [2020-01-28T01:40:33.579Z] Jan. 27, 2020 7:40:33 P.M. io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+
+[debug] [2020-01-28T01:40:33.581Z] Jan. 27, 2020 7:40:33 P.M. io.gapi.emulators.netty.NotFoundHandler handleRequest
+INFO: Unknown request URI: /bad-request
+
+[debug] [2020-01-28T01:40:37.961Z] Jan. 27, 2020 7:40:37 P.M. io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+
+[debug] [2020-01-28T01:40:37.962Z] Jan. 27, 2020 7:40:37 P.M. io.gapi.emulators.netty.NotFoundHandler handleRequest
+INFO: Unknown request URI: /bad-request
+
+[info] >  { Error: 14 UNAVAILABLE: No connection established
+[info] >      at callErrorFromStatus (/Users/kevin/ProjectV2/room-environment-monitor-gcf/functions/node_modules/firebase-admin/node_modules/@grpc/grpc-js/build/src/call.js:30:26)
+[info] >      at Http2CallStream.call.on (/Users/kevin/ProjectV2/room-environment-monitor-gcf/functions/node_modules/firebase-admin/node_modules/@grpc/grpc-js/build/src/call.js:79:34)
+[info] >      at emitOne (events.js:121:20)
+[info] >      at Http2CallStream.emit (events.js:211:7)
+[info] >      at process.nextTick (/Users/kevin/ProjectV2/room-environment-monitor-gcf/functions/node_modules/firebase-admin/node_modules/@grpc/grpc-js/build/src/call-stream.js:97:22)
+[info] >      at _combinedTickCallback (internal/process/next_tick.js:132:7)
+[info] >      at process._tickCallback (internal/process/next_tick.js:181:9)
+[info] >    code: 14,
+[info] >    details: 'No connection established',
+[info] >    metadata: Metadata { internalRepr: Map {}, options: {} } }

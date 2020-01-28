@@ -5,7 +5,6 @@ const express = require('express');
 import { TelemetryCreatePubsubHandler, TelemetryList,
     StatusUpdatePubsubHandler, StatusList} from './controllers';
 
-
 export const RoomEnvironmentTelemetryPubsubTopic = 'room-environment-monitor-telemetry';
 export const RoomEnvironmentStatusPubsubTopic = 'room-environment-monitor-status';
 
