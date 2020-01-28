@@ -21,7 +21,7 @@ export async function TelemetryGetLatest(req: Request, res: Response, next: Next
             res.json({
                 telemetry: ConvertQuerySnapshotDocument(result.docs[0])
             })
-        }).catch(err => {
+        }, err => {
             console.error(err);
             (new ApiError(err, 500)).toApi(res)
         })
