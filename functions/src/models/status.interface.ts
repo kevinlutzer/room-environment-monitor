@@ -11,6 +11,8 @@ export interface RoomEnvironmentMonitorStatusInterface {
     cpuTemp: number;
     timestamp: admin.firestore.Timestamp;
     deviceId: string;
+    name: string;
+    roomDescription: string;
 }
 
 export function Convert(deviceId: string, sysDate: Date, data: RoomEnvironmentMonitorStatusPubsubMessageInterface): RoomEnvironmentMonitorStatusInterface {
@@ -27,5 +29,7 @@ export function ConvertQuerySnapshotDocument(snapshot: FirebaseFirestore.QueryDo
         cpuTemp: data.cpuTemp,
         timestamp: data.timestamp ? data.timestamp.toDate() : new Date(),
         deviceId: data.deviceId,
+        name: data.name,
+        roomDescription: data.roomDescription
     }
 }
