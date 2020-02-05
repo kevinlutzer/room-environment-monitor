@@ -1,3 +1,2 @@
-export { StatusModel, RoomEnvironmentMonitorStatusInterface, RoomEnvironmentMonitorStatusPubsubMessageInterface } from './status.interface';
-export { TelemetryModel, RoomEnvironmentMonitorTelemetryInterface, RoomEnvironmentMonitorTelemetryListRequestInterface,
-    RoomEnvironmentMonitorTelemetryPubsubMessageInterface} from './telemetry.interface';
+export { Device, DeviceModel } from './device.interface';
+export { Telemetry, TelemetryEvent, TelemetryEventModel } from './telemetry-event.interface';
