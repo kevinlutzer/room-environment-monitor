@@ -39,7 +39,7 @@ export function telemetryEventFromPubsubMessage(deviceId: string, sysDate: Date,
     } as TelemetryEvent;
 }
 
-export function deviceFromPubsubMessage(deviceId: string, data: telemetryPubsubMessageInterface): Device {
+export function deviceFromPubsubMessage(deviceId: string, sysDate: Date, data: telemetryPubsubMessageInterface): Device {
     return {
         deviceId: deviceId || '',
         lastTelemetry: {
@@ -50,6 +50,7 @@ export function deviceFromPubsubMessage(deviceId: string, data: telemetryPubsubM
             cpuTemp: data.cpu_temp || 0,
             pressure: data.pressure || 0, 
             humidity: data.humidity || 0,
-        }
+        },
+        lastActivity: admin.firestore.Timestamp.fromDate(sysDate),
     } as Device;
 }

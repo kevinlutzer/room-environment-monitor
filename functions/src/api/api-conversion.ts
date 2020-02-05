@@ -23,9 +23,9 @@ export function convertFirestoreDocsToDevice(docs: FirebaseFirestore.QueryDocume
     let data: FirebaseFirestore.DocumentData;
     return (docs || []).map((doc) => {
         data = doc.data();
-        console.log(data);
         return {
             deviceId: doc.id || '',
+            name: data.name || '',
             roomLocation: data.roomLocation || '',
             description: data.description || '',
             created: data.created ? data.created.toDate() : new Date(),

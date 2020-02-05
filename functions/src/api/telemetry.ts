@@ -16,7 +16,7 @@ export async function TelemetryPubsubHandler(message: functions.pubsub.Message, 
     const deviceId = message.attributes.deviceId;
 
     const te = telemetryEventFromPubsubMessage(deviceId, sysDate, rawData);
-    const d = deviceFromPubsubMessage(deviceId, rawData);
+    const d = deviceFromPubsubMessage(deviceId, sysDate, rawData);
 
     const batch = db.batch();
     batch.create(db.collection(TelemetryEventModel).doc(), te)
