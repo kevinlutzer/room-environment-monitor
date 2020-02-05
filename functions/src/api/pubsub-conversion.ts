@@ -35,13 +35,13 @@ export function telemetryEventFromPubsubMessage(deviceId: string, sysDate: Date,
         pressure: data.pressure || 0, 
         humidity: data.humidity || 0,
         timestamp: admin.firestore.Timestamp.fromDate(sysDate),
-        deviceId: deviceId,
+        deviceId: deviceId || '',
     } as TelemetryEvent;
 }
 
 export function deviceFromPubsubMessage(deviceId: string, data: telemetryPubsubMessageInterface): Device {
     return {
-        deviceId: deviceId,
+        deviceId: deviceId || '',
         lastTelemetry: {
             lux: data.lux || 0,
             co2: data.co2 || 0,
