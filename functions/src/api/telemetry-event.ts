@@ -15,17 +15,8 @@ export async function TelemetryEventPubsubHandler(message: functions.pubsub.Mess
     const deviceId = message.attributes.deviceId;
     
     const te = telemetryEventFromPubsubMessage(deviceId, sysDate, rawData);
-    //const de = deviceFromPubsubMessage(deviceId, rawData);
     
-    const batch = db.batch()
-    batch.create(db.collection(TelemetryEventModel).doc(deviceId), te)
-    //batch.set(db.collection(DeviceModel).doc(deviceId), de)
-
-    try {
-        await batch.commit
-    } catch (e) {
-        console.error("Error with performing batch write", e);
-    }
+    return db.collection(TelemetryEventModel).add(te)
 }
 
 
