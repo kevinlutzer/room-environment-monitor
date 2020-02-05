@@ -1,9 +1,10 @@
 import * as functions from 'firebase-functions';
 import { Request, Response } from 'express';
 import { telemetryEventFromPubsubMessage, telemetryPubsubMessageInterface, 
-    dataFromPubsubMessage } from './pubsub-conversion';
-import { TelemetryEventModel } from '../models';
+    dataFromPubsubMessage, deviceFromPubsubMessage } from './pubsub-conversion';
+import { TelemetryEventModel, DeviceModel } from '../models';
 import { convertFirestoreDocsToTelemetryEvent } from './api-conversion';
+import { SetOptions } from '@google-cloud/firestore';
 
 export async function TelemetryEventPubsubHandler(message: functions.pubsub.Message, db: FirebaseFirestore.Firestore) {
     const rawData = dataFromPubsubMessage(message) as telemetryPubsubMessageInterface;
@@ -15,10 +16,19 @@ export async function TelemetryEventPubsubHandler(message: functions.pubsub.Mess
     // Because the id is based on the timestamp, if the timestamp is passed null or undefined the same entity will be updated
     const sysDate = new Date(rawData.timestamp || "");
     const deviceId = message.attributes.deviceId;
-    
+
     const te = telemetryEventFromPubsubMessage(deviceId, sysDate, rawData);
-    
-    return db.collection(TelemetryEventModel).add(te)
+    const d = deviceFromPubsubMessage(deviceId, rawData);
+
+    const batch = db.batch();
+    batch.create(db.collection(TelemetryEventModel).doc(), te)
+    batch.set(db.collection(DeviceModel).doc(deviceId), d, {mergeFields: ["deviceId", "lastTelemetry"]} as SetOptions)
+        
+    try {
+        await batch.commit()
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 
@@ -39,7 +49,6 @@ export async function TelemetryEventList(req: Request, res: Response, db: Fireba
     }
     
     const t = convertFirestoreDocsToTelemetryEvent(q.docs)
-
     res.json({
         telemetry: t
     })

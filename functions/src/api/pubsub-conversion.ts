@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { TelemetryEvent } from '../models';
+import { TelemetryEvent, Device } from '../models';
 
 export function dataFromPubsubMessage(message: functions.pubsub.Message): any {
     let rawData: any;
@@ -37,4 +37,19 @@ export function telemetryEventFromPubsubMessage(deviceId: string, sysDate: Date,
         timestamp: admin.firestore.Timestamp.fromDate(sysDate),
         deviceId: deviceId,
     } as TelemetryEvent;
+}
+
+export function deviceFromPubsubMessage(deviceId: string, data: telemetryPubsubMessageInterface): Device {
+    return {
+        deviceId: deviceId,
+        lastTelemetry: {
+            lux: data.lux || 0,
+            co2: data.co2 || 0,
+            tvoc: data.tvoc || 0,
+            roomTemp: data.room_temp || 0,
+            cpuTemp: data.cpu_temp || 0,
+            pressure: data.pressure || 0, 
+            humidity: data.humidity || 0,
+        }
+    } as Device;
 }
