@@ -23,6 +23,3 @@ func GetCommandLineArgs() (*CommandLineArguments, error) {
 		RootPath:       os.Args[4],
 	}, nil
 }
-
-
-

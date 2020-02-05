@@ -22,23 +22,20 @@ type topics struct {
 }
 
 type service struct {
-	logger    logger.LoggerService
-	topics    topics
-	certs     *SSLCerts
-	iotConfig *GoogleIOTConfig
+	logger logger.LoggerService
+	topics topics
+	certs  *SSLCerts
 }
 
 // NewGoogleIOTService reurns a new service
-func NewGoogleIOTService(certs *SSLCerts, iotConfig *GoogleIOTConfig, logger logger.LoggerService) Interface {
-
+func NewGoogleIOTService(certs *SSLCerts, logger logger.LoggerService) Interface {
 	return &service{
-		certs:     certs,
-		iotConfig: iotConfig,
-		logger:    logger,
+		certs:  certs,
+		logger: logger,
 		topics: topics{
-			telemetry: fmt.Sprintf("/devices/%v/events", iotConfig.DeviceID),
-			state:     fmt.Sprintf("/devices/%v/state", iotConfig.DeviceID),
-			config:    fmt.Sprintf("/devices/%v/logger", iotConfig.DeviceID),
+			telemetry: fmt.Sprintf("/devices/%v/events", deviceID),
+			state:     fmt.Sprintf("/devices/%v/state", deviceID),
+			config:    fmt.Sprintf("/devices/%v/logger", deviceID),
 		},
 	}
 }
@@ -79,23 +76,23 @@ func getTLSConfig(rootsCert string) *tls.Config {
 	}
 }
 
-func getMQTTClient(certs *SSLCerts, iotConfig *GoogleIOTConfig, opts *MQTT.ClientOptions) (MQTT.Client, error) {
+func getMQTTClient(certs *SSLCerts, opts *MQTT.ClientOptions) (MQTT.Client, error) {
 
 	clientID := fmt.Sprintf("projects/%v/locations/%v/registries/%v/devices/%v",
-		iotConfig.ProjectID,
-		iotConfig.Region,
-		iotConfig.RegistryID,
-		iotConfig.DeviceID,
+		projectID,
+		region,
+		registryID,
+		deviceID,
 	)
 
-	jwtString, err := getTokenString(certs.RSAPrivate, iotConfig.ProjectID)
+	jwtString, err := getTokenString(certs.RSAPrivate, projectID)
 	if err != nil {
 		return nil, err
 	}
 
 	tlsConfig := getTLSConfig(certs.Roots)
 
-	broker := fmt.Sprintf("ssl://%v:%v", iotConfig.Bridge.Host, iotConfig.Bridge.Port)
+	broker := fmt.Sprintf("ssl://%v:%v", host, port)
 	opts.AddBroker(broker)
 	opts.SetClientID(clientID).SetTLSConfig(tlsConfig)
 	opts.SetUsername("unused")
@@ -115,7 +112,7 @@ func (s *service) PublishSensorData(ctx context.Context, d *sensors.SensorData) 
 		s.logger.StdOut("payload > %s\n", msg.Payload())
 	})
 
-	c, err := getMQTTClient(s.certs, s.iotConfig, opts)
+	c, err := getMQTTClient(s.certs, opts)
 	if err != nil {
 		return err
 	}
@@ -157,7 +154,7 @@ func (s *service) SubsribeToConfigChanges(ctx context.Context) (*ConfigMessage, 
 		choke <- [2]string{msg.Topic(), string(msg.Payload())}
 	})
 
-	c, err := getMQTTClient(s.certs, s.iotConfig, opts)
+	c, err := getMQTTClient(s.certs, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -190,7 +187,7 @@ func (s *service) SubsribeToConfigChanges(ctx context.Context) (*ConfigMessage, 
 }
 
 func (s *service) PublishDeviceState(ctx context.Context, status *DeviceStatus) error {
-	c, err := getMQTTClient(s.certs, s.iotConfig, MQTT.NewClientOptions())
+	c, err := getMQTTClient(s.certs, MQTT.NewClientOptions())
 	if err != nil {
 		s.logger.StdErr("Failed to get MQTT client, > %v", err)
 		return err

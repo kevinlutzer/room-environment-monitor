@@ -13,14 +13,13 @@ import (
 	"gobot.io/x/gobot/drivers/i2c"
 	"gobot.io/x/gobot/platforms/raspi"
 
-	"github.com/kml183/room-environment-monitor/internal/logger"
 	googleiot "github.com/kml183/room-environment-monitor/internal/google-iot"
+	"github.com/kml183/room-environment-monitor/internal/logger"
 	cron "gopkg.in/robfig/cron.v2"
 )
 
 const (
-	useIOTServiceStub = "USEIOTSERVICESTUB"
-	useSensorStub = "USESENSORSTUB"
+	localDev  = "LOCAL_DEV"
 	defaultIP = "localhost"
 )
 
@@ -36,32 +35,28 @@ func main() {
 
 	// Services
 	ss := sensors.NewSensorServiceStub()
-	if os.Getenv(useSensorStub) != "true" {
+	if os.Getenv(localDev) != "true" {
 		ss = setupSensors(logger)
-		logger.StdOut("Use live version of the sensor service")
+		logger.StdOut("Use live of sensor config")
 	}
 
-	i := iot.NewIOTServiceStub()
-	if os.Getenv(useIOTServiceStub) != "true" {
-		gs := setupIOTService(logger)
-		i = iot.NewIOTService(logger, ss, gs)
-		logger.StdOut("Using live version of iot service")
-	}
+	gs := setupIOTService(logger)
+	iotService := iot.NewIOTService(logger, ss, gs)
 
-	hs := httpserver.NewHTTPService(logger, i)
+	hs := httpserver.NewHTTPService(logger, iotService)
 	logger.StdOut("Successfully setup services")
 
 	ctx := context.TODO()
 
 	// Setup Cron
-	if err := setupCRON(ctx, logger, i); err != nil {
+	if err := setupCRON(ctx, logger, iotService); err != nil {
 		logger.StdErrFatal(err.Error())
 		os.Exit(failedToSetupCRON)
 	}
 	logger.StdOut("Successfully setup the CRON")
 
 	// Publish device status on startup
-	if err := i.PublishDeviceStatus(ctx); err != nil {
+	if err := iotService.PublishDeviceStatus(ctx); err != nil {
 		logger.StdErrFatal(err.Error())
 		os.Exit(failedToPublishDeviceStatus)
 	}
@@ -96,7 +91,6 @@ func setupSensors(logger logger.LoggerService) sensors.Interface {
 	return sensors.NewSensorService(dl, dg, dt)
 }
 
-
 func setupIOTService(logger logger.LoggerService) googleiot.Interface {
 	// Get Command Line Args
 	args, err := GetCommandLineArgs()
@@ -110,22 +104,14 @@ func setupIOTService(logger logger.LoggerService) googleiot.Interface {
 	logger.StdOut("The command line args are: %s", string(m))
 
 	// Create SSL Certs
-	certs, err := googleiot.GetSSLCerts(args.RootPath, args.RsaCertPath, args.RsaPrivatePath)
+	certs, err := googleiot.GetSSLCerts()
 	if err != nil {
 		logger.StdErrFatal("Failed to fetch the ssl cert files > %s", err.Error())
 		os.Exit(failedToGetSSLCerts)
 	}
 	logger.StdOut("Successfully fetch the ssl cert files")
 
-	// Fetch Google IOT Config
-	iotConfig, err := googleiot.GetGoogleIOTConfig(args.DeviceID)
-	if err != nil {
-		logger.StdErrFatal("Failed to get the iot logger > %+s ", err.Error())
-		os.Exit(failedToGetIOTConfig)
-	}
-	logger.StdOut("Successfully created google iot logger")
-
-	return googleiot.NewGoogleIOTService(certs, iotConfig, logger)
+	return googleiot.NewGoogleIOTService(certs, logger)
 }
 
 func setupCRON(ctx context.Context, logger logger.LoggerService, i iot.Interface) error {

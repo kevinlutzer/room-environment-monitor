@@ -10,7 +10,7 @@ project=iot-klutzer
 region=us-central1
 registry=devices-klutzer
 device=$1
-configDirName=$defaultConfigDir
+configDirName=certs
 
 
 # # create directory if it doen't exist to hold auth files

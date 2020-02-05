@@ -2,60 +2,37 @@ package googleiot
 
 import "io/ioutil"
 
-type Bridge struct {
-	Host string
-	Port string
-}
+const (
+	certPath   = "../certs"
+	deviceID   = "prototyping-device"
+	host       = "mqtt.googleapis.com"
+	port       = "8883"
+	projectID  = "iot-klutzer"
+	registryID = "devices-klutzer"
+	region     = "us-central1"
+)
 
-type GoogleIOTConfig struct {
-	DeviceID   string
-	Bridge     *Bridge
-	ProjectID  string
-	RegistryID string
-	Region     string
-}
-
-func GetGoogleIOTConfig(deviceID string) (*GoogleIOTConfig, error) {
-
-	return &GoogleIOTConfig{
-		DeviceID: deviceID,
-		Bridge: &Bridge{
-			Host: "mqtt.googleapis.com",
-			Port: "8883",
-		},
-		ProjectID:  "iot-klutzer",
-		RegistryID: "devices-klutzer",
-		Region:     "us-central1",
-	}, nil
-}
-
+// SSLCerts stores the strings for the certs needed for SSL/TLS
 type SSLCerts struct {
 	Roots      string
-	RsaCert    string
 	RSAPrivate string
 }
 
-
-func GetSSLCerts(rootPath, rsaCertPath, rsaPrivatePath string) (*SSLCerts, error) {
-
-	rs, err := ioutil.ReadFile(rootPath)
+// GetSSLCerts reads the privte public key certs used for SSL/TLS connections
+// to google iot core
+func GetSSLCerts() (*SSLCerts, error) {
+	rs, err := ioutil.ReadFile(certPath + "/roots.pem")
 	if err != nil {
 		return nil, err
 	}
 
-	rsc, err := ioutil.ReadFile(rsaCertPath)
-	if err != nil {
-		return nil, err
-	}
-
-	rscp, err := ioutil.ReadFile(rsaPrivatePath)
+	rscp, err := ioutil.ReadFile(certPath + "/rsa_private.pem")
 	if err != nil {
 		return nil, err
 	}
 
 	return &SSLCerts{
 		Roots:      string(rs),
-		RsaCert:    string(rsc),
 		RSAPrivate: string(rscp),
 	}, nil
 }
