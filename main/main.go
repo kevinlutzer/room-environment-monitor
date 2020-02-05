@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"os"
 	"runtime"
 
@@ -92,16 +91,6 @@ func setupSensors(logger logger.LoggerService) sensors.Interface {
 }
 
 func setupIOTService(logger logger.LoggerService) googleiot.Interface {
-	// Get Command Line Args
-	args, err := GetCommandLineArgs()
-	if err != nil {
-		logger.StdErrFatal(err.Error())
-		os.Exit(failedToGetCommandLineArguments)
-	}
-	logger.StdOut("Successfully get the command line argument")
-
-	m, _ := json.Marshal(args)
-	logger.StdOut("The command line args are: %s", string(m))
 
 	// Create SSL Certs
 	certs, err := googleiot.GetSSLCerts()
