@@ -20,7 +20,7 @@ export async function TelemetryPubsubHandler(message: functions.pubsub.Message, 
 
     const batch = db.batch();
     batch.create(db.collection(TelemetryEventModel).doc(), te)
-    batch.set(db.collection(DeviceModel).doc(deviceId), d, {mergeFields: ["deviceId", "lastTelemetry"]} as SetOptions)
+    batch.set(db.collection(DeviceModel).doc(deviceId), d, {mergeFields: ["deviceId", "lastTelemetry", "lastActivity"]} as SetOptions)
         
     try {
         await batch.commit()
