@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { TelemetryEventModel } from '../models';
 import { convertFirestoreDocsToTelemetryEvent } from './api-conversion';
-import { DocumentSnapshot } from '@google-cloud/firestore';
 
 export async function TelemetryEventList(req: Request, res: Response, db: FirebaseFirestore.Firestore) {
     const pageSize = parseInt(req.query.page_size, 10) || 100;
