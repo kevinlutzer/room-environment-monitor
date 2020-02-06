@@ -37,7 +37,8 @@ export function convertFirestoreDocsToDevice(docs: FirebaseFirestore.QueryDocume
                 cpuTemp: data.lastTelemetry.cpuTemp || 0,
                 pressure: data.lastTelemetry.pressure || 0,
                 humidity: data.lastTelemetry.humidity || 0,
-            }
+            },
+            lastActivity: data.lastActivity ? data.lastActivity.toDate() : new Date(),
         } as Device;
     })
 
