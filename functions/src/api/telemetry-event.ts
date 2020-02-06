@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { TelemetryEventModel } from '../models';
 import { convertFirestoreDocsToTelemetryEvent } from './api-conversion';
+import { DocumentSnapshot } from '@google-cloud/firestore';
 
 export async function TelemetryEventList(req: Request, res: Response, db: FirebaseFirestore.Firestore) {
     const pageSize = parseInt(req.query.page_size, 10) || 100;
@@ -11,16 +12,18 @@ export async function TelemetryEventList(req: Request, res: Response, db: Fireba
     try {
         q = await list(pageSize, cursor, deviceId, db) 
     } catch (e) {
-        console.error(e)
-        res.json({
-            error: e
-        })
-        res.status(500)
+        console.error(e);
+        res.json({error: e});
+        res.status(500);
     }
-    
-    const t = convertFirestoreDocsToTelemetryEvent(q.docs)
+    const docs = q.docs;
+    const hasMore = q.size === pageSize;
+
+    const t = convertFirestoreDocsToTelemetryEvent(docs)
     res.json({
-        telemetry: t
+        telemetry: t,
+        nextCursor: hasMore ? cursor + q.size : 0, 
+        hasMore: hasMore,
     })
 }
 
