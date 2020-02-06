@@ -14,6 +14,7 @@ export async function TelemetryEventList(req: Request, res: Response, db: Fireba
         console.error(e);
         res.json({error: e});
         res.status(500);
+        return
     }
     const docs = q.docs;
     const hasMore = q.size === pageSize;

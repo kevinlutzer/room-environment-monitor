@@ -13,10 +13,10 @@ export function convertFirestoreDocsToTelemetryEvent(docs: FirebaseFirestore.Que
             pressure: data.pressure,
             humidity: data.humidity,
             timestamp: data.timestamp ? data.timestamp.toDate() : new Date(),
-            deviceId: data.deviceId
+            deviceId: data.deviceId,
+            id: doc.id
         } as TelemetryEvent;
     })
-
 } 
 
 export function convertFirestoreDocsToDevice(docs: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData>[]): Device[] {
