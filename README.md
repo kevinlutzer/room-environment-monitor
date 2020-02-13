@@ -9,7 +9,13 @@ I have a few diagrams that show the two many sequence of operations that happen 
 ![](./documentation/data_collection_raspberry_pi_transmission_sequence_diagram.png)
 ![](./documentation/data_store_and_processing_sequence_google_cloud_platform.png)
 
+# Reviewing and Analyzing the Data
 
+Based on the technologies I used there isn't a free way for me to query the data. Datastudio backed with BigQuery is the tool that I have used to visualize and understand the data. Since that tool ins't free to use, I have surfaced any of the fews publiclically.
+
+# Next Steps
+
+Right now I am playing with a different data model that will give me a cheaper method of querying the data. You can checkout the progress I have made on the visualizations by viewing this [page](https://kevin.lutzer.ca/projects/sample)
 
 # Building Locally
 `GOARM=6 GOARCH=arm GOOS=linux go build main.go`
