@@ -61,6 +61,7 @@ func main() {
 		logger.StdErrFatal(err.Error())
 		os.Exit(failedToSetupCRON)
 	}
+	logger.StdOut("Successfully setup subscription to config")
 
 	if err := hs.Start(defaultIP); err != nil {
 		logger.StdErrFatal(err.Error())

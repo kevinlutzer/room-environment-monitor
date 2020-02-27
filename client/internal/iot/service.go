@@ -2,6 +2,7 @@ package iot
 
 import (
 	"context"
+	"fmt"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"os/exec"
 
@@ -41,6 +42,7 @@ func (i *iot) PublishSensorDataSnapshot(ctx context.Context) error {
 }
 
 func (i *iot) SubscribeToIOTCoreConfig(ctx context.Context) error {
+	fmt.Println("Setting up subscription")
 	err := i.googleiot.SubsribeToConfigChanges(ctx, func(client MQTT.Client, msg MQTT.Message) {
 		i.logger.StdOut("Subscribing to change in configuration. Payout: %s", string(msg.Payload()))
 		err := i.handleConfig(msg.Payload())
@@ -56,21 +58,18 @@ func (i *iot) SubscribeToIOTCoreConfig(ctx context.Context) error {
 	return nil
 }
 
-func (i *iot) handleConfig(data []byte) error {
-	if string(data) == "REBOOT" {
-		return i.rebootTheDevice()
-	}
-	return nil
-}
-
 func (i *iot) FetchSensorDataSnapshot(ctx context.Context) (*sensors.SensorData, error) {
 	return i.sensors.FetchSensorData(ctx)
 }
 
 var execCommand = exec.Command
 
-func (i *iot) rebootTheDevice() error {
-	cmd := execCommand("sudo", "/sbin/reboot")
-	_, err := cmd.Output()
-	return err
+func (i *iot) handleConfig(data []byte) error {
+	if string(data) == "REBOOT" {
+		fmt.Printf("Hello World\n")
+		// cmd := execCommand("sudo", "/sbin/reboot")
+		// _, err := cmd.Output()
+		// return err
+	}
+	return nil
 }

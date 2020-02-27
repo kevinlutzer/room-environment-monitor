@@ -141,38 +141,3 @@ func (s *service) SubsribeToConfigChanges(ctx context.Context, f func(client MQT
 	token.WaitTimeout(5 * time.Second)
 	return token.Error()
 }
-
-func (s *service) PublishDeviceState(ctx context.Context, status *DeviceStatus) error {
-	c, err := getMQTTClient(s.certs, MQTT.NewClientOptions())
-	if err != nil {
-		s.logger.StdErr("Failed to get MQTT client, > %v", err)
-		return err
-	}
-
-	s.logger.StdOut("About to connect to the server")
-	if token := c.Connect(); token.Wait() && token.Error() != nil {
-		s.logger.StdErr("Error stuff erorr > %v", token.Error())
-		return token.Error()
-	}
-
-	data, err := json.Marshal(status)
-	if err != nil {
-		return err
-	}
-
-	token := c.Publish(
-		s.topics.state,
-		0,
-		false,
-		data)
-
-	token.WaitTimeout(5 * time.Second)
-	err = token.Error()
-	if err != nil {
-		s.logger.StdErr("failed to publish the payload\n")
-		return err
-	}
-
-	c.Disconnect(250)
-	return nil
-}
