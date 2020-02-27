@@ -2,7 +2,7 @@ package googleiot
 
 import (
 	"context"
-	"github.com/kml183/room-environment-monitor/internal/sensors"
+	"room-environment-monitor-client/internal/sensors"
 )
 
 //go:generate mockery -inpkg -name Interface -case underscore

@@ -11,8 +11,8 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
-	"github.com/kml183/room-environment-monitor/internal/logger"
-	"github.com/kml183/room-environment-monitor/internal/sensors"
+	"room-environment-monitor-client/internal/logger"
+	"room-environment-monitor-client/internal/sensors"
 )
 
 type topics struct {

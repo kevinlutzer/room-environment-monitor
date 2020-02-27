@@ -5,9 +5,9 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/kml183/room-environment-monitor/internal/logger"
-	googleiot "github.com/kml183/room-environment-monitor/internal/google-iot"
-	"github.com/kml183/room-environment-monitor/internal/sensors"
+	"room-environment-monitor-client/internal/logger"
+	googleiot "room-environment-monitor-client/internal/google-iot"
+	"room-environment-monitor-client/internal/sensors"
 )
 
 type PowerConfigMessage string

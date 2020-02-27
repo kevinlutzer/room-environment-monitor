@@ -2,7 +2,7 @@ package iot
 
 import (
 	"context"
-	"github.com/kml183/room-environment-monitor/internal/sensors"
+	"room-environment-monitor-client/internal/sensors"
 	"time"
 )
 
@@ -11,8 +11,7 @@ type stub struct {
 
 // NewIOTServiceStub returns a stub version of the Interface.
 func NewIOTServiceStub() Interface {
-	return &stub{
-	}
+	return &stub{}
 }
 
 func (i *stub) PublishSensorDataSnapshot(ctx context.Context) error {

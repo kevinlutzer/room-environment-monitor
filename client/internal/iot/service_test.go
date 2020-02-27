@@ -3,9 +3,9 @@ package iot
 import (
 	"context"
 	"errors"
-	googleiot2 "github.com/kml183/room-environment-monitor/internal/google-iot"
-	"github.com/kml183/room-environment-monitor/internal/logger"
-	sensors2 "github.com/kml183/room-environment-monitor/internal/sensors"
+	googleiot2 "room-environment-monitor-client/internal/google-iot"
+	"room-environment-monitor-client/internal/logger"
+	sensors2 "room-environment-monitor-client/internal/sensors"
 	"testing"
 
 	"github.com/stretchr/testify/mock"
@@ -17,7 +17,7 @@ type IOTServerServiceTestSuite struct {
 	suite.Suite
 	sensors   *sensors2.MockInterface
 	googleiot *googleiot2.MockInterface
-	logger	logger.LoggerService
+	logger    logger.LoggerService
 	iot       Interface
 	ctx       context.Context
 }

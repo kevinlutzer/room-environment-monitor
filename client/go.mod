@@ -1,4 +1,4 @@
-module github.com/kml183/room-environment-monitor
+module room-environment-monitor-client
 
 go 1.12
 

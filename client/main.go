@@ -5,16 +5,16 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/kml183/room-environment-monitor/internal/iot"
-	"github.com/kml183/room-environment-monitor/internal/sensors"
-	httpserver "github.com/kml183/room-environment-monitor/internal/server"
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/drivers/i2c"
 	"gobot.io/x/gobot/platforms/raspi"
+	"room-environment-monitor-client/internal/iot"
+	"room-environment-monitor-client/internal/sensors"
+	"room-environment-monitor-client/internal/server"
 
-	googleiot "github.com/kml183/room-environment-monitor/internal/google-iot"
-	"github.com/kml183/room-environment-monitor/internal/logger"
 	cron "gopkg.in/robfig/cron.v2"
+	googleiot "room-environment-monitor-client/internal/google-iot"
+	"room-environment-monitor-client/internal/logger"
 )
 
 const (

@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/kml183/room-environment-monitor/internal/logger"
-	"github.com/kml183/room-environment-monitor/internal/iot"
-	"github.com/kml183/room-environment-monitor/internal/sensors"
+	"room-environment-monitor-client/internal/iot"
+	"room-environment-monitor-client/internal/logger"
+	"room-environment-monitor-client/internal/sensors"
 )
 
 type Message struct {
@@ -34,8 +34,8 @@ type server struct {
 func NewHTTPService(logger logger.LoggerService, iot iot.Interface) Interface {
 
 	s := &server{
-		iot:     iot,
-		logger:  logger,
+		iot:    iot,
+		logger: logger,
 	}
 
 	//Setup Handlers
