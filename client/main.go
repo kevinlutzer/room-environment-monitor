@@ -56,6 +56,12 @@ func main() {
 	}
 	logger.StdOut("Successfully setup the CRON")
 
+	// Subscribe to Configuration Changes
+	if err := iotService.SubscribeToIOTCoreConfig(ctx); err != nil {
+		logger.StdErrFatal(err.Error())
+		os.Exit(failedToSetupCRON)
+	}
+
 	if err := hs.Start(defaultIP); err != nil {
 		logger.StdErrFatal(err.Error())
 		os.Exit(failedToStartHTTPService)
@@ -106,16 +112,9 @@ func setupIOTService(logger logger.LoggerService) googleiot.Interface {
 
 func setupCRON(ctx context.Context, logger logger.LoggerService, i iot.Interface) error {
 	c := cron.New()
-	if _, err := c.AddFunc("15 * * * * *", func() {
+	if _, err := c.AddFunc("1 * * * * *", func() {
 		logger.StdOut("Publishing a new data snapshot")
 		i.PublishSensorDataSnapshot(ctx)
-	}); err != nil {
-		return err
-	}
-
-	if _, err := c.AddFunc("* * * * * *", func() {
-		logger.StdOut("Subscribing to configuration changes")
-		i.SubscribeToIOTCoreConfig(ctx)
 	}); err != nil {
 		return err
 	}

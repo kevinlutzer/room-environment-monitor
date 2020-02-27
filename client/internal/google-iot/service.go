@@ -132,46 +132,14 @@ func (s *service) PublishSensorData(ctx context.Context, d *sensors.SensorData) 
 	return token.Error()
 }
 
-func (s *service) SubsribeToConfigChanges(ctx context.Context) (*ConfigMessage, error) {
-	receiveCount := 0
-	cm := &ConfigMessage{}
-	choke := make(chan [2]string)
-
-	opts := MQTT.NewClientOptions()
-	opts.SetDefaultPublishHandler(func(client MQTT.Client, msg MQTT.Message) {
-		choke <- [2]string{msg.Topic(), string(msg.Payload())}
-	})
-
-	c, err := getMQTTClient(s.certs, opts)
-	if err != nil {
-		return nil, err
-	}
-
-	if token := c.Connect(); token.Wait() && token.Error() != nil {
-		log.Fatal(token.Error().Error())
-		return nil, token.Error()
-	}
-
-	token := c.Subscribe(
+func (s *service) SubsribeToConfigChanges(ctx context.Context, f func(client MQTT.Client, msg MQTT.Message)) error {
+	token := s.client.Subscribe(
 		s.topics.config,
-		0,
-		nil)
+		1,
+		f)
 
 	token.WaitTimeout(5 * time.Second)
-	err = token.Error()
-	if err != nil {
-		s.logger.StdErr("failed to publish the payload\n")
-		return nil, err
-	}
-
-	for receiveCount < 1 {
-		incoming := <-choke
-		json.Unmarshal([]byte(incoming[1]), &cm)
-		receiveCount++
-	}
-
-	c.Disconnect(250)
-	return cm, nil
+	return token.Error()
 }
 
 func (s *service) PublishDeviceState(ctx context.Context, status *DeviceStatus) error {
