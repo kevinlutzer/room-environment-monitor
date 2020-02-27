@@ -107,7 +107,7 @@ func setupIOTService(logger logger.LoggerService) googleiot.Interface {
 
 func setupCRON(ctx context.Context, logger logger.LoggerService, i iot.Interface) error {
 	c := cron.New()
-	if _, err := c.AddFunc("* * * * * *", func() {
+	if _, err := c.AddFunc("15 * * * * *", func() {
 		logger.StdOut("Publishing a new data snapshot")
 		i.PublishSensorDataSnapshot(ctx)
 	}); err != nil {
