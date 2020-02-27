@@ -10,8 +10,6 @@ import (
 type Interface interface {
 	//PublishSensorData fetches sensors data
 	PublishSensorData(ctx context.Context, data *sensors.SensorData) error
-	//PublishDeviceState fetches sensors data
-	PublishDeviceState(ctx context.Context, status *DeviceStatus) error
 	//SubsribeToConfigChanges subscribe to any logger changes
 	SubsribeToConfigChanges(ctx context.Context) (*ConfigMessage, error)
 }

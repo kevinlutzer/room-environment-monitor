@@ -9,4 +9,5 @@ const (
 	failedToStartHTTPService        = 9
 	failedToSetupCRON               = 10
 	failedToStartGoBotService       = 11
+	failedToInitIOTService          = 12
 )

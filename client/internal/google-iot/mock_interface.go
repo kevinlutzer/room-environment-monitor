@@ -11,20 +11,6 @@ type MockInterface struct {
 	mock.Mock
 }
 
-// PublishDeviceState provides a mock function with given fields: ctx, status
-func (_m *MockInterface) PublishDeviceState(ctx context.Context, status *DeviceStatus) error {
-	ret := _m.Called(ctx, status)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *DeviceStatus) error); ok {
-		r0 = rf(ctx, status)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
 // PublishSensorData provides a mock function with given fields: ctx, data
 func (_m *MockInterface) PublishSensorData(ctx context.Context, data *sensors.SensorData) error {
 	ret := _m.Called(ctx, data)

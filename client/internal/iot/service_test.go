@@ -53,33 +53,6 @@ func (s *IOTServerServiceTestSuite) Test_PublishSensorDataSnapshot_ShouldReturnE
 	s.googleiot.AssertExpectations(s.T())
 }
 
-func (s *IOTServerServiceTestSuite) Test_PublishDeviceStatus_ShouldReturnErrorWhenFetchCPUTempErrors() {
-
-	fetchCpuTempErr := errors.New("Something It doesn't matter")
-
-	s.sensors.On("FetchCPUTemp").Return(float32(0), fetchCpuTempErr)
-
-	err := s.iot.PublishDeviceStatus(s.ctx)
-	s.Assert().Equal(fetchCpuTempErr, err)
-
-	s.sensors.AssertExpectations(s.T())
-	s.googleiot.AssertExpectations(s.T())
-}
-
-func (s *IOTServerServiceTestSuite) Test_PublishDeviceStatus_ShouldReturnErrorWhenPublishDeviceStateErrors() {
-
-	publishDeviceStateErr := errors.New("Something It doesn't matter")
-
-	s.sensors.On("FetchCPUTemp").Return(float32(0), nil)
-	s.googleiot.On("PublishDeviceState", mock.Anything, mock.Anything).Return(publishDeviceStateErr)
-
-	err := s.iot.PublishDeviceStatus(s.ctx)
-	s.Assert().Equal(publishDeviceStateErr, err)
-
-	s.sensors.AssertExpectations(s.T())
-	s.googleiot.AssertExpectations(s.T())
-}
-
 func (s *IOTServerServiceTestSuite) Test_SubscribeToIOTCoreConfig_ShouldReturnErrorWhenSubsribeToConfigChangesErrors() {
 	subscribeToIOTCoreConfigErr := errors.New("Something It doesn't matter")
 	s.googleiot.On("SubsribeToConfigChanges", mock.Anything).Return(nil, subscribeToIOTCoreConfigErr)

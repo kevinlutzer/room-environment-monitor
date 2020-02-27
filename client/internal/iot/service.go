@@ -3,10 +3,9 @@ package iot
 import (
 	"context"
 	"os/exec"
-	"time"
 
-	"room-environment-monitor-client/internal/logger"
 	googleiot "room-environment-monitor-client/internal/google-iot"
+	"room-environment-monitor-client/internal/logger"
 	"room-environment-monitor-client/internal/sensors"
 )
 
@@ -42,25 +41,6 @@ func (i *iot) PublishSensorDataSnapshot(ctx context.Context) error {
 	}
 
 	if err := i.googleiot.PublishSensorData(ctx, data); err != nil {
-		i.logger.StdErr(err.Error())
-		return err
-	}
-	return nil
-}
-
-func (i *iot) PublishDeviceStatus(ctx context.Context) error {
-	cpuTemp, err := i.sensors.FetchCPUTemp()
-	if err != nil {
-		i.logger.StdErr(err.Error())
-		return err
-	}
-
-	data := &googleiot.DeviceStatus{
-		CpuTemp:   cpuTemp,
-		TimeStamp: time.Now(),
-	}
-
-	if err := i.googleiot.PublishDeviceState(ctx, data); err != nil {
 		i.logger.StdErr(err.Error())
 		return err
 	}

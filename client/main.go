@@ -56,13 +56,6 @@ func main() {
 	}
 	logger.StdOut("Successfully setup the CRON")
 
-	// Publish device status on startup
-	if err := iotService.PublishDeviceStatus(ctx); err != nil {
-		logger.StdErrFatal(err.Error())
-		os.Exit(failedToPublishDeviceStatus)
-	}
-	logger.StdOut("Successfully published the device status initially")
-
 	if err := hs.Start(defaultIP); err != nil {
 		logger.StdErrFatal(err.Error())
 		os.Exit(failedToStartHTTPService)
@@ -102,7 +95,13 @@ func setupIOTService(logger logger.LoggerService) googleiot.Interface {
 	}
 	logger.StdOut("Successfully fetch the ssl cert files")
 
-	return googleiot.NewGoogleIOTService(certs, logger)
+	client, err := googleiot.NewGoogleIOTService(certs, logger)
+	if err != nil {
+		logger.StdErrFatal("Failed to fetch the ssl cert files > %s", err.Error())
+		os.Exit(failedToInitIOTService)
+	}
+
+	return client
 }
 
 func setupCRON(ctx context.Context, logger logger.LoggerService, i iot.Interface) error {
@@ -117,13 +116,6 @@ func setupCRON(ctx context.Context, logger logger.LoggerService, i iot.Interface
 	if _, err := c.AddFunc("* * * * * *", func() {
 		logger.StdOut("Subscribing to configuration changes")
 		i.SubscribeToIOTCoreConfig(ctx)
-	}); err != nil {
-		return err
-	}
-
-	if _, err := c.AddFunc("@hourly", func() {
-		logger.StdOut("Publishing the device status")
-		i.PublishDeviceStatus(ctx)
 	}); err != nil {
 		return err
 	}

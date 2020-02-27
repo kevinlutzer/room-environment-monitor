@@ -42,7 +42,6 @@ func NewHTTPService(logger logger.LoggerService, iot iot.Interface) Interface {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/get-sensor-data-snapshot", s.getSensorDataSnapshotHandler)
 	mux.HandleFunc("/publish-sensor-data-snapshot", s.publishSensorDataSnapshotHandler)
-	mux.HandleFunc("/publish-device-status", s.publishDeviceStatusHandler)
 	mux.HandleFunc("/subscribe-iot-logger", s.subscribeToIOTCoreConfigHandler)
 
 	s.mux = mux
@@ -87,20 +86,6 @@ func (s *server) publishSensorDataSnapshotHandler(wr http.ResponseWriter, r *htt
 
 	s.setStringResponse(wr, "successfully published the data", 200)
 
-}
-
-func (s *server) publishDeviceStatusHandler(wr http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	s.logger.StdOut("http: calling handler publishDeviceStatusHandler\n")
-
-	err := s.iot.PublishDeviceStatus(ctx)
-	if err != nil {
-		s.logger.StdErr("http: %v\n", err.Error())
-		s.setStringResponse(wr, "could't publish the status", 500)
-		return
-	}
-
-	s.setStringResponse(wr, "published the status", 200)
 }
 
 func (s *server) subscribeToIOTCoreConfigHandler(wr http.ResponseWriter, r *http.Request) {

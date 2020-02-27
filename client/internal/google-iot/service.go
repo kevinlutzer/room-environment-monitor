@@ -25,19 +25,31 @@ type service struct {
 	logger logger.LoggerService
 	topics topics
 	certs  *SSLCerts
+	client MQTT.Client
 }
 
 // NewGoogleIOTService reurns a new service
-func NewGoogleIOTService(certs *SSLCerts, logger logger.LoggerService) Interface {
+func NewGoogleIOTService(certs *SSLCerts, logger logger.LoggerService) (Interface, error) {
+
+	c, err := getMQTTClient(certs, MQTT.NewClientOptions())
+	if err != nil {
+		return nil, err
+	}
+
+	if token := c.Connect(); token.Wait() && token.Error() != nil {
+		log.Fatal(token.Error().Error())
+		return nil, token.Error()
+	}
+
 	return &service{
+		client: c,
 		certs:  certs,
 		logger: logger,
 		topics: topics{
 			telemetry: fmt.Sprintf("/devices/%v/events", deviceID),
-			state:     fmt.Sprintf("/devices/%v/state", deviceID),
 			config:    fmt.Sprintf("/devices/%v/logger", deviceID),
 		},
-	}
+	}, nil
 }
 
 func getTokenString(rsaPrivate string, projectID string) (string, error) {
@@ -94,9 +106,10 @@ func getMQTTClient(certs *SSLCerts, opts *MQTT.ClientOptions) (MQTT.Client, erro
 
 	broker := fmt.Sprintf("ssl://%v:%v", host, port)
 	opts.AddBroker(broker)
-	opts.SetClientID(clientID).SetTLSConfig(tlsConfig)
+	opts.SetClientID(clientID)
+	opts.SetTLSConfig(tlsConfig)
+	opts.SetAutoReconnect(true)
 	opts.SetUsername("unused")
-
 	opts.SetPassword(jwtString)
 
 	return MQTT.NewClient(opts), nil
@@ -104,44 +117,19 @@ func getMQTTClient(certs *SSLCerts, opts *MQTT.ClientOptions) (MQTT.Client, erro
 }
 
 func (s *service) PublishSensorData(ctx context.Context, d *sensors.SensorData) error {
-
-	opts := MQTT.NewClientOptions()
-
-	opts.SetDefaultPublishHandler(func(client MQTT.Client, msg MQTT.Message) {
-		s.logger.StdOut("topic > %s\n", msg.Topic())
-		s.logger.StdOut("payload > %s\n", msg.Payload())
-	})
-
-	c, err := getMQTTClient(s.certs, opts)
-	if err != nil {
-		return err
-	}
-
-	if token := c.Connect(); token.Wait() && token.Error() != nil {
-		log.Fatal(token.Error().Error())
-		return token.Error()
-	}
-
 	data, err := json.Marshal(d)
 	if err != nil {
 		return err
 	}
 
-	token := c.Publish(
+	token := s.client.Publish(
 		s.topics.telemetry,
-		0,
+		1,
 		false,
 		data)
 
 	token.WaitTimeout(5 * time.Second)
-	err = token.Error()
-	if err != nil {
-		s.logger.StdErr("failed to publish the payload: %v\n", err.Error())
-		return err
-	}
-
-	c.Disconnect(0)
-	return nil
+	return token.Error()
 }
 
 func (s *service) SubsribeToConfigChanges(ctx context.Context) (*ConfigMessage, error) {
