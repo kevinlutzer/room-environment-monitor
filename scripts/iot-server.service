@@ -1,12 +1,14 @@
 [Unit]
 Description=IOT server for room monitor
+After=network.target
 
 [Service]
-ExecStart=/home/pi/main
-TimeoutSec=30
-Restart=on-failure
-RestartSec=5
-StartLimitInterval=350
+ExecStart=/bin/bash start.sh
+WorkingDirectory=/home/pi
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
 
 [Install]
 WantedBy=multi-user.target
