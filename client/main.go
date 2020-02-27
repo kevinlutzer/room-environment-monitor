@@ -5,16 +5,18 @@ import (
 	"os"
 	"runtime"
 
+	"room-environment-monitor-client/internal/iot"
+	"room-environment-monitor-client/internal/sensors"
+	httpserver "room-environment-monitor-client/internal/server"
+
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/drivers/i2c"
 	"gobot.io/x/gobot/platforms/raspi"
-	"room-environment-monitor-client/internal/iot"
-	"room-environment-monitor-client/internal/sensors"
-	"room-environment-monitor-client/internal/server"
 
-	cron "gopkg.in/robfig/cron.v2"
 	googleiot "room-environment-monitor-client/internal/google-iot"
 	"room-environment-monitor-client/internal/logger"
+
+	cron "gopkg.in/robfig/cron.v2"
 )
 
 const (
@@ -105,14 +107,14 @@ func setupIOTService(logger logger.LoggerService) googleiot.Interface {
 
 func setupCRON(ctx context.Context, logger logger.LoggerService, i iot.Interface) error {
 	c := cron.New()
-	if _, err := c.AddFunc("* 5 * * * *", func() {
+	if _, err := c.AddFunc("* * * * * *", func() {
 		logger.StdOut("Publishing a new data snapshot")
 		i.PublishSensorDataSnapshot(ctx)
 	}); err != nil {
 		return err
 	}
 
-	if _, err := c.AddFunc("30 * * * * *", func() {
+	if _, err := c.AddFunc("* * * * * *", func() {
 		logger.StdOut("Subscribing to configuration changes")
 		i.SubscribeToIOTCoreConfig(ctx)
 	}); err != nil {
