@@ -122,22 +122,15 @@ func (s *service) PublishSensorData(ctx context.Context, d *sensors.SensorData) 
 		return err
 	}
 
-	token := s.client.Publish(
-		s.topics.telemetry,
-		1,
-		false,
-		data)
-
-	token.WaitTimeout(5 * time.Second)
-	return token.Error()
+	if token := s.client.Publish(s.topics.telemetry, 1, false, data); token.Wait() && token.Error() != nil {
+		return token.Error()
+	}
+	return nil
 }
 
-func (s *service) SubsribeToConfigChanges(ctx context.Context, f func(client MQTT.Client, msg MQTT.Message)) error {
-	token := s.client.Subscribe(
-		s.topics.config,
-		1,
-		f)
-
-	token.WaitTimeout(5 * time.Second)
-	return token.Error()
+func (s *service) SubsribeToConfigChanges(ctx context.Context, f MQTT.MessageHandler) error {
+	if token := s.client.Subscribe(s.topics.config, 1, f); token.Wait() && token.Error() != nil {
+		return token.Error()
+	}
+	return nil
 }

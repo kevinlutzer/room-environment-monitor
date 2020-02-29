@@ -27,11 +27,11 @@ func (_m *MockInterface) PublishSensorData(ctx context.Context, data *sensors.Se
 }
 
 // SubsribeToConfigChanges provides a mock function with given fields: ctx, f
-func (_m *MockInterface) SubsribeToConfigChanges(ctx context.Context, f func(mqtt.Client, mqtt.Message)) error {
+func (_m *MockInterface) SubsribeToConfigChanges(ctx context.Context, f mqtt.MessageHandler) error {
 	ret := _m.Called(ctx, f)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, func(mqtt.Client, mqtt.Message)) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, mqtt.MessageHandler) error); ok {
 		r0 = rf(ctx, f)
 	} else {
 		r0 = ret.Error(0)

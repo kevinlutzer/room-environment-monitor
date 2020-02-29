@@ -10,4 +10,5 @@ const (
 	failedToSetupCRON               = 10
 	failedToStartGoBotService       = 11
 	failedToInitIOTService          = 12
+	failedToSetupIOTCoreConfig      = 13
 )

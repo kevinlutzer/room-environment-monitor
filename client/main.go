@@ -44,10 +44,17 @@ func main() {
 	gs := setupIOTService(logger)
 	iotService := iot.NewIOTService(logger, ss, gs)
 
+	ctx := context.TODO()
+
+	// Subscribe to Configuration Changes
+	// if err := iotService.SubscribeToIOTCoreConfig(ctx); err != nil {
+	// 	logger.StdErrFatal(err.Error())
+	// 	os.Exit(failedToSetupIOTCoreConfig)
+	// }
+	// logger.StdOut("Successfully setup subscription to config")
+
 	hs := httpserver.NewHTTPService(logger, iotService)
 	logger.StdOut("Successfully setup services")
-
-	ctx := context.TODO()
 
 	// Setup Cron
 	if err := setupCRON(ctx, logger, iotService); err != nil {
@@ -55,13 +62,6 @@ func main() {
 		os.Exit(failedToSetupCRON)
 	}
 	logger.StdOut("Successfully setup the CRON")
-
-	// Subscribe to Configuration Changes
-	if err := iotService.SubscribeToIOTCoreConfig(ctx); err != nil {
-		logger.StdErrFatal(err.Error())
-		os.Exit(failedToSetupCRON)
-	}
-	logger.StdOut("Successfully setup subscription to config")
 
 	if err := hs.Start(defaultIP); err != nil {
 		logger.StdErrFatal(err.Error())

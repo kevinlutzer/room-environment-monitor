@@ -13,5 +13,5 @@ type Interface interface {
 	//PublishSensorData fetches sensors data
 	PublishSensorData(ctx context.Context, data *sensors.SensorData) error
 	//SubsribeToConfigChanges subscribe to any logger changes
-	SubsribeToConfigChanges(ctx context.Context, f func(client MQTT.Client, msg MQTT.Message)) error
+	SubsribeToConfigChanges(ctx context.Context, f MQTT.MessageHandler) error
 }
