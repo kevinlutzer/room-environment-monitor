@@ -24,6 +24,19 @@ const (
 	defaultIP = "localhost"
 )
 
+const (
+	failedToGetCommandLineArguments = 4
+	failedToSetGoProcesses          = 5
+	failedToGetSSLCerts             = 6
+	failedToGetIOTConfig            = 7
+	failedToPublishDeviceStatus     = 8
+	failedToStartHTTPService        = 9
+	failedToSetupCRON               = 10
+	failedToStartGoBotService       = 11
+	failedToInitIOTService          = 12
+	failedToSetupIOTCoreConfig      = 13
+)
+
 func main() {
 	logger := logger.NewLogger()
 
