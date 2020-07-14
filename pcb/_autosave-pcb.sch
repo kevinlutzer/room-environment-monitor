@@ -378,4 +378,15 @@ Wire Wire Line
 Connection ~ 7900 3050
 Wire Wire Line
 	7900 3050 8000 3050
+$Comp
+L Sensor:BME280 U?
+U 1 1 5F0CD6B3
+P 7050 1650
+F 0 "U?" H 6621 1696 50  0000 R CNN
+F 1 "BME280" H 6621 1605 50  0000 R CNN
+F 2 "Package_LGA:Bosch_LGA-8_2.5x2.5mm_P0.65mm_ClockwisePinNumbering" H 8550 1200 50  0001 C CNN
+F 3 "https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BME280-DS002.pdf" H 7050 1450 50  0001 C CNN
+	1    7050 1650
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
