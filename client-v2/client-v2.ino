@@ -1,9 +1,10 @@
-#include "sensor-adapter.h"
 #include <string>  
+
+#include "sensor-adapter.h"
 
 using namespace std;
 
-SensorAdapter sa;
+SensorAdapter sa = SensorAdapter();
 
 void setup() {
   Serial.begin(9600);
