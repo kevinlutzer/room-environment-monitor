@@ -3,12 +3,15 @@
 
 class SensorData {
     public:
-        uint16_t eC02, TV0C;
+        uint16_t geteCO2();
+        uint16_t getTVOC();
+        SensorData(uint16_t eCO2, uint16_t TVOC) {
+          _eCO2 = eCO2;
+          _TVOC = TVOC;
+        };
 
-        void constructor() {
-          eC02 = 0; TV0C = 0;
-        }
-
+    private:
+      uint16_t _eCO2, _TVOC;
 };
 
 #endif

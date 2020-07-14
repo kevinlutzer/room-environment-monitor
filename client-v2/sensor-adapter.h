@@ -7,9 +7,12 @@
 class SensorAdapter {
     private: 
         Adafruit_CCS811 ccs;
+        uint8_t _error;
 
     public:
-        SensorData get_snapshot();
+        uint8_t getError();
+        void init();
+        SensorData getSnapshot();
 };
 
 #endif
