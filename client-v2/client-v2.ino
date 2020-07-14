@@ -18,9 +18,15 @@ void setup() {
 }
 
 void loop() {
-  uint16_t eCO2 = sa.getSnapshot().geteCO2();
-  uint16_t TVOC = sa.getSnapshot().getTVOC();
+  SensorData ss = sa.getSnapshot();
+  uint16_t eCO2 = ss.geteCO2();
+  uint16_t TVOC = ss.getTVOC();
+  float Lux = ss.getLux();
+  float Temp = ss.getTemp();
+  float Humidity = ss.getHumidity();
+  float Pressure = ss.getPressure();
   uint8_t error = sa.getError();
+
   if(error > 0) {
     Serial.print("Error: ");
     Serial.print(error);
@@ -28,7 +34,14 @@ void loop() {
     Serial.print(eCO2);
     Serial.print(" ");
     Serial.print(TVOC);
-    
+    Serial.print(" ");
+    Serial.print(Lux);
+    Serial.print(" ");
+    Serial.print(Temp);
+    Serial.print(" ");
+    Serial.print(Humidity);
+    Serial.print(" ");
+    Serial.print(Pressure);
   }
   Serial.println("");
   delay(1000);
