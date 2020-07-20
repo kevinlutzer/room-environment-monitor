@@ -1,4 +1,3 @@
 (sym_lib_table
-  (lib (name LD39050PU33R)(type Legacy)(uri /Users/kevin/Downloads/LD39050PU33R/LD39050PU33R.lib)(options "")(descr ""))
-  (lib (name ESP8266-12E_ESP-12E)(type Legacy)(uri /Users/kevin/Downloads/ESP8266-12E_ESP-12E/ESP8266-12E_ESP-12E.lib)(options "")(descr ""))
+  (lib (name OPTICAL-TSL2561T_6P-3.8X2.6MM_)(type Legacy)(uri ${KIPRJMOD}/OPTICAL-TSL2561T_6P-3.8X2.6MM_/OPTICAL-TSL2561T_6P-3.8X2.6MM_.lib)(options "")(descr ""))
 )

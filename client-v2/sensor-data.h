@@ -1,6 +1,10 @@
 #ifndef SENSORDATA_H
 #define SENSORDATA_H
 
+#include <string>
+
+using namespace std;
+
 class SensorData {
     public:
         uint16_t geteCO2();
@@ -17,6 +21,7 @@ class SensorData {
           _Humidity = Humidity;
           _Pressure = Pressure;
         };
+        char * stringify(void);
 
     private:
       uint16_t _eCO2, _TVOC;

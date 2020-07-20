@@ -1,23 +1,37 @@
-#include <string>  
+#include <CloudIoTCore.h>
 
 #include "sensor-adapter.h"
+#include "esp8266_mqtt.h"
 
-using namespace std;
+#ifndef LED_BUILTIN
+#define LED_BUILTIN 13
+#endif
 
 SensorAdapter sa = SensorAdapter();
 
-void setup() {
-  Serial.begin(9600);
+void setup()
+{
+  // put your setup code here, to run once:
+  Serial.begin(250000);
+  setupCloudIoT(); // Creates globals for MQTT
+  pinMode(LED_BUILTIN, OUTPUT);
   
   sa.init();
   uint8_t error = sa.getError();
   if (error > 0) {
-    Serial.println("Failed to inialize the sensors with error");
-    while(1);
+    Serial.print("Failed to initialize the sensors with error: ");
+    Serial.print(error);
+    Serial.println("");
+    while(1) {
+      yield();
+    }
   }
 }
 
-void loop() {
+unsigned long lastMillis = 0;
+void loop()
+{
+
   SensorData ss = sa.getSnapshot();
   uint16_t eCO2 = ss.geteCO2();
   uint16_t TVOC = ss.getTVOC();
@@ -26,6 +40,9 @@ void loop() {
   float Humidity = ss.getHumidity();
   float Pressure = ss.getPressure();
   uint8_t error = sa.getError();
+
+  char* jsonStr = ss.stringify();
+  Serial.println(jsonStr);
 
   if(error > 0) {
     Serial.print("Error: ");
@@ -44,5 +61,22 @@ void loop() {
     Serial.print(Pressure);
   }
   Serial.println("");
-  delay(1000);
+  
+  mqtt->loop();
+  delay(10); // <- fixes some issues with WiFi stability
+  yield();
+ 
+  if (!mqttClient->connected())
+  {
+    ESP.wdtDisable();
+    connect(); 
+    ESP.wdtEnable(0);
+  }
+
+  // TODO: Replace with your code here
+  if (millis() - lastMillis > 60000)
+  {
+    lastMillis = millis();
+    publishTelemetry(jsonStr);
+  }
 }

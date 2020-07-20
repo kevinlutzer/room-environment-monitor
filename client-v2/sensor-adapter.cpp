@@ -12,10 +12,10 @@
 void SensorAdapter::init() {
   this->_error = 0;
     
-  if(!ccs->begin()){
-    this->_error = 1; 
-    return;
-  }
+//  if(!ccs->begin()){
+//    this->_error = 1; 
+//    return;
+//  }
 
   if(!tsl->begin())
   {
@@ -37,7 +37,7 @@ SensorData SensorAdapter::getSnapshot() {
 
   int counter = 0;
   while(!ccs->available()) {
-    delay(1000);
+    yield();
     if (counter == 2) {
       this->_error = 1;
       return SensorData(0,0,0,0,0,0);
@@ -48,14 +48,17 @@ SensorData SensorAdapter::getSnapshot() {
   if (ccs->readData()) {
     this->_error = 1;
   }
+  yield();
 
   float temp, pressure, humidity;
   temp = bme->readTemperature();
+  yield();
   pressure = bme->readPressure()/100.0F;
   humidity = bme->readHumidity();
 
   sensors_event_t event;
   tsl->getEvent(&event);
+  yield();
 
   return SensorData(this->ccs->geteCO2(),this->ccs->getTVOC(), event.light, temp, humidity, pressure);
 }
