@@ -182,6 +182,49 @@ X ~RST 9 700 -500 100 L 50 50 1 1 B
 ENDDRAW
 ENDDEF
 #
+# Kevin_Lutzer_LD56100
+#
+DEF Kevin_Lutzer_LD56100 U 0 40 Y Y 1 F N
+F0 "U" 200 -250 50 H V C CNN
+F1 "Kevin_Lutzer_LD56100" -200 250 50 H V C CNN
+F2 "Package_DFN_QFN:DFN-8-1EP_2x2mm_P0.45mm_EP0.64x1.38mm" 0 500 100 H I C CNN
+F3 "" -50 0 100 H I C CNN
+DRAW
+P 6 0 1 0 250 200 350 200 350 -200 -350 -200 -350 200 250 200 f
+X VOUT 1 450 100 100 L 50 50 1 1 W
+X VOUT 2 450 0 100 L 50 50 1 1 w
+X LCON 3 -450 -50 100 R 50 50 1 1 I
+X FB 4 450 -100 100 L 50 50 1 1 I
+X GND 5 -50 -300 100 U 50 50 1 1 W
+X EN 6 -450 -150 100 R 50 50 1 1 I
+X VIN 7 -450 150 100 R 50 50 1 1 W
+X VIN 8 -450 50 100 R 50 50 1 1 W
+X PAD 9 50 -300 100 U 50 50 1 1 W
+ENDDRAW
+ENDDEF
+#
+# Kevin_Lutzer_MBR120ESFT1G
+#
+DEF Kevin_Lutzer_MBR120ESFT1G D 0 40 N N 1 F N
+F0 "D" 0 100 50 H V C CNN
+F1 "Kevin_Lutzer_MBR120ESFT1G" 0 -100 50 H V C CNN
+F2 "Diode_SMD:D_SOD-123" 0 0 50 H I C CNN
+F3 "" 0 0 50 H I C CNN
+$FPLIST
+ TO-???*
+ *_Diode_*
+ *SingleDiode*
+ D_*
+$ENDFPLIST
+DRAW
+P 2 0 1 0 50 0 -50 0 N
+P 4 0 1 10 50 50 50 -50 -50 0 50 50 N
+P 6 0 1 10 -75 25 -75 50 -50 50 -50 -50 -25 -50 -25 -25 N
+X K 1 -150 0 100 R 50 50 1 1 P
+X A 2 150 0 100 L 50 50 1 1 P
+ENDDRAW
+ENDDEF
+#
 # Kevin_Lutzer_TSL2561
 #
 DEF Kevin_Lutzer_TSL2561 U 0 40 Y Y 1 F N
@@ -280,6 +323,24 @@ X SDA 9 -400 100 100 R 50 50 1 1 B
 ENDDRAW
 ENDDEF
 #
+# Switch_SW_SPDT
+#
+DEF Switch_SW_SPDT SW 0 0 Y N 1 F N
+F0 "SW" 0 170 50 H V C CNN
+F1 "Switch_SW_SPDT" 0 -200 50 H V C CNN
+F2 "" 0 0 50 H I C CNN
+F3 "" 0 0 50 H I C CNN
+DRAW
+C -80 0 20 0 0 0 N
+C 80 -100 20 0 0 0 N
+C 80 100 20 0 1 0 N
+P 2 0 1 0 -60 10 65 90 N
+X A 1 200 100 100 L 50 50 1 1 P
+X B 2 -200 0 100 R 50 50 1 1 P
+X C 3 200 -100 100 L 50 50 1 1 P
+ENDDRAW
+ENDDEF
+#
 # Transistor_FET_Si2371EDS
 #
 DEF Transistor_FET_Si2371EDS Q 0 20 Y N 1 F N
@@ -338,31 +399,6 @@ X SDO 5 -400 0 100 R 50 50 1 1 B
 X VDDIO 6 0 400 100 D 50 50 1 1 W
 X GND 7 100 -300 100 U 50 50 1 1 W
 X VDD 8 100 400 100 D 50 50 1 1 W
-ENDDRAW
-ENDDEF
-#
-# dk_PMIC-Voltage-Regulators-Linear_LD1117S33CTR
-#
-DEF dk_PMIC-Voltage-Regulators-Linear_LD1117S33CTR U 0 20 Y Y 1 F N
-F0 "U" 50 150 60 H V C CNN
-F1 "dk_PMIC-Voltage-Regulators-Linear_LD1117S33CTR" 50 250 60 H V C CNN
-F2 "digikey-footprints:SOT-223" 200 200 60 H I L CNN
-F3 "http://www.st.com/content/ccc/resource/technical/document/datasheet/99/3b/7d/91/91/51/4b/be/CD00000544.pdf/files/CD00000544.pdf/jcr:content/translations/en.CD00000544.pdf" 200 300 60 H I L CNN
-F4 "497-1241-1-ND" 200 400 60 H I L CNN "Digi-Key_PN"
-F5 "LD1117S33CTR" 200 500 60 H I L CNN "MPN"
-F6 "Integrated Circuits (ICs)" 200 600 60 H I L CNN "Category"
-F7 "PMIC - Voltage Regulators - Linear" 200 700 60 H I L CNN "Family"
-F8 "http://www.st.com/content/ccc/resource/technical/document/datasheet/99/3b/7d/91/91/51/4b/be/CD00000544.pdf/files/CD00000544.pdf/jcr:content/translations/en.CD00000544.pdf" 200 800 60 H I L CNN "DK_Datasheet_Link"
-F9 "/product-detail/en/stmicroelectronics/LD1117S33CTR/497-1241-1-ND/586241" 200 900 60 H I L CNN "DK_Detail_Page"
-F10 "IC REG LINEAR 3.3V 800MA SOT223" 200 1000 60 H I L CNN "Description"
-F11 "STMicroelectronics" 200 1100 60 H I L CNN "Manufacturer"
-F12 "Active" 200 1200 60 H I L CNN "Status"
-DRAW
-S -200 100 300 -200 1 1 0 f
-X GND 1 0 -300 100 U 50 50 1 1 W
-X VOUT 2 400 0 100 L 50 50 1 1 w
-X VIN 3 -300 0 100 R 50 50 1 1 W
-X VOUT 4 400 -100 100 L 50 50 1 1 w
 ENDDRAW
 ENDDEF
 #

@@ -44,9 +44,11 @@ void loop()
   char* jsonStr = ss.stringify();
   Serial.println(jsonStr);
 
+  Serial.println("");
   if(error > 0) {
     Serial.print("Error: ");
     Serial.print(error);
+    Serial.println("");
   } else {
     Serial.print(eCO2);
     Serial.print(" ");
@@ -59,6 +61,7 @@ void loop()
     Serial.print(Humidity);
     Serial.print(" ");
     Serial.print(Pressure);
+    Serial.println("");
   }
   Serial.println("");
   

@@ -1,0 +1,21 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP LD56100
+D LDO 3.3V 1A 
+K LDO
+F https://www.st.com/resource/en/datasheet/ld56100.pdf
+$ENDCMP
+#
+$CMP MBR120ESFT1G
+D diode Schottky 20V 1A SOD123L
+K diode Schottky
+F https://www.mouser.ca/datasheet/2/308/MBR120ESFT1-D-1810770.pdf
+$ENDCMP
+#
+$CMP TSL2561
+D Light Sensor
+K Light Sensor
+F https://datasheet.lcsc.com/szlcsc/2001132235_Advanced-Monolithic-Systems-TSL2561T_C481878.pdf
+$ENDCMP
+#
+#End Doc Library
