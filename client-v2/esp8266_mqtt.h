@@ -125,7 +125,6 @@ void setupWifi()
   {
     delay(10);
   }
-  Serial.println("Hello World");
 }
 
 void connectWifi()
@@ -180,18 +179,12 @@ void setupCloudIoT()
 
   // ESP8266 WiFi secure initialization
   setupCert();
-  Serial.println("Setup Cert is Succesful");
 
   mqttClient = new MQTTClient(512);
-  Serial.println("Create new MQTTClient");
   mqttClient->setOptions(180, true, 1000); // keepAlive, cleanSession, timeout
-  Serial.println("mqttClient set options");
   mqtt = new CloudIoTCoreMqtt(mqttClient, netClient, device);
-  Serial.println("mqtt is setup correctly");
   mqtt->setUseLts(true);
-  Serial.println("use LTS correctly");
   mqtt->startMQTT(); // Opens connection
-  Serial.println("start MQTT");
 }
 
 #endif //__ESP8266_MQTT_H__

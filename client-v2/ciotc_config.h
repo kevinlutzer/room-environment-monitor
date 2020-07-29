@@ -24,8 +24,8 @@ const char* password = "3062623767";
 // Cloud iot details.
 const char* project_id = "iot-klutzer";
 const char* location = "us-central1";
-const char* registry_id = "esp8266-test";
-const char* device_id = "test-device";
+const char* registry_id = "room-environment-monitors";
+const char* device_id = "esp-32-prototyping-device";
 
 // Configuration for NTP
 const char* ntp_primary = "pool.ntp.org";
@@ -40,9 +40,9 @@ const char* ntp_secondary = "time.nist.gov";
 // it's smaller add "00:" to the start. If it's too big or too small something
 // is probably wrong with your key.
 const char* private_key_str =
-    "6c:97:c4:ae:d8:74:84:c0:b1:81:9d:29:d3:b6:2d:"
-    "dd:35:13:d6:5d:20:13:06:4c:1b:a3:91:67:de:63:"
-    "5f:6f";
+    "17:40:e5:63:8c:40:f1:bd:96:9a:26:9c:7b:38:e1:"
+    "20:b5:48:da:84:cf:a9:85:0e:ed:a4:e3:f0:07:16:"
+    "ec:18";
 
 // Time (seconds) to expire token += 20 minutes for drift
 const int jwt_exp_secs = 3600; // Maximum 24H (3600*24)

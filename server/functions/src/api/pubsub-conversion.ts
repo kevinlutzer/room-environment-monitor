@@ -26,6 +26,8 @@ export interface telemetryPubsubMessageInterface {
 }
 
 export function telemetryEventFromPubsubMessage(deviceId: string, sysDate: Date, data: telemetryPubsubMessageInterface): TelemetryEvent {
+    
+    
     return {
         lux: data.lux || 0,
         co2: data.co2 || 0,

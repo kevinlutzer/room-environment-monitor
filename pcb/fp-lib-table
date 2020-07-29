@@ -1,4 +1,3 @@
 (fp_lib_table
-  (lib (name LD39050PU33R)(type KiCad)(uri /Users/kevin/Downloads/LD39050PU33R)(options "")(descr ""))
-  (lib (name XCVR_ESP8266-12E)(type KiCad)(uri /Users/kevin/Downloads/ESP8266-12E_ESP-12E/XCVR_ESP8266-12E)(options "")(descr ""))
+  (lib (name Kevin-Lutzer-Kicad-Lbr)(type KiCad)(uri /Users/kevin/Project/Kevin-Lutzer-Kicad-Lbr)(options "")(descr ""))
 )

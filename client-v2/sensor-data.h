@@ -7,24 +7,16 @@ using namespace std;
 
 class SensorData {
     public:
-        uint16_t geteCO2();
-        uint16_t getTVOC();
-        float getLux();
-        float getTemp();
-        float getHumidity();
-        float getPressure();
-        SensorData(uint16_t eCO2, uint16_t TVOC, float Lux, float Temp, float Humidity, float Pressure) {
-          _eCO2 = eCO2;
-          _TVOC = TVOC;
-          _Lux = Lux;
-          _Temp = Temp;
-          _Humidity = Humidity;
-          _Pressure = Pressure;
-        };
+        void seteCO2(uint16_t eCO2);
+        void setTVOC(uint16_t TVOC);
+        void setLux(float Lux);
+        void setTemp(float Temp);
+        void setHumidity(float Humidity);
+        void setPressure(float Pressure);
         char * stringify(void);
 
     private:
-      uint16_t _eCO2, _TVOC;
+      uint16_t _eCO2, _TVOC, _spgeCO2, _spgTVOC;
       float _Lux, _Temp, _Humidity, _Pressure;
 };
 

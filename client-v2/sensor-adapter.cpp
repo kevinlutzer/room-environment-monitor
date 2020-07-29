@@ -1,7 +1,10 @@
+#include <Wire.h>
 #include <Adafruit_CCS811.h>
-#include <Adafruit_TSL2561_U.h>
+#include <Adafruit_TSL2591.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
+#include <Adafruit_SGP30.h>
+
 
 #include "sensor-adapter.h"
 
@@ -23,44 +26,55 @@ void SensorAdapter::init() {
     return;
   }
 
+  yield();
+
   if(!bme->begin()) {
     this->_error = 3;
     return;
   }
 
-  tsl->enableAutoRange(true);            /* Auto-gain ... switches automatically between 1x and 16x */
-  tsl->setIntegrationTime(TSL2561_INTEGRATIONTIME_13MS);      /* fast but low resolution */
+  yield();
+
+  if (!sgp->begin()){
+    this->_error = 4;
+    return;
+  }
+
+  yield();
+  
+  tsl->setGain(TSL2591_GAIN_MED);
+  tsl->setTiming(TSL2591_INTEGRATIONTIME_300MS);
 }
 
 SensorData SensorAdapter::getSnapshot() {
   this->_error = 0;
 
-  int counter = 0;
-  while(!ccs->available()) {
-    yield();
-    if (counter == 2) {
-      this->_error = 1;
-      return SensorData(0,0,0,0,0,0);
-    }
-    counter ++;
-  }
-  
-  if (ccs->readData()) {
-    this->_error = 1;
-  }
-  yield();
-
   float temp, pressure, humidity;
+  uint16_t lux;
+
+  sgp->IAQmeasure();
+  
   temp = bme->readTemperature();
   yield();
+  
   pressure = bme->readPressure()/100.0F;
-  humidity = bme->readHumidity();
-
-  sensors_event_t event;
-  tsl->getEvent(&event);
   yield();
 
-  return SensorData(this->ccs->geteCO2(),this->ccs->getTVOC(), event.light, temp, humidity, pressure);
+  humidity = bme->readHumidity();
+  yield();
+
+  lux = tsl->getLuminosity(TSL2591_VISIBLE);
+  yield();
+  
+  SensorData sd = SensorData();
+  sd.seteCO2(sgp->eCO2);
+  sd.setTVOC(sgp->TVOC);
+  sd.setLux(lux);
+  sd.setTemp(temp);
+  sd.setHumidity(humidity);
+  sd.setPressure(pressure);
+
+  return sd;
 }
 
 /*
@@ -71,7 +85,8 @@ uint8_t SensorAdapter::getError() {
 }
 
 SensorAdapter::SensorAdapter() {
-  this->tsl = new Adafruit_TSL2561_Unified(TSL2561_ADDR_FLOAT, 12345);
+  this->tsl = new Adafruit_TSL2591(2591);
   this->ccs = new Adafruit_CCS811();
   this->bme = new Adafruit_BME280();
+  this->sgp = new Adafruit_SGP30();
 }

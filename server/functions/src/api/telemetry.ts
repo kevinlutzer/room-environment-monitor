@@ -12,7 +12,12 @@ export async function TelemetryPubsubHandler(message: functions.pubsub.Message, 
     }
 
     // Because the id is based on the timestamp, if the timestamp is passed null or undefined the same entity will be updated
-    const sysDate = new Date(rawData.timestamp || "");
+    let sysDate: Date; 
+    if (!rawData.timestamp) {
+        sysDate = new Date();
+    } else {
+        sysDate = new Date(rawData.timestamp);
+    }
     const deviceId = message.attributes.deviceId;
 
     const te = telemetryEventFromPubsubMessage(deviceId, sysDate, rawData);
