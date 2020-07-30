@@ -81,29 +81,44 @@ X ~ 2 0 -150 110 U 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# Device_R_Pack04_Split
+# Device_LED
 #
-DEF Device_R_Pack04_Split RN 0 0 Y N 4 F N
-F0 "RN" 80 0 50 V V C CNN
-F1 "Device_R_Pack04_Split" 0 0 50 V V C CNN
-F2 "" -80 0 50 V I C CNN
+DEF Device_LED D 0 40 N N 1 F N
+F0 "D" 0 100 50 H V C CNN
+F1 "Device_LED" 0 -100 50 H V C CNN
+F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
- DIP*
- SOIC*
- R*Array*Concave*
- R*Array*Convex*
+ LED*
+ LED_SMD:*
+ LED_THT:*
 $ENDFPLIST
 DRAW
-S 40 100 -40 -100 0 1 10 N
-X R1.1 1 0 -150 50 U 50 50 1 1 P
-X R1.2 8 0 150 50 D 50 50 1 1 P
-X R2.1 2 0 -150 50 U 50 50 2 1 P
-X R2.2 7 0 150 50 D 50 50 2 1 P
-X R3.1 3 0 -150 50 U 50 50 3 1 P
-X R3.2 6 0 150 50 D 50 50 3 1 P
-X R4.1 4 0 -150 50 U 50 50 4 1 P
-X R4.2 5 0 150 50 D 50 50 4 1 P
+P 2 0 1 10 -50 -50 -50 50 N
+P 2 0 1 0 -50 0 50 0 N
+P 4 0 1 10 50 -50 50 50 -50 0 50 -50 N
+P 5 0 1 0 -120 -30 -180 -90 -150 -90 -180 -90 -180 -60 N
+P 5 0 1 0 -70 -30 -130 -90 -100 -90 -130 -90 -130 -60 N
+X K 1 -150 0 100 R 50 50 1 1 P
+X A 2 150 0 100 L 50 50 1 1 P
+ENDDRAW
+ENDDEF
+#
+# Device_R_Small_US
+#
+DEF Device_R_Small_US R 0 10 N N 1 F N
+F0 "R" 30 20 50 H V L CNN
+F1 "Device_R_Small_US" 30 -40 50 H V L CNN
+F2 "" 0 0 50 H I C CNN
+F3 "" 0 0 50 H I C CNN
+$FPLIST
+ R_*
+$ENDFPLIST
+DRAW
+P 5 1 1 0 0 0 40 -15 0 -30 -40 -45 0 -60 N
+P 5 1 1 0 0 60 40 45 0 30 -40 15 0 0 N
+X ~ 1 0 100 40 D 50 50 1 1 P
+X ~ 2 0 -100 40 U 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
@@ -165,6 +180,43 @@ X VDD 6 0 900 100 D 50 50 1 1 W
 X REGIN 7 -700 600 100 R 50 50 1 1 W
 X VBUS 8 -700 400 100 R 50 50 1 1 I
 X ~RST 9 700 -500 100 L 50 50 1 1 B
+ENDDRAW
+ENDDEF
+#
+# Kevin_Lutzer_SGP30
+#
+DEF Kevin_Lutzer_SGP30 U 0 40 Y Y 1 F N
+F0 "U" 200 -250 50 H V C CNN
+F1 "Kevin_Lutzer_SGP30" -250 250 50 H V C CNN
+F2 "Kevin_Lutzer:SGP30" -50 700 50 H I C CNN
+F3 "" 0 -50 50 H I C CNN
+DRAW
+P 6 0 1 10 -300 0 -300 200 300 200 300 -200 -300 -200 -300 0 f
+X VDD 1 -50 300 100 D 50 50 1 1 W
+X VSS 2 -100 -300 100 U 50 50 1 1 W
+X SDA 3 -400 50 100 R 50 50 1 1 B
+X R 4 0 -300 100 U 50 50 1 1 W
+X VDDH 5 50 300 100 D 50 50 1 1 W
+X SCL 6 400 50 100 L 50 50 1 1 I
+X PAD 7 100 -300 100 U 50 50 1 1 I
+ENDDRAW
+ENDDEF
+#
+# Kevin_Lutzer_TSL2591
+#
+DEF Kevin_Lutzer_TSL2591 U 0 40 Y Y 1 F N
+F0 "U" 200 -250 50 H V C CNN
+F1 "Kevin_Lutzer_TSL2591" 150 300 50 H V C CNN
+F2 "Package_DFN_QFN:DFN-6_1.3x1.2mm_P0.4mm" -550 -250 50 H I C CNN
+F3 "" -50 50 50 H I C CNN
+DRAW
+P 8 0 1 10 -50 250 -300 250 -300 -200 250 -200 250 250 200 250 150 250 -50 250 f
+X VDD 1 -50 350 100 D 50 50 1 1 W
+X ~INT 2 350 100 100 L 50 50 1 1 W
+X GND 3 -50 -300 100 U 50 50 1 1 W
+X SCL 4 -400 50 100 R 50 50 1 1 I
+X NC 5 250 -100 100 L 50 50 1 1 N N
+X SDA 6 -400 -50 100 R 50 50 1 1 B
 ENDDRAW
 ENDDEF
 #
@@ -340,11 +392,11 @@ X B 2 200 0 100 L 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# pcb-rescue_BME280-dk_Humidity-Moisture-Sensors
+# dk_Humidity-Moisture-Sensors_BME280
 #
-DEF pcb-rescue_BME280-dk_Humidity-Moisture-Sensors U 0 40 Y Y 1 F N
+DEF dk_Humidity-Moisture-Sensors_BME280 U 0 40 Y Y 1 F N
 F0 "U" -200 350 60 H V C CNN
-F1 "pcb-rescue_BME280-dk_Humidity-Moisture-Sensors" -100 450 60 H V R CNN
+F1 "dk_Humidity-Moisture-Sensors_BME280" -100 450 60 H V R CNN
 F2 "digikey-footprints:Pressure_Sensor_LGA-8_2.5x2.5mm_BME280" 200 200 60 H I L CNN
 F3 "https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BME280-DS002.pdf" 200 300 60 H I L CNN
 F4 "828-1063-1-ND" 200 400 60 H I L CNN "Digi-Key_PN"
@@ -369,11 +421,11 @@ X VDD 8 100 400 100 D 50 50 1 1 W
 ENDDRAW
 ENDDEF
 #
-# pcb-rescue_BSS138DW-7-F-dk_Transistors-FETs-MOSFETs-Arrays
+# dk_Transistors-FETs-MOSFETs-Arrays_BSS138DW-7-F
 #
-DEF pcb-rescue_BSS138DW-7-F-dk_Transistors-FETs-MOSFETs-Arrays Q 0 0 Y Y 1 F N
+DEF dk_Transistors-FETs-MOSFETs-Arrays_BSS138DW-7-F Q 0 0 Y Y 1 F N
 F0 "Q" -200 350 60 H V C CNN
-F1 "pcb-rescue_BSS138DW-7-F-dk_Transistors-FETs-MOSFETs-Arrays" -200 -600 60 H V L CNN
+F1 "dk_Transistors-FETs-MOSFETs-Arrays_BSS138DW-7-F" -200 -600 60 H V L CNN
 F2 "digikey-footprints:SOT-363" 200 200 60 H I L CNN
 F3 "https://www.diodes.com/assets/Datasheets/ds30203.pdf" 200 300 60 V I L CNN
 F4 "BSS138DW-FDICT-ND" 200 400 60 H I L CNN "Digi-Key_PN"
@@ -429,43 +481,6 @@ X D1 3 200 200 100 L 50 50 1 1 O
 X S1 4 -300 200 100 R 50 50 1 1 I
 X G1 5 -300 -100 100 R 50 50 1 1 I
 X D2 6 -300 -400 100 R 50 50 1 1 O
-ENDDRAW
-ENDDEF
-#
-# pcb-rescue_SGP30-Kevin_Lutzer
-#
-DEF pcb-rescue_SGP30-Kevin_Lutzer U 0 40 Y Y 1 F N
-F0 "U" 200 -250 50 H V C CNN
-F1 "pcb-rescue_SGP30-Kevin_Lutzer" -250 250 50 H V C CNN
-F2 "Kevin_Lutzer:SGP30" -50 700 50 H I C CNN
-F3 "" 0 -50 50 H I C CNN
-DRAW
-P 6 0 1 10 -300 0 -300 200 300 200 300 -200 -300 -200 -300 0 f
-X VDD 1 -50 300 100 D 50 50 1 1 W
-X VSS 2 -100 -300 100 U 50 50 1 1 W
-X SDA 3 -400 50 100 R 50 50 1 1 B
-X R 4 0 -300 100 U 50 50 1 1 W
-X VDDH 5 50 300 100 D 50 50 1 1 W
-X SCL 6 400 50 100 L 50 50 1 1 I
-X PAD 7 100 -300 100 U 50 50 1 1 I
-ENDDRAW
-ENDDEF
-#
-# pcb-rescue_TSL2591-Kevin_Lutzer
-#
-DEF pcb-rescue_TSL2591-Kevin_Lutzer U 0 40 Y Y 1 F N
-F0 "U" 200 -250 50 H V C CNN
-F1 "pcb-rescue_TSL2591-Kevin_Lutzer" 150 300 50 H V C CNN
-F2 "Package_DFN_QFN:DFN-6_1.3x1.2mm_P0.4mm" -550 -250 50 H I C CNN
-F3 "" -50 50 50 H I C CNN
-DRAW
-P 8 0 1 10 -50 250 -300 250 -300 -200 250 -200 250 250 200 250 150 250 -50 250 f
-X VDD 1 -50 350 100 D 50 50 1 1 W
-X ~INT 2 350 100 100 L 50 50 1 1 W
-X GND 3 -50 -300 100 U 50 50 1 1 W
-X SCL 4 -400 50 100 R 50 50 1 1 I
-X NC 5 250 -100 100 L 50 50 1 1 N N
-X SDA 6 -400 -50 100 R 50 50 1 1 B
 ENDDRAW
 ENDDEF
 #

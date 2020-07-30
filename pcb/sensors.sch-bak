@@ -14,28 +14,6 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L pcb-rescue:BME280-dk_Humidity-Moisture-Sensors U?
-U 1 1 5F9ABBF1
-P 1450 1450
-AR Path="/5F9ABBF1" Ref="U?"  Part="1" 
-AR Path="/5F9A85F1/5F9ABBF1" Ref="U4"  Part="1" 
-F 0 "U4" H 1650 1200 60  0000 L CNN
-F 1 "BME280" H 1000 1800 60  0000 L CNN
-F 2 "digikey-footprints:Pressure_Sensor_LGA-8_2.5x2.5mm_BME280" H 1650 1650 60  0001 L CNN
-F 3 "https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BME280-DS002.pdf" H 1650 1750 60  0001 L CNN
-F 4 "828-1063-1-ND" H 1650 1850 60  0001 L CNN "Digi-Key_PN"
-F 5 "BME280" H 1650 1950 60  0001 L CNN "MPN"
-F 6 "Sensors, Transducers" H 1650 2050 60  0001 L CNN "Category"
-F 7 "Humidity, Moisture Sensors" H 1650 2150 60  0001 L CNN "Family"
-F 8 "https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BME280-DS002.pdf" H 1650 2250 60  0001 L CNN "DK_Datasheet_Link"
-F 9 "/product-detail/en/bosch-sensortec/BME280/828-1063-1-ND/6136314" H 1650 2350 60  0001 L CNN "DK_Detail_Page"
-F 10 "SENSOR PRESSURE HUMIDITY TEMP" H 1650 2450 60  0001 L CNN "Description"
-F 11 "Bosch Sensortec" H 1650 2550 60  0001 L CNN "Manufacturer"
-F 12 "Active" H 1650 2650 60  0001 L CNN "Status"
-	1    1450 1450
-	1    0    0    -1  
-$EndComp
-$Comp
 L power:GND #PWR?
 U 1 1 5F9ABBF7
 P 1500 1800
@@ -133,54 +111,6 @@ Wire Wire Line
 	5050 900  5050 1050
 Text Notes 500  600  0    100  ~ 0
 Sensor Array
-$Comp
-L pcb-rescue:TSL2591-Kevin_Lutzer U?
-U 1 1 5F9ABC28
-P 5100 1400
-AR Path="/5F9ABC28" Ref="U?"  Part="1" 
-AR Path="/5F9A85F1/5F9ABC28" Ref="U7"  Part="1" 
-F 0 "U7" H 5250 1150 50  0000 L CNN
-F 1 "TSL2591" H 5100 1700 50  0000 L CNN
-F 2 "Kevin_Lutzer:TSL2591" H 4550 1150 50  0001 C CNN
-F 3 "https://cdn-shop.adafruit.com/datasheets/TSL25911_Datasheet_EN_v1.pdf" H 5050 1450 50  0001 C CNN
-	1    5100 1400
-	1    0    0    -1  
-$EndComp
-$Comp
-L pcb-rescue:SGP30-Kevin_Lutzer U?
-U 1 1 5F9ABC2E
-P 3050 1350
-AR Path="/5F9ABC2E" Ref="U?"  Part="1" 
-AR Path="/5F9A85F1/5F9ABC2E" Ref="U6"  Part="1" 
-F 0 "U6" H 2750 1600 50  0000 L CNN
-F 1 "SGP30" H 3200 1100 50  0000 L CNN
-F 2 "Kevin_Lutzer:SGP30" H 3050 1300 50  0001 C CNN
-F 3 "" H 3050 1300 50  0001 C CNN
-	1    3050 1350
-	1    0    0    -1  
-$EndComp
-$Comp
-L pcb-rescue:BSS138DW-7-F-dk_Transistors-FETs-MOSFETs-Arrays Q?
-U 1 1 5F9ABC3D
-P 1750 3000
-AR Path="/5F9ABC3D" Ref="Q?"  Part="1" 
-AR Path="/5F9A85F1/5F9ABC3D" Ref="Q2"  Part="1" 
-F 0 "Q2" H 1450 2350 60  0000 C CNN
-F 1 "BSS138DW-7-F" H 1750 2450 60  0000 C CNN
-F 2 "digikey-footprints:SOT-363" H 1950 3200 60  0001 L CNN
-F 3 "https://www.diodes.com/assets/Datasheets/ds30203.pdf" V 1950 3300 60  0001 L CNN
-F 4 "BSS138DW-FDICT-ND" H 1950 3400 60  0001 L CNN "Digi-Key_PN"
-F 5 "BSS138DW-7-F" H 1950 3500 60  0001 L CNN "MPN"
-F 6 "Discrete Semiconductor Products" H 1950 3600 60  0001 L CNN "Category"
-F 7 "Transistors - FETs, MOSFETs - Arrays" H 1950 3700 60  0001 L CNN "Family"
-F 8 "https://www.diodes.com/assets/Datasheets/ds30203.pdf" H 1950 3800 60  0001 L CNN "DK_Datasheet_Link"
-F 9 "/product-detail/en/diodes-incorporated/BSS138DW-7-F/BSS138DW-FDICT-ND/808541" H 1950 3900 60  0001 L CNN "DK_Detail_Page"
-F 10 "MOSFET 2N-CH 50V 0.2A SC70-6" H 1950 4000 60  0001 L CNN "Description"
-F 11 "Diodes Incorporated" H 1950 4100 60  0001 L CNN "Manufacturer"
-F 12 "Active" H 1950 4200 60  0001 L CNN "Status"
-	1    1750 3000
-	1    0    0    -1  
-$EndComp
 $Comp
 L power:+3.3V #PWR?
 U 1 1 5F9ABC44
@@ -298,45 +228,6 @@ Wire Wire Line
 Wire Wire Line
 	2450 1300 2550 1300
 $Comp
-L Device:R_Pack04_Split RN?
-U 2 1 5F9ABC83
-P 3500 1050
-AR Path="/5F9ABC83" Ref="RN?"  Part="2" 
-AR Path="/5F9A85F1/5F9ABC83" Ref="RN1"  Part="2" 
-F 0 "RN1" H 3588 1096 50  0000 L CNN
-F 1 "10k" H 3588 1005 50  0000 L CNN
-F 2 "Resistor_SMD:R_Array_Convex_4x0603" V 3420 1050 50  0001 C CNN
-F 3 "~" H 3500 1050 50  0001 C CNN
-	2    3500 1050
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:R_Pack04_Split RN?
-U 1 1 5F9ABC89
-P 2550 1050
-AR Path="/5F9ABC89" Ref="RN?"  Part="1" 
-AR Path="/5F9A85F1/5F9ABC89" Ref="RN1"  Part="1" 
-F 0 "RN1" H 2638 1096 50  0000 L CNN
-F 1 "10k" H 2638 1005 50  0000 L CNN
-F 2 "Resistor_SMD:R_Array_Convex_4x0603" V 2470 1050 50  0001 C CNN
-F 3 "~" H 2550 1050 50  0001 C CNN
-	1    2550 1050
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:R_Pack04_Split RN?
-U 3 1 5F9ABC8F
-P 3650 2800
-AR Path="/5F9ABC8F" Ref="RN?"  Part="3" 
-AR Path="/5F9A85F1/5F9ABC8F" Ref="RN1"  Part="3" 
-F 0 "RN1" H 3738 2846 50  0000 L CNN
-F 1 "10k" H 3738 2755 50  0000 L CNN
-F 2 "Resistor_SMD:R_Array_Convex_4x0603" V 3570 2800 50  0001 C CNN
-F 3 "~" H 3650 2800 50  0001 C CNN
-	3    3650 2800
-	1    0    0    -1  
-$EndComp
-$Comp
 L power:+3.3V #PWR?
 U 1 1 5F9ABC95
 P 3850 2500
@@ -354,33 +245,16 @@ I2C_SDA
 Text GLabel 3650 3200 0    50   Input ~ 0
 I2C_SCK
 Wire Wire Line
-	3650 3050 3650 2950
-Wire Wire Line
 	3650 3200 4000 3200
 Wire Wire Line
-	4000 3200 4000 2950
-Wire Wire Line
-	3650 2650 3650 2500
+	3650 2600 3650 2500
 Wire Wire Line
 	3650 2500 3850 2500
 Wire Wire Line
-	4000 2500 4000 2650
+	4000 2500 4000 2600
 Connection ~ 3850 2500
 Wire Wire Line
 	3850 2500 4000 2500
-$Comp
-L Device:R_Pack04_Split RN?
-U 4 1 5F9ABCA5
-P 4000 2800
-AR Path="/5F9ABCA5" Ref="RN?"  Part="4" 
-AR Path="/5F9A85F1/5F9ABCA5" Ref="RN1"  Part="4" 
-F 0 "RN1" H 4088 2846 50  0000 L CNN
-F 1 "10k" H 4088 2755 50  0000 L CNN
-F 2 "" V 3920 2800 50  0001 C CNN
-F 3 "~" H 4000 2800 50  0001 C CNN
-	4    4000 2800
-	1    0    0    -1  
-$EndComp
 Text GLabel 2450 1300 0    50   Input ~ 0
 I2C_SDA_1V8
 Text GLabel 3650 1300 2    50   Input ~ 0
@@ -394,11 +268,7 @@ Wire Wire Line
 Wire Wire Line
 	1450 3100 1350 3100
 Wire Wire Line
-	1350 3100 1350 2600
-Wire Wire Line
 	1950 3100 2050 3100
-Wire Wire Line
-	2050 3100 2050 2600
 Wire Wire Line
 	3500 1200 3500 1300
 Connection ~ 3500 1300
@@ -458,4 +328,234 @@ Wire Wire Line
 	6100 2250 6200 2250
 Wire Wire Line
 	6200 2250 6200 2300
+Text GLabel 4650 1350 0    50   Input ~ 0
+I2C_SCK
+Text GLabel 4650 1450 0    50   BiDi ~ 0
+I2C_SDA
+$Comp
+L Kevin_Lutzer:SGP30 U6
+U 1 1 5F22FF25
+P 3050 1350
+F 0 "U6" H 3494 1396 50  0000 L CNN
+F 1 "SGP30" H 3494 1305 50  0000 L CNN
+F 2 "SGP30 (1):SGP30" H 3000 2050 50  0001 C CNN
+F 3 "" H 3050 1300 50  0001 C CNN
+	1    3050 1350
+	1    0    0    -1  
+$EndComp
+$Comp
+L Kevin_Lutzer:TSL2591 U7
+U 1 1 5F2329EE
+P 5100 1400
+F 0 "U7" H 5494 1471 50  0000 L CNN
+F 1 "TSL2591" H 5494 1380 50  0000 L CNN
+F 2 "Package_DFN_QFN:DFN-6_1.3x1.2mm_P0.4mm" H 4550 1150 50  0001 C CNN
+F 3 "https://cdn-shop.adafruit.com/datasheets/TSL25911_Datasheet_EN_v1.pdf" H 5050 1450 50  0001 C CNN
+	1    5100 1400
+	1    0    0    -1  
+$EndComp
+$Comp
+L dk_Humidity-Moisture-Sensors:BME280 U4
+U 1 1 5F234D13
+P 1450 1450
+F 0 "U4" H 1778 1553 60  0000 L CNN
+F 1 "BME280" H 1778 1447 60  0000 L CNN
+F 2 "digikey-footprints:Pressure_Sensor_LGA-8_2.5x2.5mm_BME280" H 1650 1650 60  0001 L CNN
+F 3 "https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BME280-DS002.pdf" H 1650 1750 60  0001 L CNN
+F 4 "828-1063-1-ND" H 1650 1850 60  0001 L CNN "Digi-Key_PN"
+F 5 "BME280" H 1650 1950 60  0001 L CNN "MPN"
+F 6 "Sensors, Transducers" H 1650 2050 60  0001 L CNN "Category"
+F 7 "Humidity, Moisture Sensors" H 1650 2150 60  0001 L CNN "Family"
+F 8 "https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BME280-DS002.pdf" H 1650 2250 60  0001 L CNN "DK_Datasheet_Link"
+F 9 "/product-detail/en/bosch-sensortec/BME280/828-1063-1-ND/6136314" H 1650 2350 60  0001 L CNN "DK_Detail_Page"
+F 10 "SENSOR PRESSURE HUMIDITY TEMP" H 1650 2450 60  0001 L CNN "Description"
+F 11 "Bosch Sensortec" H 1650 2550 60  0001 L CNN "Manufacturer"
+F 12 "Active" H 1650 2650 60  0001 L CNN "Status"
+	1    1450 1450
+	1    0    0    -1  
+$EndComp
+$Comp
+L dk_Transistors-FETs-MOSFETs-Arrays:BSS138DW-7-F Q2
+U 1 1 5F240700
+P 1650 3200
+F 0 "Q2" H 1600 3687 60  0000 C CNN
+F 1 "BSS138DW-7-F" H 1600 3581 60  0000 C CNN
+F 2 "digikey-footprints:SOT-363" H 1850 3400 60  0001 L CNN
+F 3 "https://www.diodes.com/assets/Datasheets/ds30203.pdf" V 1850 3500 60  0001 L CNN
+F 4 "BSS138DW-FDICT-ND" H 1850 3600 60  0001 L CNN "Digi-Key_PN"
+F 5 "BSS138DW-7-F" H 1850 3700 60  0001 L CNN "MPN"
+F 6 "Discrete Semiconductor Products" H 1850 3800 60  0001 L CNN "Category"
+F 7 "Transistors - FETs, MOSFETs - Arrays" H 1850 3900 60  0001 L CNN "Family"
+F 8 "https://www.diodes.com/assets/Datasheets/ds30203.pdf" H 1850 4000 60  0001 L CNN "DK_Datasheet_Link"
+F 9 "/product-detail/en/diodes-incorporated/BSS138DW-7-F/BSS138DW-FDICT-ND/808541" H 1850 4100 60  0001 L CNN "DK_Detail_Page"
+F 10 "MOSFET 2N-CH 50V 0.2A SC70-6" H 1850 4200 60  0001 L CNN "Description"
+F 11 "Diodes Incorporated" H 1850 4300 60  0001 L CNN "Manufacturer"
+F 12 "Active" H 1850 4400 60  0001 L CNN "Status"
+	1    1650 3200
+	-1   0    0    1   
+$EndComp
+NoConn ~ 3050 1450
+$Comp
+L Device:C C3
+U 1 1 5F40D43E
+P 5700 3250
+F 0 "C3" H 5815 3296 50  0000 L CNN
+F 1 "100n" H 5815 3205 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 5738 3100 50  0001 C CNN
+F 3 "~" H 5700 3250 50  0001 C CNN
+	1    5700 3250
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0139
+U 1 1 5F40D8C5
+P 5700 3450
+F 0 "#PWR0139" H 5700 3200 50  0001 C CNN
+F 1 "GND" H 5705 3277 50  0000 C CNN
+F 2 "" H 5700 3450 50  0001 C CNN
+F 3 "" H 5700 3450 50  0001 C CNN
+	1    5700 3450
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+3.3V #PWR0140
+U 1 1 5F40E142
+P 5700 3050
+F 0 "#PWR0140" H 5700 2900 50  0001 C CNN
+F 1 "+3.3V" H 5715 3223 50  0000 C CNN
+F 2 "" H 5700 3050 50  0001 C CNN
+F 3 "" H 5700 3050 50  0001 C CNN
+	1    5700 3050
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C11
+U 1 1 5F40E452
+P 6100 3250
+F 0 "C11" H 6215 3296 50  0000 L CNN
+F 1 "100n" H 6215 3205 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 6138 3100 50  0001 C CNN
+F 3 "~" H 6100 3250 50  0001 C CNN
+	1    6100 3250
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C12
+U 1 1 5F40EB79
+P 6500 3250
+F 0 "C12" H 6615 3296 50  0000 L CNN
+F 1 "100n" H 6615 3205 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 6538 3100 50  0001 C CNN
+F 3 "~" H 6500 3250 50  0001 C CNN
+	1    6500 3250
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0141
+U 1 1 5F40F2D5
+P 6100 3450
+F 0 "#PWR0141" H 6100 3200 50  0001 C CNN
+F 1 "GND" H 6105 3277 50  0000 C CNN
+F 2 "" H 6100 3450 50  0001 C CNN
+F 3 "" H 6100 3450 50  0001 C CNN
+	1    6100 3450
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0142
+U 1 1 5F40F86F
+P 6500 3450
+F 0 "#PWR0142" H 6500 3200 50  0001 C CNN
+F 1 "GND" H 6505 3277 50  0000 C CNN
+F 2 "" H 6500 3450 50  0001 C CNN
+F 3 "" H 6500 3450 50  0001 C CNN
+	1    6500 3450
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+3.3V #PWR0143
+U 1 1 5F40FC60
+P 6100 3050
+F 0 "#PWR0143" H 6100 2900 50  0001 C CNN
+F 1 "+3.3V" H 6115 3223 50  0000 C CNN
+F 2 "" H 6100 3050 50  0001 C CNN
+F 3 "" H 6100 3050 50  0001 C CNN
+	1    6100 3050
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+1V8 #PWR0144
+U 1 1 5F41045C
+P 6500 3050
+F 0 "#PWR0144" H 6500 2900 50  0001 C CNN
+F 1 "+1V8" H 6515 3223 50  0000 C CNN
+F 2 "" H 6500 3050 50  0001 C CNN
+F 3 "" H 6500 3050 50  0001 C CNN
+	1    6500 3050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6500 3100 6500 3050
+Wire Wire Line
+	6100 3100 6100 3050
+Wire Wire Line
+	5700 3100 5700 3050
+Wire Wire Line
+	5700 3400 5700 3450
+Wire Wire Line
+	6100 3400 6100 3450
+Wire Wire Line
+	6500 3400 6500 3450
+Wire Wire Line
+	1350 2600 1350 3100
+Wire Wire Line
+	2050 2600 2050 3100
+$Comp
+L Device:R_US R10
+U 1 1 5F42F459
+P 2550 1050
+F 0 "R10" H 2618 1096 50  0000 L CNN
+F 1 "10k" H 2618 1005 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 2590 1040 50  0001 C CNN
+F 3 "~" H 2550 1050 50  0001 C CNN
+	1    2550 1050
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R_US R11
+U 1 1 5F431D99
+P 3500 1050
+F 0 "R11" H 3568 1096 50  0000 L CNN
+F 1 "10k" H 3568 1005 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 3540 1040 50  0001 C CNN
+F 3 "~" H 3500 1050 50  0001 C CNN
+	1    3500 1050
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R_US R12
+U 1 1 5F43299F
+P 3650 2750
+F 0 "R12" H 3718 2796 50  0000 L CNN
+F 1 "10k" H 3718 2705 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 3690 2740 50  0001 C CNN
+F 3 "~" H 3650 2750 50  0001 C CNN
+	1    3650 2750
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R_US R13
+U 1 1 5F437086
+P 4000 2750
+F 0 "R13" H 4068 2796 50  0000 L CNN
+F 1 "10k" H 4068 2705 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 4040 2740 50  0001 C CNN
+F 3 "~" H 4000 2750 50  0001 C CNN
+	1    4000 2750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4000 2900 4000 3200
+Wire Wire Line
+	3650 2900 3650 3050
 $EndSCHEMATC
