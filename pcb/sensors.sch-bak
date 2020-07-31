@@ -13,220 +13,170 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
-$Comp
-L power:GND #PWR?
-U 1 1 5F9ABBF7
-P 1500 1800
-AR Path="/5F9ABBF7" Ref="#PWR?"  Part="1" 
-AR Path="/5F9A85F1/5F9ABBF7" Ref="#PWR0105"  Part="1" 
-F 0 "#PWR0105" H 1500 1550 50  0001 C CNN
-F 1 "GND" H 1505 1627 50  0000 C CNN
-F 2 "" H 1500 1800 50  0001 C CNN
-F 3 "" H 1500 1800 50  0001 C CNN
-	1    1500 1800
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	1500 1800 1450 1800
-Wire Wire Line
-	1450 1800 1450 1750
-Wire Wire Line
-	1500 1800 1550 1800
-Wire Wire Line
-	1550 1800 1550 1750
-Connection ~ 1500 1800
-Wire Wire Line
-	1550 1050 1550 1000
-Wire Wire Line
-	1550 1000 1500 1000
-Wire Wire Line
-	1450 1000 1450 1050
-$Comp
-L power:+3.3V #PWR?
-U 1 1 5F9ABC05
-P 1500 1000
-AR Path="/5F9ABC05" Ref="#PWR?"  Part="1" 
-AR Path="/5F9A85F1/5F9ABC05" Ref="#PWR0109"  Part="1" 
-F 0 "#PWR0109" H 1500 850 50  0001 C CNN
-F 1 "+3.3V" H 1515 1173 50  0000 C CNN
-F 2 "" H 1500 1000 50  0001 C CNN
-F 3 "" H 1500 1000 50  0001 C CNN
-	1    1500 1000
-	1    0    0    -1  
-$EndComp
-Connection ~ 1500 1000
-Wire Wire Line
-	1500 1000 1450 1000
-Text GLabel 1000 1250 0    50   Input ~ 0
+Text GLabel 2100 1400 2    50   Input ~ 0
 I2C_SCK
-Text GLabel 1000 1350 0    50   BiDi ~ 0
+Text GLabel 2100 1600 2    50   BiDi ~ 0
 I2C_SDA
-Wire Wire Line
-	1000 1250 1050 1250
-Wire Wire Line
-	1000 1350 1050 1350
-NoConn ~ 1050 1450
-NoConn ~ 1050 1550
 $Comp
 L power:GND #PWR?
 U 1 1 5F9ABC13
-P 5050 1750
+P 10150 2300
 AR Path="/5F9ABC13" Ref="#PWR?"  Part="1" 
 AR Path="/5F9A85F1/5F9ABC13" Ref="#PWR0110"  Part="1" 
-F 0 "#PWR0110" H 5050 1500 50  0001 C CNN
-F 1 "GND" H 5055 1577 50  0000 C CNN
-F 2 "" H 5050 1750 50  0001 C CNN
-F 3 "" H 5050 1750 50  0001 C CNN
-	1    5050 1750
+F 0 "#PWR0110" H 10150 2050 50  0001 C CNN
+F 1 "GND" H 10155 2127 50  0000 C CNN
+F 2 "" H 10150 2300 50  0001 C CNN
+F 3 "" H 10150 2300 50  0001 C CNN
+	1    10150 2300
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	5050 1750 5050 1700
+	10150 2300 10150 2250
 Text GLabel 6200 2150 2    50   BiDi ~ 0
 I2C_SDA
 Text GLabel 6200 2050 2    50   Input ~ 0
 I2C_SCK
 Wire Wire Line
-	4650 1350 4700 1350
+	9750 1900 9800 1900
 Wire Wire Line
-	4650 1450 4700 1450
+	9750 2000 9800 2000
 $Comp
 L power:+3.3V #PWR?
 U 1 1 5F9ABC1E
-P 5050 900
+P 10150 1450
 AR Path="/5F9ABC1E" Ref="#PWR?"  Part="1" 
 AR Path="/5F9A85F1/5F9ABC1E" Ref="#PWR0111"  Part="1" 
-F 0 "#PWR0111" H 5050 750 50  0001 C CNN
-F 1 "+3.3V" H 5065 1073 50  0000 C CNN
-F 2 "" H 5050 900 50  0001 C CNN
-F 3 "" H 5050 900 50  0001 C CNN
-	1    5050 900 
+F 0 "#PWR0111" H 10150 1300 50  0001 C CNN
+F 1 "+3.3V" H 10165 1623 50  0000 C CNN
+F 2 "" H 10150 1450 50  0001 C CNN
+F 3 "" H 10150 1450 50  0001 C CNN
+	1    10150 1450
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	5450 1300 5500 1300
-Text GLabel 5500 1300 2    50   Output ~ 0
+	10550 1850 10600 1850
+Text GLabel 10600 1850 2    50   Output ~ 0
 nINT
 Wire Wire Line
-	5050 900  5050 1050
+	10150 1450 10150 1600
 Text Notes 500  600  0    100  ~ 0
 Sensor Array
 $Comp
 L power:+3.3V #PWR?
 U 1 1 5F9ABC44
-P 2050 2600
+P 2050 2950
 AR Path="/5F9ABC44" Ref="#PWR?"  Part="1" 
 AR Path="/5F9A85F1/5F9ABC44" Ref="#PWR0113"  Part="1" 
-F 0 "#PWR0113" H 2050 2450 50  0001 C CNN
-F 1 "+3.3V" H 2065 2773 50  0000 C CNN
-F 2 "" H 2050 2600 50  0001 C CNN
-F 3 "" H 2050 2600 50  0001 C CNN
-	1    2050 2600
+F 0 "#PWR0113" H 2050 2800 50  0001 C CNN
+F 1 "+3.3V" H 2065 3123 50  0000 C CNN
+F 2 "" H 2050 2950 50  0001 C CNN
+F 3 "" H 2050 2950 50  0001 C CNN
+	1    2050 2950
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:+3.3V #PWR?
 U 1 1 5F9ABC4B
-P 1350 2600
+P 1350 2950
 AR Path="/5F9ABC4B" Ref="#PWR?"  Part="1" 
 AR Path="/5F9A85F1/5F9ABC4B" Ref="#PWR0114"  Part="1" 
-F 0 "#PWR0114" H 1350 2450 50  0001 C CNN
-F 1 "+3.3V" H 1365 2773 50  0000 C CNN
-F 2 "" H 1350 2600 50  0001 C CNN
-F 3 "" H 1350 2600 50  0001 C CNN
-	1    1350 2600
+F 0 "#PWR0114" H 1350 2800 50  0001 C CNN
+F 1 "+3.3V" H 1365 3123 50  0000 C CNN
+F 2 "" H 1350 2950 50  0001 C CNN
+F 3 "" H 1350 2950 50  0001 C CNN
+	1    1350 2950
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	1950 3400 2100 3400
-Text GLabel 1200 3400 0    50   Input ~ 0
+	1950 3750 2100 3750
+Text GLabel 1200 3750 0    50   Input ~ 0
 I2C_SCK
 Wire Wire Line
-	1200 3400 1450 3400
-Text GLabel 2150 2800 2    50   BiDi ~ 0
+	1200 3750 1450 3750
+Text GLabel 2150 3150 2    50   BiDi ~ 0
 I2C_SDA
 Wire Wire Line
-	2950 1650 2950 1700
+	8050 2200 8050 2250
 Wire Wire Line
-	2950 1700 3050 1700
+	8050 2250 8150 2250
 Wire Wire Line
-	3150 1700 3150 1650
+	8250 2250 8250 2200
 Wire Wire Line
-	3050 1650 3050 1700
-Connection ~ 3050 1700
+	8150 2200 8150 2250
+Connection ~ 8150 2250
 Wire Wire Line
-	3050 1700 3150 1700
+	8150 2250 8250 2250
 $Comp
 L power:GND #PWR?
 U 1 1 5F9ABC5B
-P 3050 1700
+P 8150 2250
 AR Path="/5F9ABC5B" Ref="#PWR?"  Part="1" 
 AR Path="/5F9A85F1/5F9ABC5B" Ref="#PWR0118"  Part="1" 
-F 0 "#PWR0118" H 3050 1450 50  0001 C CNN
-F 1 "GND" H 3055 1527 50  0000 C CNN
-F 2 "" H 3050 1700 50  0001 C CNN
-F 3 "" H 3050 1700 50  0001 C CNN
-	1    3050 1700
+F 0 "#PWR0118" H 8150 2000 50  0001 C CNN
+F 1 "GND" H 8155 2077 50  0000 C CNN
+F 2 "" H 8150 2250 50  0001 C CNN
+F 3 "" H 8150 2250 50  0001 C CNN
+	1    8150 2250
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	1200 2800 1450 2800
+	1200 3150 1450 3150
 $Comp
 L power:+1V8 #PWR?
 U 1 1 5F9ABC63
-P 3050 1000
+P 8150 1550
 AR Path="/5F9ABC63" Ref="#PWR?"  Part="1" 
 AR Path="/5F9A85F1/5F9ABC63" Ref="#PWR0119"  Part="1" 
-F 0 "#PWR0119" H 3050 850 50  0001 C CNN
-F 1 "+1V8" H 3065 1173 50  0000 C CNN
-F 2 "" H 3050 1000 50  0001 C CNN
-F 3 "" H 3050 1000 50  0001 C CNN
-	1    3050 1000
+F 0 "#PWR0119" H 8150 1400 50  0001 C CNN
+F 1 "+1V8" H 8165 1723 50  0000 C CNN
+F 2 "" H 8150 1550 50  0001 C CNN
+F 3 "" H 8150 1550 50  0001 C CNN
+	1    8150 1550
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	3050 1000 3000 1000
+	8150 1550 8100 1550
 Wire Wire Line
-	3000 1000 3000 1050
+	8100 1550 8100 1600
 Wire Wire Line
-	3100 1050 3100 1000
+	8200 1600 8200 1550
 Wire Wire Line
-	3100 1000 3050 1000
-Connection ~ 3050 1000
+	8200 1550 8150 1550
+Connection ~ 8150 1550
 $Comp
 L power:+1V8 #PWR?
 U 1 1 5F9ABC6E
-P 3500 850
+P 8600 1400
 AR Path="/5F9ABC6E" Ref="#PWR?"  Part="1" 
 AR Path="/5F9A85F1/5F9ABC6E" Ref="#PWR0120"  Part="1" 
-F 0 "#PWR0120" H 3500 700 50  0001 C CNN
-F 1 "+1V8" H 3515 1023 50  0000 C CNN
-F 2 "" H 3500 850 50  0001 C CNN
-F 3 "" H 3500 850 50  0001 C CNN
-	1    3500 850 
+F 0 "#PWR0120" H 8600 1250 50  0001 C CNN
+F 1 "+1V8" H 8615 1573 50  0000 C CNN
+F 2 "" H 8600 1400 50  0001 C CNN
+F 3 "" H 8600 1400 50  0001 C CNN
+	1    8600 1400
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	3650 1300 3500 1300
+	8750 1850 8600 1850
 Wire Wire Line
-	3500 900  3500 850 
+	8600 1450 8600 1400
 $Comp
 L power:+1V8 #PWR?
 U 1 1 5F9ABC79
-P 2550 850
+P 7650 1400
 AR Path="/5F9ABC79" Ref="#PWR?"  Part="1" 
 AR Path="/5F9A85F1/5F9ABC79" Ref="#PWR0121"  Part="1" 
-F 0 "#PWR0121" H 2550 700 50  0001 C CNN
-F 1 "+1V8" H 2565 1023 50  0000 C CNN
-F 2 "" H 2550 850 50  0001 C CNN
-F 3 "" H 2550 850 50  0001 C CNN
-	1    2550 850 
+F 0 "#PWR0121" H 7650 1250 50  0001 C CNN
+F 1 "+1V8" H 7665 1573 50  0000 C CNN
+F 2 "" H 7650 1400 50  0001 C CNN
+F 3 "" H 7650 1400 50  0001 C CNN
+	1    7650 1400
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	2550 900  2550 850 
+	7650 1450 7650 1400
 Wire Wire Line
-	2450 1300 2550 1300
+	7550 1850 7650 1850
 $Comp
 L power:+3.3V #PWR?
 U 1 1 5F9ABC95
@@ -255,30 +205,30 @@ Wire Wire Line
 Connection ~ 3850 2500
 Wire Wire Line
 	3850 2500 4000 2500
-Text GLabel 2450 1300 0    50   Input ~ 0
+Text GLabel 7550 1850 0    50   Input ~ 0
 I2C_SDA_1V8
-Text GLabel 3650 1300 2    50   Input ~ 0
+Text GLabel 8750 1850 2    50   Input ~ 0
 I2C_SCK_1V8
-Text GLabel 2100 3400 2    50   Output ~ 0
+Text GLabel 2100 3750 2    50   Output ~ 0
 I2C_SCK_1V8
-Text GLabel 1200 2800 0    50   BiDi ~ 0
+Text GLabel 1200 3150 0    50   BiDi ~ 0
 I2C_SDA_1V8
 Wire Wire Line
-	1950 2800 2150 2800
+	1950 3150 2150 3150
 Wire Wire Line
-	1450 3100 1350 3100
+	1450 3450 1350 3450
 Wire Wire Line
-	1950 3100 2050 3100
+	1950 3450 2050 3450
 Wire Wire Line
-	3500 1200 3500 1300
-Connection ~ 3500 1300
+	8600 1750 8600 1850
+Connection ~ 8600 1850
 Wire Wire Line
-	3500 1300 3450 1300
+	8600 1850 8550 1850
 Wire Wire Line
-	2550 1200 2550 1300
-Connection ~ 2550 1300
+	7650 1750 7650 1850
+Connection ~ 7650 1850
 Wire Wire Line
-	2550 1300 2650 1300
+	7650 1850 7750 1850
 $Comp
 L Connector:Conn_01x04_Male J2
 U 1 1 5FB3311F
@@ -328,73 +278,42 @@ Wire Wire Line
 	6100 2250 6200 2250
 Wire Wire Line
 	6200 2250 6200 2300
-Text GLabel 4650 1350 0    50   Input ~ 0
+Text GLabel 9750 1900 0    50   Input ~ 0
 I2C_SCK
-Text GLabel 4650 1450 0    50   BiDi ~ 0
+Text GLabel 9750 2000 0    50   BiDi ~ 0
 I2C_SDA
-$Comp
-L Kevin_Lutzer:SGP30 U6
-U 1 1 5F22FF25
-P 3050 1350
-F 0 "U6" H 3494 1396 50  0000 L CNN
-F 1 "SGP30" H 3494 1305 50  0000 L CNN
-F 2 "SGP30 (1):SGP30" H 3000 2050 50  0001 C CNN
-F 3 "" H 3050 1300 50  0001 C CNN
-	1    3050 1350
-	1    0    0    -1  
-$EndComp
 $Comp
 L Kevin_Lutzer:TSL2591 U7
 U 1 1 5F2329EE
-P 5100 1400
-F 0 "U7" H 5494 1471 50  0000 L CNN
-F 1 "TSL2591" H 5494 1380 50  0000 L CNN
-F 2 "Package_DFN_QFN:DFN-6_1.3x1.2mm_P0.4mm" H 4550 1150 50  0001 C CNN
-F 3 "https://cdn-shop.adafruit.com/datasheets/TSL25911_Datasheet_EN_v1.pdf" H 5050 1450 50  0001 C CNN
-	1    5100 1400
-	1    0    0    -1  
-$EndComp
-$Comp
-L dk_Humidity-Moisture-Sensors:BME280 U4
-U 1 1 5F234D13
-P 1450 1450
-F 0 "U4" H 1778 1553 60  0000 L CNN
-F 1 "BME280" H 1778 1447 60  0000 L CNN
-F 2 "digikey-footprints:Pressure_Sensor_LGA-8_2.5x2.5mm_BME280" H 1650 1650 60  0001 L CNN
-F 3 "https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BME280-DS002.pdf" H 1650 1750 60  0001 L CNN
-F 4 "828-1063-1-ND" H 1650 1850 60  0001 L CNN "Digi-Key_PN"
-F 5 "BME280" H 1650 1950 60  0001 L CNN "MPN"
-F 6 "Sensors, Transducers" H 1650 2050 60  0001 L CNN "Category"
-F 7 "Humidity, Moisture Sensors" H 1650 2150 60  0001 L CNN "Family"
-F 8 "https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BME280-DS002.pdf" H 1650 2250 60  0001 L CNN "DK_Datasheet_Link"
-F 9 "/product-detail/en/bosch-sensortec/BME280/828-1063-1-ND/6136314" H 1650 2350 60  0001 L CNN "DK_Detail_Page"
-F 10 "SENSOR PRESSURE HUMIDITY TEMP" H 1650 2450 60  0001 L CNN "Description"
-F 11 "Bosch Sensortec" H 1650 2550 60  0001 L CNN "Manufacturer"
-F 12 "Active" H 1650 2650 60  0001 L CNN "Status"
-	1    1450 1450
+P 10200 1950
+F 0 "U7" H 10350 1700 50  0000 L CNN
+F 1 "TSL2591" H 10200 2250 50  0000 L CNN
+F 2 "Kevin-Lutzer-Kicad-Lbr:TSL2591" H 9650 1700 50  0001 C CNN
+F 3 "https://cdn-shop.adafruit.com/datasheets/TSL25911_Datasheet_EN_v1.pdf" H 10150 2000 50  0001 C CNN
+	1    10200 1950
 	1    0    0    -1  
 $EndComp
 $Comp
 L dk_Transistors-FETs-MOSFETs-Arrays:BSS138DW-7-F Q2
 U 1 1 5F240700
-P 1650 3200
-F 0 "Q2" H 1600 3687 60  0000 C CNN
-F 1 "BSS138DW-7-F" H 1600 3581 60  0000 C CNN
-F 2 "digikey-footprints:SOT-363" H 1850 3400 60  0001 L CNN
-F 3 "https://www.diodes.com/assets/Datasheets/ds30203.pdf" V 1850 3500 60  0001 L CNN
-F 4 "BSS138DW-FDICT-ND" H 1850 3600 60  0001 L CNN "Digi-Key_PN"
-F 5 "BSS138DW-7-F" H 1850 3700 60  0001 L CNN "MPN"
-F 6 "Discrete Semiconductor Products" H 1850 3800 60  0001 L CNN "Category"
-F 7 "Transistors - FETs, MOSFETs - Arrays" H 1850 3900 60  0001 L CNN "Family"
-F 8 "https://www.diodes.com/assets/Datasheets/ds30203.pdf" H 1850 4000 60  0001 L CNN "DK_Datasheet_Link"
-F 9 "/product-detail/en/diodes-incorporated/BSS138DW-7-F/BSS138DW-FDICT-ND/808541" H 1850 4100 60  0001 L CNN "DK_Detail_Page"
-F 10 "MOSFET 2N-CH 50V 0.2A SC70-6" H 1850 4200 60  0001 L CNN "Description"
-F 11 "Diodes Incorporated" H 1850 4300 60  0001 L CNN "Manufacturer"
-F 12 "Active" H 1850 4400 60  0001 L CNN "Status"
-	1    1650 3200
+P 1650 3550
+F 0 "Q2" H 1600 4037 60  0000 C CNN
+F 1 "BSS138DW-7-F" H 1600 3931 60  0000 C CNN
+F 2 "digikey-footprints:SOT-363" H 1850 3750 60  0001 L CNN
+F 3 "https://www.diodes.com/assets/Datasheets/ds30203.pdf" V 1850 3850 60  0001 L CNN
+F 4 "BSS138DW-FDICT-ND" H 1850 3950 60  0001 L CNN "Digi-Key_PN"
+F 5 "BSS138DW-7-F" H 1850 4050 60  0001 L CNN "MPN"
+F 6 "Discrete Semiconductor Products" H 1850 4150 60  0001 L CNN "Category"
+F 7 "Transistors - FETs, MOSFETs - Arrays" H 1850 4250 60  0001 L CNN "Family"
+F 8 "https://www.diodes.com/assets/Datasheets/ds30203.pdf" H 1850 4350 60  0001 L CNN "DK_Datasheet_Link"
+F 9 "/product-detail/en/diodes-incorporated/BSS138DW-7-F/BSS138DW-FDICT-ND/808541" H 1850 4450 60  0001 L CNN "DK_Detail_Page"
+F 10 "MOSFET 2N-CH 50V 0.2A SC70-6" H 1850 4550 60  0001 L CNN "Description"
+F 11 "Diodes Incorporated" H 1850 4650 60  0001 L CNN "Manufacturer"
+F 12 "Active" H 1850 4750 60  0001 L CNN "Status"
+	1    1650 3550
 	-1   0    0    1   
 $EndComp
-NoConn ~ 3050 1450
+NoConn ~ 8150 2000
 $Comp
 L Device:C C3
 U 1 1 5F40D43E
@@ -507,29 +426,29 @@ Wire Wire Line
 Wire Wire Line
 	6500 3400 6500 3450
 Wire Wire Line
-	1350 2600 1350 3100
+	1350 2950 1350 3450
 Wire Wire Line
-	2050 2600 2050 3100
+	2050 2950 2050 3450
 $Comp
 L Device:R_US R10
 U 1 1 5F42F459
-P 2550 1050
-F 0 "R10" H 2618 1096 50  0000 L CNN
-F 1 "10k" H 2618 1005 50  0000 L CNN
-F 2 "Resistor_SMD:R_0603_1608Metric" V 2590 1040 50  0001 C CNN
-F 3 "~" H 2550 1050 50  0001 C CNN
-	1    2550 1050
+P 7650 1600
+F 0 "R10" H 7718 1646 50  0000 L CNN
+F 1 "10k" H 7718 1555 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 7690 1590 50  0001 C CNN
+F 3 "~" H 7650 1600 50  0001 C CNN
+	1    7650 1600
 	1    0    0    -1  
 $EndComp
 $Comp
 L Device:R_US R11
 U 1 1 5F431D99
-P 3500 1050
-F 0 "R11" H 3568 1096 50  0000 L CNN
-F 1 "10k" H 3568 1005 50  0000 L CNN
-F 2 "Resistor_SMD:R_0603_1608Metric" V 3540 1040 50  0001 C CNN
-F 3 "~" H 3500 1050 50  0001 C CNN
-	1    3500 1050
+P 8600 1600
+F 0 "R11" H 8668 1646 50  0000 L CNN
+F 1 "10k" H 8668 1555 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 8640 1590 50  0001 C CNN
+F 3 "~" H 8600 1600 50  0001 C CNN
+	1    8600 1600
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -558,4 +477,96 @@ Wire Wire Line
 	4000 2900 4000 3200
 Wire Wire Line
 	3650 2900 3650 3050
+$Comp
+L Kevin_Lutzer:SGP30 U6
+U 1 1 5F5E68DD
+P 8150 1900
+F 0 "U6" H 8594 1946 50  0000 L CNN
+F 1 "SGP30" H 8594 1855 50  0000 L CNN
+F 2 "SGP30 (1):SGP30" H 8100 2600 50  0001 C CNN
+F 3 "" H 8150 1850 50  0001 C CNN
+	1    8150 1900
+	1    0    0    -1  
+$EndComp
+$Comp
+L Sensor:BME280 U4
+U 1 1 5F5E97F8
+P 1300 1500
+F 0 "U4" H 871 1546 50  0000 R CNN
+F 1 "BME280" H 871 1455 50  0000 R CNN
+F 2 "Package_LGA:Bosch_LGA-8_2.5x2.5mm_P0.65mm_ClockwisePinNumbering" H 2800 1050 50  0001 C CNN
+F 3 "https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BME280-DS002.pdf" H 1300 1300 50  0001 C CNN
+	1    1300 1500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1200 900  1200 800 
+Wire Wire Line
+	1400 800  1400 900 
+Wire Wire Line
+	2100 1400 1900 1400
+$Comp
+L power:GND #PWR?
+U 1 1 5F5F0DAC
+P 1300 2200
+AR Path="/5F5F0DAC" Ref="#PWR?"  Part="1" 
+AR Path="/5F9A85F1/5F5F0DAC" Ref="#PWR0109"  Part="1" 
+F 0 "#PWR0109" H 1300 1950 50  0001 C CNN
+F 1 "GND" H 1305 2027 50  0000 C CNN
+F 2 "" H 1300 2200 50  0001 C CNN
+F 3 "" H 1300 2200 50  0001 C CNN
+	1    1300 2200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1200 2100 1200 2200
+Wire Wire Line
+	1200 2200 1300 2200
+Wire Wire Line
+	1300 2200 1400 2200
+Wire Wire Line
+	1400 2200 1400 2100
+Connection ~ 1300 2200
+$Comp
+L power:+3.3V #PWR?
+U 1 1 5F60BDED
+P 1300 800
+AR Path="/5F60BDED" Ref="#PWR?"  Part="1" 
+AR Path="/5F9A85F1/5F60BDED" Ref="#PWR0126"  Part="1" 
+F 0 "#PWR0126" H 1300 650 50  0001 C CNN
+F 1 "+3.3V" H 1315 973 50  0000 C CNN
+F 2 "" H 1300 800 50  0001 C CNN
+F 3 "" H 1300 800 50  0001 C CNN
+	1    1300 800 
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1200 800  1300 800 
+Connection ~ 1300 800 
+Wire Wire Line
+	1300 800  1400 800 
+NoConn ~ 1900 1200
+NoConn ~ 3350 2050
+$Comp
+L Device:R_US R16
+U 1 1 5F61590D
+P 2000 1000
+F 0 "R16" H 2068 1046 50  0000 L CNN
+F 1 "10k" H 2068 955 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 2040 990 50  0001 C CNN
+F 3 "~" H 2000 1000 50  0001 C CNN
+	1    2000 1000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2000 850  2000 800 
+Wire Wire Line
+	1900 1800 2000 1800
+Wire Wire Line
+	2000 1150 2000 1800
+Wire Wire Line
+	1400 800  2000 800 
+Connection ~ 1400 800 
+Wire Wire Line
+	1900 1600 2100 1600
 $EndSCHEMATC
