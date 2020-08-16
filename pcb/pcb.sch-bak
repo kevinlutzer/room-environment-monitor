@@ -153,7 +153,7 @@ nRST
 Wire Wire Line
 	6450 1700 6500 1700
 Wire Wire Line
-	7700 2400 7800 2400
+	7700 2400 7750 2400
 Text GLabel 7850 1900 2    50   Output ~ 0
 I2C_SCK
 Text GLabel 7850 2000 2    50   Output ~ 0
@@ -174,13 +174,8 @@ NoConn ~ 3500 3550
 NoConn ~ 3500 3450
 NoConn ~ 6500 2300
 NoConn ~ 6500 2400
-NoConn ~ 7700 2500
-NoConn ~ 7700 2300
-NoConn ~ 7700 2100
 Wire Notes Line
 	5650 500  5650 7800
-Text GLabel 6400 2100 0    50   Input ~ 0
-RGB_LED
 $Comp
 L Device:R_US R2
 U 1 1 5F1D7DFC
@@ -716,10 +711,8 @@ Text GLabel 7850 2200 2    50   Input ~ 0
 nMODE
 NoConn ~ 1750 6700
 NoConn ~ 3000 3150
-Text GLabel 6400 2600 0    50   Output ~ 0
+Text GLabel 7850 1700 2    50   Output ~ 0
 nINT
-Wire Wire Line
-	6400 2600 6500 2600
 $Comp
 L dk_Transistors-FETs-MOSFETs-Arrays:BSS138DW-7-F Q1
 U 1 1 5F2362A4
@@ -946,16 +939,16 @@ $EndComp
 $Comp
 L Device:R_Small_US R9
 U 1 1 5F341E1A
-P 7800 2550
-F 0 "R9" H 7868 2596 50  0000 L CNN
-F 1 "10k" H 7868 2505 50  0000 L CNN
-F 2 "Resistor_SMD:R_0603_1608Metric" H 7800 2550 50  0001 C CNN
-F 3 "~" H 7800 2550 50  0001 C CNN
-	1    7800 2550
+P 7750 2700
+F 0 "R9" H 7818 2746 50  0000 L CNN
+F 1 "10k" H 7818 2655 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 7750 2700 50  0001 C CNN
+F 3 "~" H 7750 2700 50  0001 C CNN
+	1    7750 2700
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	7800 2400 7800 2450
+	7750 2400 7750 2600
 Wire Wire Line
 	6450 1300 6450 1700
 Wire Wire Line
@@ -1096,18 +1089,15 @@ Connection ~ 7100 1100
 Wire Wire Line
 	7100 1100 7100 1000
 Wire Wire Line
-	7100 2850 7800 2850
+	7100 2850 7750 2850
 Connection ~ 7100 2850
 Wire Wire Line
-	7800 2650 7800 2850
-Wire Wire Line
-	6400 2100 6500 2100
+	7750 2800 7750 2850
 NoConn ~ 6500 2500
-Text GLabel 6400 2200 0    50   Input ~ 0
+Text GLabel 7850 2300 2    50   Input ~ 0
 nFAC_RST
 Wire Wire Line
-	6400 2200 6500 2200
-NoConn ~ 7700 1700
+	7850 2300 7700 2300
 Text Notes 5700 650  0    100  ~ 0
 ESP-12F w/ Sensor Subblock
 Wire Notes Line
@@ -1153,4 +1143,10 @@ Wire Wire Line
 	3500 4250 4050 4250
 Wire Wire Line
 	3500 3650 4350 3650
+Text GLabel 7850 2100 2    50   Input ~ 0
+RGB_LED
+Wire Wire Line
+	7700 2100 7850 2100
+Wire Wire Line
+	7700 1700 7850 1700
 $EndSCHEMATC
