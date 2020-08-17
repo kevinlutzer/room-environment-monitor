@@ -711,7 +711,7 @@ Text GLabel 7850 2200 2    50   Input ~ 0
 nMODE
 NoConn ~ 1750 6700
 NoConn ~ 3000 3150
-Text GLabel 7850 1700 2    50   Output ~ 0
+Text GLabel 7850 1700 2    50   Input ~ 0
 nINT
 $Comp
 L dk_Transistors-FETs-MOSFETs-Arrays:BSS138DW-7-F Q1

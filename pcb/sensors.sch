@@ -558,14 +558,8 @@ Wire Wire Line
 	1850 1700 2050 1700
 Text Notes 1750 2550 0    50   ~ 0
 Sensor Address\nBME280 - 0x77\nTSL2591 - 0x29\nSGP30 - 0x58
-Text Notes 4250 3250 0    50   ~ 0
-Bypass Caps
 Text Notes 1150 3250 0    50   ~ 0
 Lvl shifter from 1.8V to 3.3V 
-Text Notes 3200 3250 0    50   ~ 0
-I2C Buss Connector
-Text Notes 5950 3250 0    50   ~ 0
-Pullups for the I2C Bus
 $Comp
 L Kevin_Lutzer:SGP30 U6
 U 1 1 5F5E68DD
