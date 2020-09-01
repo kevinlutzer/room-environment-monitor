@@ -13,9 +13,9 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
-Text GLabel 2300 1550 2    50   Input ~ 0
+Text GLabel 2400 1550 2    50   Input ~ 0
 I2C_SCK
-Text GLabel 2300 1750 2    50   BiDi ~ 0
+Text GLabel 2400 1750 2    50   BiDi ~ 0
 I2C_SDA
 $Comp
 L power:GND #PWR?
@@ -281,17 +281,6 @@ I2C_SCK
 Text GLabel 3400 1400 0    50   BiDi ~ 0
 I2C_SDA
 $Comp
-L Kevin_Lutzer:TSL2591 U7
-U 1 1 5F2329EE
-P 3850 1350
-F 0 "U7" H 4000 1100 50  0000 L CNN
-F 1 "TSL2591" H 3850 1650 50  0000 L CNN
-F 2 "Kevin-Lutzer-Kicad-Lbr:TSL2591" H 3300 1100 50  0001 C CNN
-F 3 "https://cdn-shop.adafruit.com/datasheets/TSL25911_Datasheet_EN_v1.pdf" H 3800 1400 50  0001 C CNN
-	1    3850 1350
-	1    0    0    -1  
-$EndComp
-$Comp
 L dk_Transistors-FETs-MOSFETs-Arrays:BSS138DW-7-F Q2
 U 1 1 5F240700
 P 1600 3800
@@ -490,29 +479,27 @@ Wire Wire Line
 Wire Wire Line
 	1600 950  1600 1050
 Wire Wire Line
-	2300 1550 2100 1550
+	2400 1550 2100 1550
 $Comp
 L power:GND #PWR?
 U 1 1 5F5F0DAC
-P 1500 2350
+P 1600 2350
 AR Path="/5F5F0DAC" Ref="#PWR?"  Part="1" 
 AR Path="/5F9A85F1/5F5F0DAC" Ref="#PWR0109"  Part="1" 
-F 0 "#PWR0109" H 1500 2100 50  0001 C CNN
-F 1 "GND" H 1505 2177 50  0000 C CNN
-F 2 "" H 1500 2350 50  0001 C CNN
-F 3 "" H 1500 2350 50  0001 C CNN
-	1    1500 2350
+F 0 "#PWR0109" H 1600 2100 50  0001 C CNN
+F 1 "GND" H 1605 2177 50  0000 C CNN
+F 2 "" H 1600 2350 50  0001 C CNN
+F 3 "" H 1600 2350 50  0001 C CNN
+	1    1600 2350
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
 	1400 2250 1400 2350
 Wire Wire Line
-	1400 2350 1500 2350
-Wire Wire Line
-	1500 2350 1600 2350
+	1400 2350 1600 2350
 Wire Wire Line
 	1600 2350 1600 2250
-Connection ~ 1500 2350
+Connection ~ 1600 2350
 $Comp
 L power:+3.3V #PWR?
 U 1 1 5F60BDED
@@ -531,29 +518,28 @@ Wire Wire Line
 Connection ~ 1500 950 
 Wire Wire Line
 	1500 950  1600 950 
-NoConn ~ 2100 1350
 $Comp
 L Device:R_US R16
 U 1 1 5F61590D
-P 2200 1150
-F 0 "R16" H 2268 1196 50  0000 L CNN
-F 1 "10k" H 2268 1105 50  0000 L CNN
-F 2 "Resistor_SMD:R_0603_1608Metric" V 2240 1140 50  0001 C CNN
-F 3 "~" H 2200 1150 50  0001 C CNN
-	1    2200 1150
+P 2350 1150
+F 0 "R16" H 2418 1196 50  0000 L CNN
+F 1 "10k" H 2418 1105 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 2390 1140 50  0001 C CNN
+F 3 "~" H 2350 1150 50  0001 C CNN
+	1    2350 1150
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	2200 1000 2200 950 
+	2350 1000 2350 950 
 Wire Wire Line
-	2100 1950 2200 1950
+	2100 1950 2350 1950
 Wire Wire Line
-	2200 1300 2200 1950
+	2350 1300 2350 1950
 Wire Wire Line
-	1600 950  2200 950 
+	1600 950  2350 950 
 Connection ~ 1600 950 
 Wire Wire Line
-	2100 1750 2300 1750
+	2100 1750 2400 1750
 Text Notes 700  6350 0    50   ~ 0
 Sensor Address\nBME280 - 0x77\nTSL2591 - 0x29\nSGP30 - 0x58
 $Comp
@@ -562,7 +548,7 @@ U 1 1 5F5E68DD
 P 1650 5150
 F 0 "U6" H 1850 5400 50  0000 L CNN
 F 1 "SGP30" H 1800 4900 50  0000 L CNN
-F 2 "SGP30 (1):SGP30" H 1600 5850 50  0001 C CNN
+F 2 "Kevin-Lutzer-Kicad-Lbr:SGP30" H 1600 5850 50  0001 C CNN
 F 3 "" H 1650 5100 50  0001 C CNN
 	1    1650 5150
 	1    0    0    -1  
@@ -593,4 +579,21 @@ Wire Notes Line
 	4750 500  4750 5400
 Text Notes 3550 4150 0    100  ~ 0
 I2C Bus\nPullups
+Wire Wire Line
+	1600 2350 2200 2350
+Wire Wire Line
+	2200 2350 2200 1350
+Wire Wire Line
+	2200 1350 2100 1350
+$Comp
+L Kevin_Lutzer:TSL2591 U?
+U 1 1 5F50BFF8
+P 3850 1350
+F 0 "U?" H 3600 1650 50  0000 C CNN
+F 1 "TSL2591" H 4000 1100 50  0000 C CNN
+F 2 "Kevin-Lutzer-Kicad-Lbr:TSL2591" H 3300 1100 50  0001 C CNN
+F 3 "https://cdn-shop.adafruit.com/datasheets/TSL25911_Datasheet_EN_v1.pdf" H 3800 1400 50  0001 C CNN
+	1    3850 1350
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC

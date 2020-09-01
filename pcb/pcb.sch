@@ -225,17 +225,6 @@ nRST
 Wire Wire Line
 	4500 6050 3350 6050
 $Comp
-L Device:C C2
-U 1 1 5F0BCC65
-P 4300 1700
-F 0 "C2" H 4415 1746 50  0000 L CNN
-F 1 "47u" H 4415 1655 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 4338 1550 50  0001 C CNN
-F 3 "~" H 4300 1700 50  0001 C CNN
-	1    4300 1700
-	1    0    0    -1  
-$EndComp
-$Comp
 L power:GND #PWR0108
 U 1 1 5F0BA267
 P 3850 2050
@@ -244,17 +233,6 @@ F 1 "GND" H 3855 1877 50  0000 C CNN
 F 2 "" H 3850 2050 50  0001 C CNN
 F 3 "" H 3850 2050 50  0001 C CNN
 	1    3850 2050
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:+3.3V #PWR0107
-U 1 1 5F0B902F
-P 4300 1300
-F 0 "#PWR0107" H 4300 1150 50  0001 C CNN
-F 1 "+3.3V" H 4315 1473 50  0000 C CNN
-F 2 "" H 4300 1300 50  0001 C CNN
-F 3 "" H 4300 1300 50  0001 C CNN
-	1    4300 1300
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
@@ -526,17 +504,6 @@ Wire Wire Line
 Connection ~ 6300 4300
 Wire Wire Line
 	6300 4300 6150 4300
-$Comp
-L Regulator_Linear:AP2112K-3.3 U1
-U 1 1 5F256A82
-P 3850 1500
-F 0 "U1" H 3850 1842 50  0000 C CNN
-F 1 "AP2112K-3.3" H 3850 1751 50  0000 C CNN
-F 2 "Package_TO_SOT_SMD:SOT-23-5" H 3850 1825 50  0001 C CNN
-F 3 "https://www.diodes.com/assets/Datasheets/AP2112.pdf" H 3850 1600 50  0001 C CNN
-	1    3850 1500
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	3850 1800 3850 1950
 Wire Wire Line
@@ -560,17 +527,6 @@ Wire Wire Line
 	3100 1800 3100 1950
 Wire Wire Line
 	3100 1950 3850 1950
-Wire Wire Line
-	3850 1950 4300 1950
-Wire Wire Line
-	4300 1950 4300 1850
-Wire Wire Line
-	4300 1550 4300 1400
-Wire Wire Line
-	4300 1400 4150 1400
-Wire Wire Line
-	4300 1400 4300 1300
-Connection ~ 4300 1400
 Wire Wire Line
 	3100 1400 3100 1300
 Wire Wire Line
@@ -1153,4 +1109,48 @@ NoConn ~ 7700 2500
 NoConn ~ 6500 2100
 NoConn ~ 6500 2200
 NoConn ~ 6500 2600
+Connection ~ 4300 1400
+Wire Wire Line
+	4300 1400 4300 1300
+Wire Wire Line
+	4300 1400 4150 1400
+Wire Wire Line
+	4300 1550 4300 1400
+Wire Wire Line
+	4300 1950 4300 1850
+Wire Wire Line
+	3850 1950 4300 1950
+$Comp
+L power:+3.3V #PWR0107
+U 1 1 5F0B902F
+P 4300 1300
+F 0 "#PWR0107" H 4300 1150 50  0001 C CNN
+F 1 "+3.3V" H 4315 1473 50  0000 C CNN
+F 2 "" H 4300 1300 50  0001 C CNN
+F 3 "" H 4300 1300 50  0001 C CNN
+	1    4300 1300
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C2
+U 1 1 5F0BCC65
+P 4300 1700
+F 0 "C2" H 4415 1746 50  0000 L CNN
+F 1 "47u" H 4415 1655 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 4338 1550 50  0001 C CNN
+F 3 "~" H 4300 1700 50  0001 C CNN
+	1    4300 1700
+	1    0    0    -1  
+$EndComp
+$Comp
+L Regulator_Linear:AP2112K-3.3 U1
+U 1 1 5F256A82
+P 3850 1500
+F 0 "U1" H 3850 1842 50  0000 C CNN
+F 1 "AP2112K-3.3" H 3850 1751 50  0000 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-23-5" H 3850 1825 50  0001 C CNN
+F 3 "https://www.diodes.com/assets/Datasheets/AP2112.pdf" H 3850 1600 50  0001 C CNN
+	1    3850 1500
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
