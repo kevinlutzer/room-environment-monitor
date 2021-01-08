@@ -154,9 +154,9 @@ Wire Wire Line
 	6450 1700 6500 1700
 Wire Wire Line
 	7700 2400 7750 2400
-Text GLabel 7850 1900 2    50   Output ~ 0
-I2C_SCK
 Text GLabel 7850 2000 2    50   Output ~ 0
+I2C_SCK
+Text GLabel 7850 1900 2    50   Output ~ 0
 I2C_SDA
 Wire Wire Line
 	7700 1900 7850 1900
