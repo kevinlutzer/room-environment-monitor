@@ -585,10 +585,10 @@ Wire Wire Line
 	1700 2000 2150 2000
 Connection ~ 2150 2000
 $Comp
-L Kevin_Lutzer:TSL2591 U7
-U 1 1 5FFDF22B
+L Kevin_Lutzer:TSL2591 U?
+U 1 1 5FFE72E4
 P 3850 1350
-F 0 "U7" H 3550 1650 50  0000 L CNN
+F 0 "U?" H 3550 1650 50  0000 L CNN
 F 1 "TSL2591" H 3850 1650 50  0000 L CNN
 F 2 "Kevin-Lutzer-Kicad-Lbr:TSL2591" H 3300 1100 50  0001 C CNN
 F 3 "https://cdn-shop.adafruit.com/datasheets/TSL25911_Datasheet_EN_v1.pdf" H 3800 1400 50  0001 C CNN
