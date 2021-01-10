@@ -1056,10 +1056,6 @@ Wire Wire Line
 	3500 4250 4050 4250
 Wire Wire Line
 	3500 3650 4350 3650
-Text GLabel 7850 2100 2    50   Input ~ 0
-RGB_LED
-Wire Wire Line
-	7700 2100 7850 2100
 Wire Wire Line
 	7700 1700 7850 1700
 NoConn ~ 7700 2500
@@ -1095,17 +1091,6 @@ F 1 "47u" H 4415 1655 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric" H 4338 1550 50  0001 C CNN
 F 3 "~" H 4300 1700 50  0001 C CNN
 	1    4300 1700
-	1    0    0    -1  
-$EndComp
-$Comp
-L Regulator_Linear:AP2112K-3.3 U1
-U 1 1 5F256A82
-P 3850 1500
-F 0 "U1" H 3850 1842 50  0000 C CNN
-F 1 "AP2112K-3.3" H 3850 1751 50  0000 C CNN
-F 2 "Package_TO_SOT_SMD:SOT-23-5" H 3850 1825 50  0001 C CNN
-F 3 "https://www.diodes.com/assets/Datasheets/AP2112.pdf" H 3850 1600 50  0001 C CNN
-	1    3850 1500
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -1229,4 +1214,16 @@ Wire Wire Line
 	6450 2200 6500 2200
 Wire Wire Line
 	6450 2300 6500 2300
+$Comp
+L Regulator_Linear:AP2112K-3.3 U1
+U 1 1 5F256A82
+P 3850 1500
+F 0 "U1" H 3850 1842 50  0000 C CNN
+F 1 "AP2112K-3.3" H 3850 1751 50  0000 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-23-5" H 3850 1825 50  0001 C CNN
+F 3 "https://www.diodes.com/assets/Datasheets/AP2112.pdf" H 3850 1600 50  0001 C CNN
+	1    3850 1500
+	1    0    0    -1  
+$EndComp
+NoConn ~ 7700 2100
 $EndSCHEMATC
