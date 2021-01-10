@@ -154,9 +154,9 @@ Wire Wire Line
 	6450 1700 6500 1700
 Wire Wire Line
 	7700 2400 7750 2400
-Text GLabel 7850 1900 2    50   Output ~ 0
-I2C_SCK
 Text GLabel 7850 2000 2    50   Output ~ 0
+I2C_SCK
+Text GLabel 7850 1900 2    50   Output ~ 0
 I2C_SDA
 Wire Wire Line
 	7700 1900 7850 1900
@@ -172,7 +172,6 @@ NoConn ~ 2100 4450
 NoConn ~ 3500 3750
 NoConn ~ 3500 3550
 NoConn ~ 3500 3450
-NoConn ~ 6500 2300
 NoConn ~ 6500 2400
 Wire Notes Line
 	5650 500  5650 7800
@@ -225,17 +224,6 @@ nRST
 Wire Wire Line
 	4500 6050 3350 6050
 $Comp
-L Device:C C2
-U 1 1 5F0BCC65
-P 4300 1700
-F 0 "C2" H 4415 1746 50  0000 L CNN
-F 1 "47u" H 4415 1655 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 4338 1550 50  0001 C CNN
-F 3 "~" H 4300 1700 50  0001 C CNN
-	1    4300 1700
-	1    0    0    -1  
-$EndComp
-$Comp
 L power:GND #PWR0108
 U 1 1 5F0BA267
 P 3850 2050
@@ -244,17 +232,6 @@ F 1 "GND" H 3855 1877 50  0000 C CNN
 F 2 "" H 3850 2050 50  0001 C CNN
 F 3 "" H 3850 2050 50  0001 C CNN
 	1    3850 2050
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:+3.3V #PWR0107
-U 1 1 5F0B902F
-P 4300 1300
-F 0 "#PWR0107" H 4300 1150 50  0001 C CNN
-F 1 "+3.3V" H 4315 1473 50  0000 C CNN
-F 2 "" H 4300 1300 50  0001 C CNN
-F 3 "" H 4300 1300 50  0001 C CNN
-	1    4300 1300
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
@@ -395,47 +372,6 @@ F 3 "~" H 6150 3600 50  0001 C CNN
 	1    6150 3600
 	1    0    0    -1  
 $EndComp
-$Comp
-L power:+3.3V #PWR0123
-U 1 1 5F4FBB06
-P 1450 6350
-F 0 "#PWR0123" H 1450 6200 50  0001 C CNN
-F 1 "+3.3V" H 1465 6523 50  0000 C CNN
-F 2 "" H 1450 6350 50  0001 C CNN
-F 3 "" H 1450 6350 50  0001 C CNN
-	1    1450 6350
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR0132
-U 1 1 5F4FC014
-P 1450 7050
-F 0 "#PWR0132" H 1450 6800 50  0001 C CNN
-F 1 "GND" H 1455 6877 50  0000 C CNN
-F 2 "" H 1450 7050 50  0001 C CNN
-F 3 "" H 1450 7050 50  0001 C CNN
-	1    1450 7050
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	1450 6400 1450 6350
-Wire Wire Line
-	1450 7000 1450 7050
-$Comp
-L LED:WS2812B D1
-U 1 1 5F529F39
-P 1450 6700
-F 0 "D1" H 1794 6746 50  0000 L CNN
-F 1 "WS2812B" H 1794 6655 50  0000 L CNN
-F 2 "LED_SMD:LED_WS2812B_PLCC4_5.0x5.0mm_P3.2mm" H 1500 6400 50  0001 L TNN
-F 3 "https://cdn-shop.adafruit.com/datasheets/WS2812B.pdf" H 1550 6325 50  0001 L TNN
-	1    1450 6700
-	1    0    0    -1  
-$EndComp
-Text GLabel 1100 6700 0    50   Input ~ 0
-RGB_LED
-Wire Wire Line
-	1100 6700 1150 6700
 Wire Wire Line
 	4500 6400 3700 6400
 $Comp
@@ -526,17 +462,6 @@ Wire Wire Line
 Connection ~ 6300 4300
 Wire Wire Line
 	6300 4300 6150 4300
-$Comp
-L Regulator_Linear:AP2112K-3.3 U1
-U 1 1 5F256A82
-P 3850 1500
-F 0 "U1" H 3850 1842 50  0000 C CNN
-F 1 "AP2112K-3.3" H 3850 1751 50  0000 C CNN
-F 2 "Package_TO_SOT_SMD:SOT-23-5" H 3850 1825 50  0001 C CNN
-F 3 "https://www.diodes.com/assets/Datasheets/AP2112.pdf" H 3850 1600 50  0001 C CNN
-	1    3850 1500
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	3850 1800 3850 1950
 Wire Wire Line
@@ -560,17 +485,6 @@ Wire Wire Line
 	3100 1800 3100 1950
 Wire Wire Line
 	3100 1950 3850 1950
-Wire Wire Line
-	3850 1950 4300 1950
-Wire Wire Line
-	4300 1950 4300 1850
-Wire Wire Line
-	4300 1550 4300 1400
-Wire Wire Line
-	4300 1400 4150 1400
-Wire Wire Line
-	4300 1400 4300 1300
-Connection ~ 4300 1400
 Wire Wire Line
 	3100 1400 3100 1300
 Wire Wire Line
@@ -709,7 +623,6 @@ Text Notes 550  5600 0    100  ~ 0
 I/O - Buttons and LEDs
 Text GLabel 7850 2200 2    50   Input ~ 0
 nMODE
-NoConn ~ 1750 6700
 NoConn ~ 3000 3150
 Text GLabel 7850 1700 2    50   Input ~ 0
 nINT
@@ -1143,14 +1056,174 @@ Wire Wire Line
 	3500 4250 4050 4250
 Wire Wire Line
 	3500 3650 4350 3650
-Text GLabel 7850 2100 2    50   Input ~ 0
-RGB_LED
-Wire Wire Line
-	7700 2100 7850 2100
 Wire Wire Line
 	7700 1700 7850 1700
 NoConn ~ 7700 2500
-NoConn ~ 6500 2100
-NoConn ~ 6500 2200
 NoConn ~ 6500 2600
+Connection ~ 4300 1400
+Wire Wire Line
+	4300 1400 4300 1300
+Wire Wire Line
+	4300 1400 4150 1400
+Wire Wire Line
+	4300 1550 4300 1400
+Wire Wire Line
+	4300 1950 4300 1850
+Wire Wire Line
+	3850 1950 4300 1950
+$Comp
+L power:+3.3V #PWR0107
+U 1 1 5F0B902F
+P 4300 1300
+F 0 "#PWR0107" H 4300 1150 50  0001 C CNN
+F 1 "+3.3V" H 4315 1473 50  0000 C CNN
+F 2 "" H 4300 1300 50  0001 C CNN
+F 3 "" H 4300 1300 50  0001 C CNN
+	1    4300 1300
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C2
+U 1 1 5F0BCC65
+P 4300 1700
+F 0 "C2" H 4415 1746 50  0000 L CNN
+F 1 "47u" H 4415 1655 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 4338 1550 50  0001 C CNN
+F 3 "~" H 4300 1700 50  0001 C CNN
+	1    4300 1700
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:LED D1
+U 1 1 5FFB8848
+P 1850 6250
+F 0 "D1" H 1843 5995 50  0000 C CNN
+F 1 "LED" H 1843 6086 50  0000 C CNN
+F 2 "LED_SMD:LED_0603_1608Metric" H 1850 6250 50  0001 C CNN
+F 3 "~" H 1850 6250 50  0001 C CNN
+	1    1850 6250
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:LED D2
+U 1 1 5FFB92C8
+P 1850 6450
+F 0 "D2" H 1843 6195 50  0000 C CNN
+F 1 "LED" H 1843 6286 50  0000 C CNN
+F 2 "LED_SMD:LED_0603_1608Metric" H 1850 6450 50  0001 C CNN
+F 3 "~" H 1850 6450 50  0001 C CNN
+	1    1850 6450
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:LED D5
+U 1 1 5FFB9A43
+P 1850 6650
+F 0 "D5" H 1843 6395 50  0000 C CNN
+F 1 "LED" H 1843 6486 50  0000 C CNN
+F 2 "LED_SMD:LED_0603_1608Metric" H 1850 6650 50  0001 C CNN
+F 3 "~" H 1850 6650 50  0001 C CNN
+	1    1850 6650
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R_Small_US R17
+U 1 1 5FFBA97E
+P 1550 6250
+F 0 "R17" H 1618 6296 50  0000 L CNN
+F 1 "470" H 1618 6205 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 1550 6250 50  0001 C CNN
+F 3 "~" H 1550 6250 50  0001 C CNN
+	1    1550 6250
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R_Small_US R18
+U 1 1 5FFBB322
+P 1550 6450
+F 0 "R18" H 1618 6496 50  0000 L CNN
+F 1 "470" H 1618 6405 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 1550 6450 50  0001 C CNN
+F 3 "~" H 1550 6450 50  0001 C CNN
+	1    1550 6450
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R_Small_US R19
+U 1 1 5FFBB8C2
+P 1550 6650
+F 0 "R19" H 1618 6696 50  0000 L CNN
+F 1 "470" H 1618 6605 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" H 1550 6650 50  0001 C CNN
+F 3 "~" H 1550 6650 50  0001 C CNN
+	1    1550 6650
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR0101
+U 1 1 5FFBBD6A
+P 2050 6700
+F 0 "#PWR0101" H 2050 6450 50  0001 C CNN
+F 1 "GND" H 2055 6527 50  0000 C CNN
+F 2 "" H 2050 6700 50  0001 C CNN
+F 3 "" H 2050 6700 50  0001 C CNN
+	1    2050 6700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2000 6250 2050 6250
+Wire Wire Line
+	2050 6250 2050 6450
+Wire Wire Line
+	2000 6650 2050 6650
+Connection ~ 2050 6650
+Wire Wire Line
+	2050 6650 2050 6700
+Wire Wire Line
+	2000 6450 2050 6450
+Connection ~ 2050 6450
+Wire Wire Line
+	2050 6450 2050 6650
+Wire Wire Line
+	1650 6250 1700 6250
+Wire Wire Line
+	1650 6450 1700 6450
+Wire Wire Line
+	1650 6650 1700 6650
+Text GLabel 1400 6250 0    50   Input ~ 0
+SIG1
+Text GLabel 1400 6450 0    50   Input ~ 0
+SIG2
+Text GLabel 1400 6650 0    50   Input ~ 0
+SIG3
+Wire Wire Line
+	1400 6250 1450 6250
+Wire Wire Line
+	1400 6450 1450 6450
+Wire Wire Line
+	1400 6650 1450 6650
+Text GLabel 6450 2100 0    50   Output ~ 0
+SIG3
+Text GLabel 6450 2200 0    50   Output ~ 0
+SIG2
+Text GLabel 6450 2300 0    50   Output ~ 0
+SIG1
+Wire Wire Line
+	6450 2100 6500 2100
+Wire Wire Line
+	6450 2200 6500 2200
+Wire Wire Line
+	6450 2300 6500 2300
+$Comp
+L Regulator_Linear:AP2112K-3.3 U1
+U 1 1 5F256A82
+P 3850 1500
+F 0 "U1" H 3850 1842 50  0000 C CNN
+F 1 "AP2112K-3.3" H 3850 1751 50  0000 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-23-5" H 3850 1825 50  0001 C CNN
+F 3 "https://www.diodes.com/assets/Datasheets/AP2112.pdf" H 3850 1600 50  0001 C CNN
+	1    3850 1500
+	1    0    0    -1  
+$EndComp
+NoConn ~ 7700 2100
 $EndSCHEMATC
