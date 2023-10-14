@@ -9,12 +9,6 @@ api_key.txt
 iot/*.pyc
 sever/*.pyc
 
-# index files from wget
-
-# ide logger files
-.idea
-.DS_store
-
 # Kicad
 pcb/room_environment_monitor-backups/
 pcb/\#auto_saved_files\#
@@ -24,3 +18,9 @@ pcb/room_environment_monitor/room_environment_monitor-backups/
 pcb/_autosave-room_environment_monitor.kicad_pcb
 *.kicad_pcb-bak
 *.sch-bak
+
+# VSCODE
+client/bin/
+client/.vscode/
+.DS_Store
+.idea
