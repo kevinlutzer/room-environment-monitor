@@ -8,6 +8,7 @@ api_key.txt
 *.pyc
 iot/*.pyc
 sever/*.pyc
+*a.out
 
 # Kicad
 pcb/room_environment_monitor-backups/
