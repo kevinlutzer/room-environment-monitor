@@ -75,3 +75,58 @@ void setup()
 }
 
 void loop(){}
+
+
+#include "pm1006.hpp"
+
+#define DEBUG_PM1006
+
+PM1006 *pm1006; 
+
+void setup() {
+  pm1006 = new PM1006(&Serial1, 4, 5); 
+  pm1006->begin();
+  Serial.begin(115200);
+  Serial.println("Hello World");
+}
+
+void loop() {
+  delay(1000);
+  int value = pm1006->read();
+  Serial.print("Value: ");
+  Serial.print(value);
+  Serial.print("\n");
+}
+
+#include "Adafruit_NeoPixel.h"
+
+
+// How many internal neopixels do we have? some boards have more than one!
+#define NUMPIXELS        3
+#define PIN_NEOPIXEL 8
+
+Adafruit_NeoPixel pixels(NUMPIXELS, PIN_NEOPIXEL, NEO_GRB + NEO_KHZ800);
+
+// the setup routine runs once when you press reset:
+void setup() {
+  Serial.begin(115200);
+
+  pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
+  pixels.setBrightness(20); // not so bright
+}
+
+// the loop routine runs over and over again forever:
+void loop() {
+  // say hi
+  Serial.println("Hello!");
+  
+  // set color to red
+  pixels.fill(0xFF0000);
+  pixels.show();
+  delay(500); // wait half a second
+
+  // turn off
+  pixels.fill(0x000000);
+  pixels.show();
+  delay(500); // wait half a second
+}
