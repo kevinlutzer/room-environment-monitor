@@ -6774,7 +6774,7 @@
         (effects (font (size 1 1) (thickness 0.15)))
       (tstamp 1bfd5d4e-7829-4147-bc6e-9cebc2e5d39a)
     )
-    (fp_text value "10k" (at 0 1.43 90) (layer "F.Fab") hide
+    (fp_text value "4.7" (at 0 1.43 90) (layer "F.Fab") hide
         (effects (font (size 1 1) (thickness 0.15)))
       (tstamp 63e114c6-013b-473e-8cdf-ee04af941131)
     )

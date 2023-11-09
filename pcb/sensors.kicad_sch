@@ -2422,7 +2422,7 @@
     (property "Reference" "R5" (at 15.621 29.464 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "10k" (at 14.605 34.544 0)
+    (property "Value" "4.7" (at 14.605 34.544 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "Resistor_SMD:R_0603_1608Metric" (at 18.415 31.75 0)
