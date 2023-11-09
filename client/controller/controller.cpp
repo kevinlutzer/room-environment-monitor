@@ -1,25 +1,25 @@
-#include "controller.hpp" 
 #include "WiFi.h"
 #include "Adafruit_BME280.h"
 #include "sntp.h"
 #include "ArduinoJson.h"
 #include "PubSubClient.h"
-#include "../Config.hpp"
+#include "UUID.h"
+
+#include "../config.hpp"
+#include "controller.hpp" 
 
 #define DEBUG_CONTROLLER 
 
-REMController::REMController(WiFiClass *wifi, PM1006 *pm1006, Adafruit_BME280 *bme280, PubSubClient *pubsubClient) {
-    this->pm1006 = pm1006;
+REMController::REMController(WiFiClass *wifi, PM1006K *pm1006k, Adafruit_BME280 *bme280, PubSubClient *pubsubClient) {
+    this->pm1006k = pm1006k;
     this->bme280 = bme280;
     this->wifi = wifi;
     this->pubsubClient = pubsubClient;
-
-    this->bme280Data = new BME280Data();
-    this->pm1006Data = new PM1006Data();
+    this->uuidGenerator = new UUID();
 }
 
 bool REMController::publishStatus() {
-    DynamicJsonBuffer json(100);
+    DynamicJsonDocument json(156);
     #ifdef DEBUG_CONTROLLER
         Serial.println("Going to be publishing status");
     #endif
@@ -39,10 +39,26 @@ bool REMController::publishData() {
         Serial.println("Going to be publishing data");
     #endif
     DynamicJsonDocument json(1024);
-    json["pm25"] = this->pm1006Data->getPM25();
-    json["temperature"] = this->bme280Data->getTemperature();
-    json["humidity"] = this->bme280Data->getHumidity();
-    json["pressure"] = this->bme280Data->getPressure();
+    json["pm2_5"] = this->pm2_5;
+    json["pm1_0"] = this->pm1_0;
+    json["pm10"] = this->pm10;
+    json["deviceid"] = DEVICE_ID;
+
+    json["temperature"] = this->temperature;
+    json["humidity"] = this->humidity;
+    json["pressure"] = this->pressure;
+
+    // Generate a UUID and append it to the data struct
+    this->uuidGenerator->generate();
+    json["id"] = this->uuidGenerator->toCharArray();
+
+    // Get local time and append it to the data struct
+    // struct tm timeinfo;
+    // getLocalTime(&timeinfo);
+    // char buf[24];
+    // sprintf(buf, "%04d-%02d-%02dT%02d:%02d:%02d.000Z", timeinfo.tm_year + 1900, timeinfo.tm_mon + 1, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+
+    // json["created"] = buf;
 
     #ifdef DEBUG_CONTROLLER
         Serial.println("Data to be serialized:");
@@ -72,25 +88,22 @@ String REMController::wifiConfig() {
 }
 
 bool REMController::refreshPM25() {
-    int pm25 = this->pm1006->read();
-    if (pm25 == -1) {
+    if (!this->pm1006k->takeMeasurement()) {
+        Serial.println("Failed to take measurement");
         return false;
     }
  
-    this->pm1006Data->setPM25(pm25);
-    Serial.print("PM25: ");
-    Serial.println(pm25);
+    this->pm2_5 = this->pm1006k->getPM2_5();
+    this->pm1_0 = this->pm1006k->getPM1_0();
+    this->pm10 = this->pm1006k->getPM10();
+
     return true;
 }
 
 bool REMController::refreshBME280() {
-    float temp = this->bme280->readTemperature();
-    float humidity = this->bme280->readHumidity();
-    float pressure = this->bme280->readPressure();
-
-    this->bme280Data->setTemperature(temp);
-    this->bme280Data->setHumidity(humidity);
-    this->bme280Data->setPressure(pressure);
+    this->temperature = this->bme280->readTemperature();
+    this->humidity = this->bme280->readHumidity();
+    this->pressure = this->bme280->readPressure();
 
     return true;
 }
