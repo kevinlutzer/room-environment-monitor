@@ -1,4 +1,4 @@
-22304769692889313
+22306469241215037
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -61025,6 +61025,13 @@ Kevin_Lutzer_Lbr
 0
 6
 6
+Kevin_Lutzer_Lbr
+Adafruit_CP210XN_Friend
+
+
+0
+16
+16
 Kevin_Lutzer_Lbr
 BNC_Molex_731000105_Horizontal
 dual independently isolated BNC plug (https://www.amphenolrf.com/downloads/dl/file/id/2980/product/644/031_6575_customer_drawing.pdf)
