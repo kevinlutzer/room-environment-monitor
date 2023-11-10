@@ -1,21 +1,5 @@
 # Overview 
 
-The idea for this project came from my concern about the lack of ventilation in the room that I solder electronics in. I wanted to be able to monitor the total concentration of total volatile organic compounds (TVOCs) in the room and compare it to that of a different room which should not have any harmful chemicals in the air. 
+![V4 PCB](./documentation/v4-pcb/3d.png)
 
-## Operation and Sequences
-
-I have a few diagrams that show the two many sequence of operations that happen to collect, transmit and store data. Note that the technologies that I am using to do this are a raspberry pi and the google cloud platform. The first diagram is the operations the raspberry pi performs. The second is what happens in the gcloud platform. 
-
-![](./documentation/data_collection_raspberry_pi_transmission_sequence_diagram.png)
-![](./documentation/data_store_and_processing_sequence_google_cloud_platform.png)
-
-# Reviewing and Analyzing the Data
-
-Based on the technologies I used there isn't a free way for me to query the data. Datastudio backed with BigQuery is the tool that I have used to visualize and understand the data. Since that tool ins't free to use, I have surfaced any of the fews publiclically.
-
-# Next Steps
-
-Right now I am playing with a different data model that will give me a cheaper method of querying the data. You can checkout the progress I have made on the visualizations by viewing this [page](https://kevin.lutzer.ca/projects/sample)
-
-# Building Locally
-`GOARM=6 GOARCH=arm GOOS=linux go build main.go`
+The Room Environment Monitor project was something that I started back in 2017. I wanted a small IoT device that could tell me if there was a concerning amount of volatile organic compounds (VOCs) and CO2 in my workshop. I built the first version based on a Raspberry Pi Zero and CCS811 sensor. I went through multiple iterations of the project with the overall objective to reduce cost. At that time CCS811s cost about 40 dollars alone bringing the total bill of materials to about 70 CAD. Fast forward a few years later and IKEA released their Vindriktning monitor which uses a PM1006 sensor to measure 2.5um matter in the air. I designed my latest version of the Room Environment Monitor to replace the controller inside and make use of the device's case.
