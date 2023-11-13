@@ -27,6 +27,7 @@ void setup() {
   // Setup Controller and Controller Depedencies
   Serial1.begin(PM1006K::BAUD_RATE, SERIAL_8N1, PM1006K_RX_PIN, PM1006K_TX_PIN);
   pm1006k = new PM1006K(&Serial1);
+
   // Setup I2C and BME280 Driver
   Wire.begin(I2C_SDA, I2C_SCL);
   bme280 = new Adafruit_BME280();
@@ -83,5 +84,3 @@ void PublishStatusTask(void * paramater) {
     }
   }
 }
-
-void loop() {}
