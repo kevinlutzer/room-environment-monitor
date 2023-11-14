@@ -6,12 +6,18 @@
 
 #include "controller.hpp"
 #include "config.hpp"
+#include "credentials.hpp"
+#include "debug.hpp"
+
+#define DEBUG_CONTROLLER true
 
 REMController * controller;
+Credentials * credentials;
 PM1006K * pm1006k;
 Adafruit_BME280 * bme280;
 PubSubClient * pubsubClient;
 WiFiClient espClient;
+Debug * debug;
 
 int count = 0;
 
@@ -23,7 +29,28 @@ void setup() {
   // Setup UART Logger and wait for connection
   Serial.begin(115200);
   delay(4000);
+
+  // Setup debug construct
+  debug = new Debug(DEBUG_CONTROLLER, &Serial);
   
+  // Setup secrets instance
+  credentials = new Credentials(debug);
+  credentials->begin();
+
+  String wifissid = "";
+  String wifipass = "";
+  if(!credentials->setCredentials(wifipass, wifissid)){
+    Serial.println("Failed to set credentials");
+  }
+
+  Serial.println("Loaded Secrets");
+  if(!credentials->loadSecrets()) {
+    Serial.println("Failed to load secrets");
+  }
+  Serial.println(credentials->getWifiSSID());
+  Serial.println(credentials->getWifiPass());
+  Serial.println("END");
+
   // Setup Controller and Controller Depedencies
   Serial1.begin(PM1006K::BAUD_RATE, SERIAL_8N1, PM1006K_RX_PIN, PM1006K_TX_PIN);
   pm1006k = new PM1006K(&Serial1);
@@ -35,7 +62,9 @@ void setup() {
 
   // Setup Pubsub Driver
   pubsubClient = new PubSubClient(espClient);
-  controller = new REMController(&WiFi, pm1006k, bme280, pubsubClient);
+
+  // Setup Controller
+  controller = new REMController(&WiFi, pm1006k, bme280, pubsubClient, debug, credentials);
 
   if (!controller->setupWiFi()) {
     Serial.println("Wifi Setup Failed");
@@ -60,6 +89,12 @@ void setup() {
   xTaskCreate(PublishDataTask, "Publish Data", 1024, NULL, 1, NULL);
   xTaskCreate(PublishStatusTask, "Publish Status", 1024, NULL, 1, NULL);
 }
+
+void loop() {}
+
+//
+// Tasks
+// 
 
 void PublishDataTask(void * paramater) {
   while(true) {

@@ -5,16 +5,20 @@
 #include "PubSubClient.h"
 #include "UUID.h"
 
+#include "credentials.hpp"
+#include "debug.hpp"
 #include "../config.hpp"
 #include "controller.hpp" 
 
 #define DEBUG_CONTROLLER 
 
-REMController::REMController(WiFiClass *wifi, PM1006K *pm1006k, Adafruit_BME280 *bme280, PubSubClient *pubsubClient) {
+REMController::REMController(WiFiClass *wifi, PM1006K *pm1006k, Adafruit_BME280 *bme280, PubSubClient *pubsubClient, Debug * debugStream, Credentials * credentials) {
     this->pm1006k = pm1006k;
     this->bme280 = bme280;
     this->wifi = wifi;
     this->pubsubClient = pubsubClient;
+    this->debugStream = debugStream;
+    this->credentials = credentials;
     this->uuidGenerator = new UUID();
 }
 
@@ -146,14 +150,14 @@ bool REMController::verifyClockSync() {
 }
 
 bool REMController::setupWiFi() {
-
     this->wifi->useStaticBuffers(true);
     bool success = this->wifi->mode(WIFI_STA);
     if (!success) {
         return false;
     }
 
-    const char * wifissid = "lz-guest";
+    String wifissid = this->credentials->getWifiSSID();
+    String wifipass = this->credentials->getWifiPass();
 
     wl_status_t wifi_status = this->wifi->begin(wifissid, wifipass);
 

@@ -8,9 +8,12 @@
 #include "PM1006K.h"
 #include "UUID.h"
 
+#include "debug.hpp"
+#include "credentials.hpp"
+
 class REMController {
     public:
-        REMController(WiFiClass *wifi, PM1006K *pm1006k, Adafruit_BME280 *bme280, PubSubClient *pubsubClient);
+        REMController(WiFiClass *wifi, PM1006K *pm1006k, Adafruit_BME280 *bme280, PubSubClient *pubsubClient, Debug * debugStream, Credentials * credentials);
         bool setupWiFi();
         bool refreshPM25();
         bool refreshBME280();
@@ -26,6 +29,8 @@ class REMController {
         PM1006K *pm1006k;
         WiFiClass *wifi;
         Adafruit_BME280 *bme280;
+        Debug * debugStream;
+        Credentials * credentials;
         PubSubClient *pubsubClient;
         
         // Utilities

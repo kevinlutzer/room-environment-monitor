@@ -1,7 +1,7 @@
 #ifndef _REM_CONTROLLER_CONFIG_H
 #define _REM_CONTROLLER_CONFIG_H
 
-    #define SAMPLE_RATE 2000 // ms
+    #define SAMPLE_RATE 30000 // ms
     #define STATUS_RATE 5000 // ms
 
     #define MQTT_SERVER "192.168.4.159"
