@@ -6,20 +6,25 @@
 #include "UUID.h"
 
 #include "credentials.hpp"
-#include "debug.hpp"
+#include "terminal.hpp"
 #include "../config.hpp"
 #include "controller.hpp" 
 
 #define DEBUG_CONTROLLER 
 
-REMController::REMController(WiFiClass *wifi, PM1006K *pm1006k, Adafruit_BME280 *bme280, PubSubClient *pubsubClient, Debug * debugStream, Credentials * credentials) {
+REMController::REMController(WiFiClass *wifi, PM1006K *pm1006k, Adafruit_BME280 *bme280, PubSubClient *pubsubClient, Terminal * terminalStream, Credentials * credentials) {
     this->pm1006k = pm1006k;
     this->bme280 = bme280;
     this->wifi = wifi;
     this->pubsubClient = pubsubClient;
-    this->debugStream = debugStream;
+    this->terminalStream = terminalStream;
     this->credentials = credentials;
+
+    randomSeed(analogRead(3));
+    uint32_t rn = random();
+
     this->uuidGenerator = new UUID();
+    this->uuidGenerator->seed(rn);
 }
 
 bool REMController::publishStatus() {

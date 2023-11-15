@@ -1,20 +1,21 @@
 #include "credentials.hpp"
+#include "terminal.hpp"
 #include "EEPROM.h"
 
-Credentials::Credentials(Debug * debugStream) {
-    this->debugStream = debugStream;
+Credentials::Credentials(Terminal * terminalStream) {
+    this->terminalStream = terminalStream;
 }
 
 bool Credentials::loadSecrets() {
     this->wifipass = EEPROM.readString(Credentials::EEPROM_WIFI_PASS_ADDR);
     if (this->wifipass == 0) {
-        this->debugStream->println("Wifi pass has a length of 0");
+        this->terminalStream->println("Wifi pass has a length of 0");
         return false;
     }
 
     this->wifissid = EEPROM.readString(Credentials::EEPROM_WIFI_SSID_ADDR);
     if (this->wifissid == 0) {
-        this->debugStream->println("Failed to read wifi ssid from EEPROM");
+        this->terminalStream->println("Failed to read wifi ssid from EEPROM");
         return false;
     }
 }
@@ -38,7 +39,7 @@ bool Credentials::begin() {
             return success;
         } else {
             retries --;
-            this->debugStream->println("Failed to initialise EEPROM");
+            this->terminalStream->println("Failed to initialise EEPROM");
             delay(2000);
         }
     }
@@ -54,12 +55,12 @@ bool Credentials::setCredentials(String wifipass, String wifissid) {
     uint8_t wifissidLen = wifissid.length();
 
     if (EEPROM.writeString(Credentials::EEPROM_WIFI_PASS_ADDR, wifipass) < wifipassLen) {
-        this->debugStream->println("Failed to write wifi password to EEPROM");
+        this->terminalStream->println("Failed to write wifi password to EEPROM");
         return false;
     }
 
     if (EEPROM.writeString(Credentials::EEPROM_WIFI_SSID_ADDR, wifissid) < wifissidLen) {
-        this->debugStream->println("Failed to write wifi ssid to EEPROM");
+        this->terminalStream->println("Failed to write wifi ssid to EEPROM");
         return false;
     }
 

@@ -7,7 +7,7 @@
 #include "controller.hpp"
 #include "config.hpp"
 #include "credentials.hpp"
-#include "debug.hpp"
+#include "terminal.hpp"
 
 #define DEBUG_CONTROLLER true
 
@@ -17,7 +17,7 @@ PM1006K * pm1006k;
 Adafruit_BME280 * bme280;
 PubSubClient * pubsubClient;
 WiFiClient espClient;
-Debug * debug;
+Terminal * debug;
 
 int count = 0;
 
@@ -31,7 +31,7 @@ void setup() {
   delay(4000);
 
   // Setup debug construct
-  debug = new Debug(DEBUG_CONTROLLER, &Serial);
+  debug = new Terminal(DEBUG_CONTROLLER, &Serial);
   
   // Setup secrets instance
   credentials = new Credentials(debug);

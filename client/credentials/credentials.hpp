@@ -1,7 +1,7 @@
 #ifndef _CREDENTIALS_H
 #define _CREDENTIALS_H
 
-#include "debug.hpp"
+#include "terminal.hpp"
 
 class Credentials {
 
@@ -10,7 +10,7 @@ class Credentials {
     static const int EEPROM_WIFI_SSID_ADDR = 0;
 
     public:
-        Credentials(Debug * debug);
+        Credentials(Terminal * debug);
         bool begin();
         bool loadSecrets();
         String getWifiPass();
@@ -18,7 +18,7 @@ class Credentials {
         bool setCredentials(String wifipass, String wifissid);
 
     private:
-        Debug * debugStream;
+        Terminal * terminalStream;
         String wifipass;
         String wifissid; 
 };
