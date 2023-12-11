@@ -2,18 +2,16 @@
 #define _DEBUG_H
 
 #include "Stream.h"
-#include "stdlib.h"
 
 // First argument is the command that was run, the rest are the space dellimited arguments
-typedef int (commandFunc)(int argc, char* argv[]);    
-
-using namespace std;
+typedef int (*commandFunc)(int, char*);
 
 class Terminal {
     
-    public :
+    public:
         Terminal(bool init, Stream * terminalStream);
         void addCommand(char * name, commandFunc command);
+        void waitForCommand();
 
         // Getter and Setter for the debug status
         bool get();
@@ -26,11 +24,19 @@ class Terminal {
         void print(String str);
 
     private:
+
+        bool indexOfCommand(String name);
+
         bool debug;
         Stream * terminalStream;    
         commandFunc * commands;
+
+        // The order in which the commands were added by there name
+        // It appears that std::map doesn't exist for this toolchain and even
+        // if it did, it wouldn't be the best to use it as it requires dynamic memory
+        String * commandOrder; 
+
         int commandTotal = 0;
-        // std::map<int, std::function<void(Pipeline*)>> handlers;
 };
 
 #endif

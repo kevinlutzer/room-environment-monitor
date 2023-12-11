@@ -20,7 +20,7 @@ REMController::REMController(WiFiClass *wifi, PM1006K *pm1006k, Adafruit_BME280 
     this->terminalStream = terminalStream;
     this->credentials = credentials;
 
-    randomSeed(analogRead(3));
+    randomSeed(analogRead(A0) || analogRead(A1) || analogRead(A2));
     uint32_t rn = random();
 
     this->uuidGenerator = new UUID();

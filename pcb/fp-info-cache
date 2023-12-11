@@ -1,4 +1,4 @@
-22306469241215037
+22309874978703117
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -61054,6 +61054,13 @@ B4B-ZR-SM4-TF LFSN
 6
 6
 Kevin_Lutzer_Lbr
+Crystal_SMD_HC49-US
+SMD Crystal HC-49-SD http://cdn-reichelt.de/documents/datenblatt/B400/xxx-HC49-SMD.pdf, 11.4x4.7mm^2 package
+SMD SMT crystal
+0
+2
+2
+Kevin_Lutzer_Lbr
 Diode-TO-277B
 TO-227B https://media.digikey.com/pdf/Data%20Sheets/Littelfuse%20PDFs/DST2050S.pdf
 TO-277B
@@ -61123,6 +61130,13 @@ QFN DFN_QFN
 0
 70
 57
+Kevin_Lutzer_Lbr
+RPi_Pico_SMD_TH
+Through hole straight pin header, 2x20, 2.54mm pitch, double rows
+Through hole pin header THT 2x20 2.54mm double row
+0
+86
+43
 Kevin_Lutzer_Lbr
 R_RFC1109
 

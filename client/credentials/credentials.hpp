@@ -16,6 +16,7 @@ class Credentials {
         String getWifiPass();
         String getWifiSSID();
         bool setCredentials(String wifipass, String wifissid);
+        void waitForCommand();
 
     private:
         Terminal * terminalStream;
