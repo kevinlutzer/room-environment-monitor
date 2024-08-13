@@ -1,0 +1,29 @@
+#!/bin/bash
+
+BIN_DIR=$PWD/bin
+LIBS=$PWD/controller,$PWD/credentials,$PWD/terminal
+PLATFORM=esp32:esp32:esp32c3
+
+# Install the needed arduino libs
+setup() {
+    arduino-cli lib install PubSubClient
+    arduino-cli lib install PM1006K
+    arduino-cli lib install ArduinoJson
+    arduino-cli lib install UUID
+    
+    arduino-cli lib install "Adafruit BME280 Library"
+    arduino-cli lib install "Adafruit NeoPixel"    
+}
+
+# build the client code
+compile() {
+    arduino-cli compile -b $PLATFORM --output-dir=$BIN_DIR --library=$LIBS -v
+}
+
+# if setup is specified, do that, otherwise just build
+if [ "$1" == "setup" ]; then
+    setup
+    exit 0
+fi 
+
+compile

@@ -7,7 +7,7 @@ api_key.txt
 # compiled pi files
 *.pyc
 iot/*.pyc
-sever/*.pyc
+server/*.pyc
 *a.out
 
 # Kicad
@@ -21,7 +21,10 @@ pcb/_autosave-room_environment_monitor.kicad_pcb
 *.sch-bak
 
 # VSCODE
-client/bin/
-client/.vscode/
+.vscode/ 
 .DS_Store
 .idea
+
+# Arduino
+.cache/
+bin/
