@@ -7,17 +7,15 @@
 
 #include "credentials.hpp"
 #include "terminal.hpp"
-#include "../config.hpp"
+#include "../pin_config.hpp"
 #include "controller.hpp" 
 
-#define DEBUG_CONTROLLER 
-
-REMController::REMController(WiFiClass *wifi, PM1006K *pm1006k, Adafruit_BME280 *bme280, PubSubClient *pubsubClient, Terminal * terminalStream, Credentials * credentials) {
+REMController::REMController(WiFiClass *wifi, PM1006K *pm1006k, Adafruit_BME280 *bme280, PubSubClient *pubsubClient, Terminal * terminal, Credentials * credentials) {
     this->pm1006k = pm1006k;
     this->bme280 = bme280;
     this->wifi = wifi;
     this->pubsubClient = pubsubClient;
-    this->terminalStream = terminalStream;
+    this->terminal = terminal;
     this->credentials = credentials;
 
     randomSeed(analogRead(A0) || analogRead(A1) || analogRead(A2));
@@ -29,24 +27,23 @@ REMController::REMController(WiFiClass *wifi, PM1006K *pm1006k, Adafruit_BME280 
 
 bool REMController::publishStatus() {
     DynamicJsonDocument json(156);
-    #ifdef DEBUG_CONTROLLER
-        Serial.println("Going to be publishing status");
-    #endif
+
+    this->terminal->debugln("Going to be publishing status");
+
     json["id"] = DEVICE_ID;
     json["description"] = DEVICE_DESCRIPTION;
     
-    #ifdef DEBUG_CONTROLLER
-        Serial.println("Status to be serialized:");
+    if (this->terminal->isDebug()) {
+        this->terminal->debugln("Status to be serialized:");
         serializeJson(json, Serial);
-    #endif
+    }
 
     return this->publish(STATUS_TOPIC, json.as<String>().c_str());
 }
 
 bool REMController::publishData() {
-    #ifdef DEBUG_CONTROLLER
-        Serial.println("Going to be publishing data");
-    #endif
+    this->terminal->debugln("Going to be publishing data");
+
     DynamicJsonDocument json(1024);
     json["pm2_5"] = this->pm2_5;
     json["pm1_0"] = this->pm1_0;
@@ -69,10 +66,10 @@ bool REMController::publishData() {
 
     // json["created"] = buf;
 
-    #ifdef DEBUG_CONTROLLER
-        Serial.println("Data to be serialized:");
-        serializeJson(json, Serial);
-    #endif
+    // if (this->terminal->isDebug()) {
+    //     this->terminal->debugln("Data to be serialized:");
+    //     serializeJson(json, Serial);        
+    // }
 
     return this->publish(DATA_TOPIC, json.as<String>().c_str());\
 }
@@ -144,13 +141,6 @@ bool REMController::verifyClockSync() {
         }
     }
 
-    #ifdef DEBUG_CONTROLLER
-        struct tm timeinfo;
-        getLocalTime(&timeinfo);
-        Serial.print("Current time: ");
-        Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
-    #endif
-
     return true; 
 }
 
@@ -179,9 +169,8 @@ bool REMController::setupWiFi() {
         count ++;
     }
 
-    #ifdef DEBUG_CONTROLLER
-        Serial.println("Connected to WiFi");
-    #endif
+
+    this->terminal->debugln("Connected to WiFi");
 
     return true;
 }

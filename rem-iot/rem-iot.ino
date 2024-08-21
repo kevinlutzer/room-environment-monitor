@@ -1,15 +1,20 @@
 #include "WiFi.h"
 #include "Wire.h"
+#include "EEPROM.h"
 #include "PubSubClient.h"
 #include "PM1006K.h"
 #include "Adafruit_BME280.h"
 
 #include "controller.hpp"
-#include "config.hpp"
+#include "pin_config.hpp"
 #include "credentials.hpp"
 #include "terminal.hpp"
 
-#define DEBUG_CONTROLLER true
+#define DEBUG false
+
+#define PUBLISH_DATA_STACK 2048
+#define PUBLISH_STATUS_STACK 1024
+#define PUBLISH_TERMINAL_STACK 1024
 
 REMController * controller;
 Credentials * credentials;
@@ -17,7 +22,7 @@ PM1006K * pm1006k;
 Adafruit_BME280 * bme280;
 PubSubClient * pubsubClient;
 WiFiClient espClient;
-Terminal * debug;
+Terminal * terminal;
 
 int count = 0;
 
@@ -31,25 +36,17 @@ void setup() {
   delay(4000);
 
   // Setup debug construct
-  debug = new Terminal(DEBUG_CONTROLLER, &Serial);
+  terminal = new Terminal(DEBUG, &Serial);
   
   // Setup secrets instance
-  credentials = new Credentials(debug);
-  credentials->begin();
-
-  String wifissid = "";
-  String wifipass = "";
-  if(!credentials->setCredentials(wifipass, wifissid)){
-    Serial.println("Failed to set credentials");
+  credentials = new Credentials(terminal, &EEPROM);
+  if (!credentials->begin()) {
+    terminal->debugln("Failed to setup the eeprom");
   }
 
-  Serial.println("Loaded Secrets");
   if(!credentials->loadSecrets()) {
-    Serial.println("Failed to load secrets");
+    terminal->debugln("Failed to load secrets");
   }
-  Serial.println(credentials->getWifiSSID());
-  Serial.println(credentials->getWifiPass());
-  Serial.println("END");
 
   // Setup Controller and Controller Depedencies
   Serial1.begin(PM1006K::BAUD_RATE, SERIAL_8N1, PM1006K_RX_PIN, PM1006K_TX_PIN);
@@ -64,37 +61,46 @@ void setup() {
   pubsubClient = new PubSubClient(espClient);
 
   // Setup Controller
-  controller = new REMController(&WiFi, pm1006k, bme280, pubsubClient, debug, credentials);
+  controller = new REMController(&WiFi, pm1006k, bme280, pubsubClient, terminal, credentials);
 
   if (!controller->setupWiFi()) {
-    Serial.println("Wifi Setup Failed");
+    terminal->debugln("Wifi Setup Failed");
   }
+
+  uint8_t count = 0;
+  
+  // // Wait about 10 seconds for the esp client to become avaliable. If it doesn't, 
+  // // reboot the microcontroller.
+  // while(!espClient.available()) {
+  //   if (count > 10) {
+  //     terminal->debugln("Failed to setup the esp32 networking client, trying to rebooting");
+  //     ESP.restart();
+  //   }
+
+  //   delay(1000);
+  //   count ++;
+  // }
 
   pubsubClient->setServer(MQTT_SERVER, 1883);
-  if (!espClient.available()) {
-    Serial.println("Client Not Available");
-  }
-
   pubsubClient->connect("arduinoClient");
   if(controller->publish("rem/esp32/status", "online")) {
-    Serial.println("Published");
+    terminal->debugln("Published");
   } else {
-    Serial.println("Publish Failed");
+    terminal->debugln("Publish Failed");
   }
 
   String config = controller->wifiConfig();
-  Serial.println(config);
+  terminal->debugln(config);
 
   // Setup Tasks
-  xTaskCreate(PublishDataTask, "Publish Data", 1024, NULL, 1, NULL);
-  xTaskCreate(PublishStatusTask, "Publish Status", 1024, NULL, 1, NULL);
+  xTaskCreate(PublishDataTask, "Publish Data", PUBLISH_DATA_STACK, NULL, 1, NULL);
+  xTaskCreate(PublishStatusTask, "Publish Status", PUBLISH_STATUS_STACK, NULL, 1, NULL);
+  xTaskCreate(TerminalTask, "Terminal Task", PUBLISH_TERMINAL_STACK, NULL, 1, NULL);
 }
 
-void loop() {}
-
-//
-// Tasks
-// 
+void loop() {
+  return;
+}
 
 void PublishDataTask(void * paramater) {
   while(true) {
@@ -102,9 +108,9 @@ void PublishDataTask(void * paramater) {
     controller->refreshPM25();
     controller->refreshBME280();
     if (!controller->publishData()) {
-      Serial.println("Publish Data Failed");
+      terminal->debugln("Publish Data Failed");
     } else {
-      Serial.println("Published Data");
+      terminal->debugln("Published Data");
     }
   }
 }
@@ -113,9 +119,14 @@ void PublishStatusTask(void * paramater) {
   while(true) {
     delay(STATUS_RATE);
     if (!controller->publishStatus()) {
-      Serial.println("Publish Data Failed");
+      terminal->debugln("Publish Data Failed");
     } else {
-      Serial.println("Published Data");
+      terminal->debugln("Published Data");
     }
   }
+}
+
+void TerminalTask(void * paramater) {
+  // Just handle input characters and the yield back to the core
+  terminal->handleCharacter();
 }

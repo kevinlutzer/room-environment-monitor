@@ -4,7 +4,7 @@
     #define SAMPLE_RATE 30000 // ms
     #define STATUS_RATE 5000 // ms
 
-    #define MQTT_SERVER "192.168.4.159"
+    #define MQTT_SERVER "192.168.1.100"
     #define DEVICE_ID "REM-1"
     #define DEVICE_DESCRIPTION "Development unit"
     #define DATA_TOPIC "rem/data"

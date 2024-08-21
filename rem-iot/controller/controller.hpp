@@ -13,15 +13,18 @@
 
 class REMController {
     public:
-        REMController(WiFiClass *wifi, PM1006K *pm1006k, Adafruit_BME280 *bme280, PubSubClient *pubsubClient, Terminal * terminalStream, Credentials * credentials);
+        REMController(WiFiClass *wifi, PM1006K *pm1006k, Adafruit_BME280 *bme280, PubSubClient *pubsubClient, Terminal * terminal, Credentials * credentials);
         bool setupWiFi();
-        bool refreshPM25();
-        bool refreshBME280();
         bool setupSNTP();
         bool verifyClockSync();
+
+        bool refreshPM25();
+        bool refreshBME280();
+
         bool publish(const char * topic, const char * payload);
         bool publishData();
         bool publishStatus();
+
         String wifiConfig();
 
     private:
@@ -29,7 +32,7 @@ class REMController {
         PM1006K *pm1006k;
         WiFiClass *wifi;
         Adafruit_BME280 *bme280;
-        Terminal * terminalStream;
+        Terminal * terminal;
         Credentials * credentials;
         PubSubClient *pubsubClient;
         

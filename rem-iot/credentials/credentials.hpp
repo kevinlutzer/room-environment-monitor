@@ -2,15 +2,16 @@
 #define _CREDENTIALS_H
 
 #include "terminal.hpp"
+#include "EEPROM.h"
 
 class Credentials {
 
-    static const int EEPROM_SIZE = 64;
-    static const int EEPROM_WIFI_PASS_ADDR = 30;
-    static const int EEPROM_WIFI_SSID_ADDR = 0;
+    static const int EEPROM_SIZE = 128;
+    static const int EEPROM_WIFI_PASS_ADDR = 64;
+    static const int EEPROM_WIFI_SSID_ADDR = 1;
 
     public:
-        Credentials(Terminal * debug);
+        Credentials(Terminal * debug, EEPROMClass * eeprom);
         bool begin();
         bool loadSecrets();
         String getWifiPass();
@@ -20,6 +21,8 @@ class Credentials {
 
     private:
         Terminal * terminalStream;
+        EEPROMClass * eeprom;
+
         String wifipass;
         String wifissid; 
 };

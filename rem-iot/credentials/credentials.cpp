@@ -2,20 +2,28 @@
 #include "terminal.hpp"
 #include "EEPROM.h"
 
-Credentials::Credentials(Terminal * terminalStream) {
+Credentials::Credentials(Terminal * terminalStream, EEPROMClass * eeprom) {
     this->terminalStream = terminalStream;
+    this->eeprom = eeprom;
 }
 
 bool Credentials::loadSecrets() {
-    this->wifipass = EEPROM.readString(Credentials::EEPROM_WIFI_PASS_ADDR);
+
+    char * buf;
+    size_t read_total = this->eeprom->readBytes(0x01, (void *)buf, 120);
+
+    Serial.println(buf);
+    Serial.println(read_total);
+
+    this->wifipass = this->eeprom->readString(Credentials::EEPROM_WIFI_PASS_ADDR);
     if (this->wifipass == 0) {
-        this->terminalStream->println("Wifi pass has a length of 0");
+        this->terminalStream->debugln("Wifi pass has a length of 0");
         return false;
     }
 
-    this->wifissid = EEPROM.readString(Credentials::EEPROM_WIFI_SSID_ADDR);
+    this->wifissid = this->eeprom->readString(Credentials::EEPROM_WIFI_SSID_ADDR);
     if (this->wifissid == 0) {
-        this->terminalStream->println("Failed to read wifi ssid from EEPROM");
+        this->terminalStream->debugln("Failed to read wifi ssid from EEPROM");
         return false;
     }
 }
@@ -28,41 +36,38 @@ String Credentials::getWifiSSID() {
     return this->wifissid;
 }
 
-// Init the EEPROM, retry 3 times and wait ~2 seconds between each retry
+// Init the EEPROM, retry 3 times and wait ~1 seconds between each retry
 bool Credentials::begin() {
     bool success = false;
     int retries = 3;
 
-    while (!success && retries > 0) {
-        success = EEPROM.begin(64);
-        if (success) {
-            return success;
-        } else {
-            retries --;
-            this->terminalStream->println("Failed to initialise EEPROM");
-            delay(2000);
-        }
+    while (!this->eeprom->begin(EEPROM_SIZE) && retries < 5) {
+        this->terminalStream->debugln("Failed to initialise EEPROM");
+        delay(1000);
     }
 
     return success;
 }
 
 bool Credentials::setCredentials(String wifipass, String wifissid) {
+
+    if (this->eeprom->writeString(Credentials::EEPROM_WIFI_PASS_ADDR, wifipass) < wifipass.length()) {
+        this->terminalStream->debugln("Failed to write wifi password to EEPROM");
+        return false;
+    }
+
+    if (this->eeprom->writeString(Credentials::EEPROM_WIFI_SSID_ADDR, wifissid) < wifissid.length()) {
+        this->terminalStream->debugln("Failed to write wifi ssid to EEPROM");
+        return false;
+    }
+
+    if (!EEPROM.commit()) {
+        this->terminalStream->debugln("Failed to commit changes to EEPROM");
+        return false;
+    }
+
     this->wifipass = wifipass;
     this->wifissid = wifissid;
-
-    uint8_t wifipassLen = wifipass.length();
-    uint8_t wifissidLen = wifissid.length();
-
-    if (EEPROM.writeString(Credentials::EEPROM_WIFI_PASS_ADDR, wifipass) < wifipassLen) {
-        this->terminalStream->println("Failed to write wifi password to EEPROM");
-        return false;
-    }
-
-    if (EEPROM.writeString(Credentials::EEPROM_WIFI_SSID_ADDR, wifissid) < wifissidLen) {
-        this->terminalStream->println("Failed to write wifi ssid to EEPROM");
-        return false;
-    }
 
     return true;
 }
