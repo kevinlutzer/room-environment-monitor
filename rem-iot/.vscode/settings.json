@@ -18,6 +18,9 @@
         "vector": "cpp",
         "freertos.h": "c",
         "stdint.h": "c",
-        "freertos_cli.h": "c"
-    }
+        "freertos_cli.h": "c",
+        "stdexcept": "cpp",
+        "deque": "cpp"
+    },
+    "C_Cpp.default.compilerPath": "/usr/bin/clang++"
 }
