@@ -9,9 +9,10 @@
 // of space specified by this macro to store the settings properly
 #define SETTINGS_LEN 128
 
-// The position that a buffer containing settings data starts at. 
-// Some eeproms will use the first few bytes for administractive things
-#define STARTING_POS 1
+// The address that the buffer containing settings data starts at within.
+// The datastorage hardware. For w.e reason, I can't seem to write (commit) data 
+// to the first few bytes of my prototype's eeprom.
+#define STARTING_ADDR 40
 #define SSID_LEN 40
 
 class Settings {

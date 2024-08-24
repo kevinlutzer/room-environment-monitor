@@ -58,6 +58,8 @@ bool SettingsManager::setWifiCredentials(char * wifipass, char * wifissid) {
     this->settings->ssid = new String(wifissid);
 
     uint8_t buf[240];
+    memset(buf, 0x00, 240);
+    
     this->settings->serialize(buf, 240);
 
     if (!EEPROM.writeBytes(0x00, (void *)buf, 240)) {

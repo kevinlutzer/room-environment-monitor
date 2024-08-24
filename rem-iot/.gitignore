@@ -1,3 +1,4 @@
 .pio
 .vscode/ipch
 .cache
+*.code-workspace
