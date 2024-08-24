@@ -19,8 +19,8 @@ class Settings {
     public:
         Settings();
 
-        String ssid;
-        String password;
+        String * ssid;
+        String * password;
 
         void serialize(uint8_t * buf, int len);
         void deserialize(uint8_t * buf, int len);

@@ -8,7 +8,7 @@ SettingsManager::SettingsManager(Terminal * terminalStream, EEPROMClass * eeprom
     this->settings = new Settings();
 }
 
-bool SettingsManager::loadSecrets() {
+bool SettingsManager::loadSettings() {
 
     // char * buf;
     // size_t read_total = this->eeprom->readBytes(0x01, (void *)buf, 120);
@@ -26,12 +26,12 @@ bool SettingsManager::loadSecrets() {
     // }
 }
 
-String SettingsManager::getWifiPass() {
-    return this->settings->password;
+const char * SettingsManager::getWifiPass() {
+    return this->settings->password->c_str();
 }
 
-String SettingsManager::getWifiSSID() {
-    return this->settings->ssid;
+const char *  SettingsManager::getWifiSSID() {
+    return this->settings->ssid->c_str();
 }
 
 // Init the EEPROM, retry 4 times and wait ~1 seconds between each retry
@@ -52,31 +52,23 @@ bool SettingsManager::begin() {
     return success;
 }
 
-bool SettingsManager::setWifiCredentials(String wifipass, String wifissid) {
+bool SettingsManager::setWifiCredentials(char * wifipass, char * wifissid) {
 
-    // Declare mutator to just update the password and ssid poritons of the settings
-    auto mutator = [](Settings * settings) {
-        settings->password = wifipass;
-        settings->ssid = wifissid;
-    };
+    this->settings->password = new String(wifipass);
+    this->settings->ssid = new String(wifissid);
 
-    return this->mutateSetting(mutator);
-}
-
-bool SettingsManager::mutateSetting(void (*func)(Settings * s)) {
-
-    uint8_t buf[240]
-    this->settingsManager->serialize(buf, 240);
+    uint8_t buf[240];
+    this->settings->serialize(buf, 240);
 
     if (!EEPROM.writeBytes(0x00, (void *)buf, 240)) {
         this->terminalStream->debugln("Failed to commit changes to EEPROM");
-        return false
+        return false;
     }
 
     if (!EEPROM.commit()) {
         this->terminalStream->debugln("Failed to commit changes to EEPROM");
-        return false
+        return false;
     }
 
-    return true
+    return true;
 }

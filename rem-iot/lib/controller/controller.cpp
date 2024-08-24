@@ -1,13 +1,13 @@
 #include "WiFi.h"
 #include "Adafruit_BME280.h"
-#include "sntp.h"
+#include "esp_sntp.h"
 #include "ArduinoJson.h"
 #include "PubSubClient.h"
 #include "UUID.h"
 
 #include "settings_manager.hpp"
 #include "terminal.hpp"
-#include "../pin_config.hpp"
+#include "pin_config.hpp"
 #include "controller.hpp" 
 
 REMController::REMController(WiFiClass *wifi, PM1006K *pm1006k, Adafruit_BME280 *bme280, PubSubClient *pubsubClient, Terminal * terminal, SettingsManager * settingsManager) {

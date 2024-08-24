@@ -41,7 +41,7 @@ void setup() {
     terminal->debugln("Failed to setup the eeprom");
   }
 
-  if(!settingsManager->loadSecrets()) {
+  if(!settingsManager->loadSettings()) {
     terminal->debugln("Failed to load secrets");
   }
 

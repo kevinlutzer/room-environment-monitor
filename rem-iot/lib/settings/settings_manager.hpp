@@ -12,18 +12,16 @@ class SettingsManager {
     public:
         SettingsManager(Terminal * debug, EEPROMClass * eeprom);
         bool begin();
-        bool loadSecrets();
-        String getWifiPass();
-        String getWifiSSID();
-        bool setWifiCredentials(String wifipass, String wifissid);
+        bool loadSettings();
+        const char * getWifiPass();
+        const char * getWifiSSID();
+        bool setWifiCredentials(char * wifipass, char * wifissid);
         void print();
 
     private:
         Terminal * terminalStream;
         EEPROMClass * eeprom;
         Settings * settings;
-
-        void mutateSetting(void (*func)(Settings * s));
 };
 
 #endif

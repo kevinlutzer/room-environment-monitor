@@ -2,14 +2,16 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"type": "shell",
-			"command": "./build compile",
-			"label": "build",
-			"problemMatcher": [],
+			"type": "PlatformIO",
+			"task": "Build",
+			"problemMatcher": [
+				"$platformio"
+			],
 			"group": {
 				"kind": "build",
 				"isDefault": true
-			}
+			},
+			"label": "PlatformIO: Build"
 		}
 	]
 }
