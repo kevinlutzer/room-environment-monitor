@@ -9,11 +9,11 @@
 #include "UUID.h"
 
 #include "terminal.hpp"
-#include "credentials.hpp"
+#include "settings_manager.hpp"
 
 class REMController {
     public:
-        REMController(WiFiClass *wifi, PM1006K *pm1006k, Adafruit_BME280 *bme280, PubSubClient *pubsubClient, Terminal * terminal, Credentials * credentials);
+        REMController(WiFiClass *wifi, PM1006K *pm1006k, Adafruit_BME280 *bme280, PubSubClient *pubsubClient, Terminal * terminal, SettingsManager * settingsManager);
         bool setupWiFi();
         bool setupSNTP();
         bool verifyClockSync();
@@ -33,7 +33,7 @@ class REMController {
         WiFiClass *wifi;
         Adafruit_BME280 *bme280;
         Terminal * terminal;
-        Credentials * credentials;
+        SettingsManager * settingsManager;
         PubSubClient *pubsubClient;
         
         // Utilities

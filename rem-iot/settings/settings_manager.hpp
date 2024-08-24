@@ -2,6 +2,7 @@
 #define _settingsManager_H
 
 #include "terminal.hpp"
+#include "settings.hpp"
 #include "EEPROM.h"
 
 class SettingsManager {
@@ -25,6 +26,8 @@ class SettingsManager {
 
         String wifipass;
         String wifissid; 
+
+        void mutateSetting(void (*func)(Settings * s));
 };
 
 #endif

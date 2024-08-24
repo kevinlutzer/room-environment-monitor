@@ -7,7 +7,7 @@
 
 #include "controller.hpp"
 #include "pin_config.hpp"
-#include "credentials.hpp"
+#include "settings_manager.hpp"
 #include "terminal.hpp"
 
 #define DEBUG false
@@ -17,7 +17,7 @@
 #define PUBLISH_TERMINAL_STACK 1024
 
 REMController * controller;
-Credentials * credentials;
+SettingsManager * settingsManager;
 PM1006K * pm1006k;
 Adafruit_BME280 * bme280;
 PubSubClient * pubsubClient;
@@ -31,20 +31,17 @@ void setup() {
   pinMode(FAN, OUTPUT);
   digitalWrite(FAN, HIGH);
 
-  // Setup UART Logger and wait for connection
-  Serial.begin(115200);
-  delay(4000);
-
   // Setup debug construct
+  Serial.begin(115200);
   terminal = new Terminal(DEBUG, &Serial);
   
   // Setup secrets instance
-  credentials = new Credentials(terminal, &EEPROM);
-  if (!credentials->begin()) {
+  settingsManager = new SettingsManager(terminal, &EEPROM);
+  if (!settingsManager->begin()) {
     terminal->debugln("Failed to setup the eeprom");
   }
 
-  if(!credentials->loadSecrets()) {
+  if(!settingsManager->loadSecrets()) {
     terminal->debugln("Failed to load secrets");
   }
 
@@ -61,7 +58,7 @@ void setup() {
   pubsubClient = new PubSubClient(espClient);
 
   // Setup Controller
-  controller = new REMController(&WiFi, pm1006k, bme280, pubsubClient, terminal, credentials);
+  controller = new REMController(&WiFi, pm1006k, bme280, pubsubClient, terminal, settingsManager);
 
   if (!controller->setupWiFi()) {
     terminal->debugln("Wifi Setup Failed");

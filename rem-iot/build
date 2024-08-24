@@ -2,7 +2,7 @@
 
 BIN_DIR=$PWD/bin
 CACHE_DIR=$PWD/.cache
-LIBS=$PWD/controller,$PWD/credentials,$PWD/terminal,$PWD/FreeRTOS_CLI
+LIBS=$PWD/controller,$PWD/settings,$PWD/terminal,$PWD/FreeRTOS_CLI
 PLATFORM=esp32:esp32:esp32c3
 LOCAL_PORT=/dev/cu.usbserial-1110
 

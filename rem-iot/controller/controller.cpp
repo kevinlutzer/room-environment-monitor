@@ -5,18 +5,18 @@
 #include "PubSubClient.h"
 #include "UUID.h"
 
-#include "credentials.hpp"
+#include "settings_manager.hpp"
 #include "terminal.hpp"
 #include "../pin_config.hpp"
 #include "controller.hpp" 
 
-REMController::REMController(WiFiClass *wifi, PM1006K *pm1006k, Adafruit_BME280 *bme280, PubSubClient *pubsubClient, Terminal * terminal, Credentials * credentials) {
+REMController::REMController(WiFiClass *wifi, PM1006K *pm1006k, Adafruit_BME280 *bme280, PubSubClient *pubsubClient, Terminal * terminal, SettingsManager * settingsManager) {
     this->pm1006k = pm1006k;
     this->bme280 = bme280;
     this->wifi = wifi;
     this->pubsubClient = pubsubClient;
     this->terminal = terminal;
-    this->credentials = credentials;
+    this->settingsManager = settingsManager;
 
     randomSeed(analogRead(A0) || analogRead(A1) || analogRead(A2));
     uint32_t rn = random();
@@ -151,8 +151,8 @@ bool REMController::setupWiFi() {
         return false;
     }
 
-    String wifissid = this->credentials->getWifiSSID();
-    String wifipass = this->credentials->getWifiPass();
+    String wifissid = this->settingsManager->getWifiSSID();
+    String wifipass = this->settingsManager->getWifiPass();
 
     wl_status_t wifi_status = this->wifi->begin(wifissid, wifipass);
 

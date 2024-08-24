@@ -68,3 +68,7 @@ bool SettingsManager::setsettingsManager(String wifipass, String wifissid) {
 
     return true;
 }
+
+void SettingsManager::mutateSetting(void (*func)(Settings * s)) {
+    
+}

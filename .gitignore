@@ -20,8 +20,7 @@ pcb/_autosave-room_environment_monitor.kicad_pcb
 *.kicad_pcb-bak
 *.sch-bak
 
-# VSCODE
-.vscode/ 
+# VSCODExY
 .DS_Store
 .idea
 
