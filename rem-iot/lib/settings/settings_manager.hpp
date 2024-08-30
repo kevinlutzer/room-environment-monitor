@@ -7,10 +7,9 @@
 
 class SettingsManager {
 
-    static const int EEPROM_SIZE = 2048;
-
     public:
         SettingsManager(Terminal * debug, EEPROMClass * eeprom);
+        ~SettingsManager();
         bool begin();
         bool loadSettings();
         const char * getWifiPass();
@@ -19,7 +18,7 @@ class SettingsManager {
         void print();
 
     private:
-        Terminal * terminalStream;
+        Terminal * terminal;
         EEPROMClass * eeprom;
         Settings * settings;
 };

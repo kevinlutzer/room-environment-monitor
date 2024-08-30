@@ -9,9 +9,21 @@
 			],
 			"group": {
 				"kind": "build",
-				"isDefault": true
+				"isDefault": true,
 			},
 			"label": "PlatformIO: Build"
+		},
+		{
+			"type": "PlatformIO",
+			"task": "Test",
+			"problemMatcher": [
+				"$platformio"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"label": "PlatformIO: Test"
 		}
 	]
 }

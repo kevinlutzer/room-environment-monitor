@@ -2,28 +2,39 @@
 #include "terminal.hpp"
 #include "EEPROM.h"
 
-SettingsManager::SettingsManager(Terminal * terminalStream, EEPROMClass * eeprom) {
-    this->terminalStream = terminalStream;
+SettingsManager::SettingsManager(Terminal * terminal, EEPROMClass * eeprom) {
+    this->terminal = terminal;
     this->eeprom = eeprom;
     this->settings = new Settings();
 }
 
+SettingsManager::~SettingsManager() {
+    // eeprom and terminal are shared so don't delete the 
+    // references. Settings is created as a new instance in this class
+    delete this->settings;
+
+    // This class initializes the eeprom, if it is destroyed, 
+    // we need to close our "file descriptor" 
+    EEPROM.end();
+}
+
 bool SettingsManager::loadSettings() {
 
-    // char * buf;
-    // size_t read_total = this->eeprom->readBytes(0x01, (void *)buf, 120);
+    // Read the data properly from the EEPROM, if we don't get the same amount of bytes
+    // as the size that is allocated by ::begin, return an error.
+    uint8_t buf[EEPROM_SIZE];
+    size_t read_total = this->eeprom->readBytes(STARTING_ADDR, (void *)buf, EEPROM_SIZE - STARTING_ADDR);
+    if (read_total != EEPROM_SIZE) {
+        this->terminal->debugln("Failed to read from the EEPROM");   
+        return false;
+    }
 
-    // this->wifipass = this->eeprom->readString(SettingsManager::EEPROM_WIFI_PASS_ADDR);
-    // if (this->wifipass == 0) {
-    //     this->terminalStream->debugln("Wifi pass has a length of 0");
-    //     return false;
-    // }
+    for (int i = 0; i < EEPROM_SIZE - STARTING_ADDR; i++) {
+        Serial.printf("Buf[%d]=%c", i, buf[i]);
+    }
 
-    // this->wifissid = this->eeprom->readString(SettingsManager::EEPROM_WIFI_SSID_ADDR);
-    // if (this->wifissid == 0) {
-    //     this->terminalStream->debugln("Failed to read wifi ssid from EEPROM");
-    //     return false;
-    // }
+    this->settings = new Settings();
+    this->settings->deserialize(buf, EEPROM_SIZE); 
 }
 
 const char * SettingsManager::getWifiPass() {
@@ -57,18 +68,20 @@ bool SettingsManager::setWifiCredentials(char * wifipass, char * wifissid) {
     this->settings->password = new String(wifipass);
     this->settings->ssid = new String(wifissid);
 
-    uint8_t buf[240];
-    memset(buf, 0x00, 240);
+    // Build a buf the size of the eeprom memory alloc
+    // and manually clear it.
+    uint8_t buf[EEPROM_SIZE];
+    memset(buf, 0x00, EEPROM_SIZE);
     
-    this->settings->serialize(buf, 240);
+    this->settings->serialize(buf, EEPROM_SIZE);
 
-    if (!EEPROM.writeBytes(0x00, (void *)buf, 240)) {
-        this->terminalStream->debugln("Failed to commit changes to EEPROM");
+    if (!EEPROM.writeBytes(0x00, (void *)buf, EEPROM_SIZE)) {
+        this->terminal->debugln("Failed to commit changes to EEPROM");
         return false;
     }
 
     if (!EEPROM.commit()) {
-        this->terminalStream->debugln("Failed to commit changes to EEPROM");
+        this->terminal->debugln("Failed to commit changes to EEPROM");
         return false;
     }
 

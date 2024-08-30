@@ -47,8 +47,21 @@ void setup() {
   }
 
   if (!settingsManager->setWifiCredentials("password", "ssid")) {
-    Serial.println("Failed to write data to eeprom");
+    terminal->debugln("Failed to write data to eeprom");
   }
+
+  delete settingsManager;
+  settingsManager = new SettingsManager(terminal, &EEPROM);
+  if (!settingsManager->begin()) {
+    terminal->debugln("Failed to setup the eeprom");
+  }
+
+  if (!settingsManager->loadSettings()) {
+    terminal->debugln("Failed to load settings");
+  }
+
+  terminal->debugln(settingsManager->getWifiPass());
+  terminal->debugln(settingsManager->getWifiSSID());
 
   // if(!settingsManager->loadSettings()) {
   //   terminal->debugln("Failed to load secrets");
@@ -56,10 +69,6 @@ void setup() {
 
   // uint8_t * buf[126]; 
   // Serial.printf("Bytes read: %d", EEPROM.readBytes(0x00, (void *)buf, 126));
-
-  for (int i = 0; i < 126; i ++) {
-   Serial.printf("Byte[%d] = %c\n",i, EEPROM.read(i)); 
-  }
 
   // // Setup Controller and Controller Depedencies
   // Serial1.begin(PM1006K::BAUD_RATE, SERIAL_8N1, PM1006K_RX_PIN, PM1006K_TX_PIN);

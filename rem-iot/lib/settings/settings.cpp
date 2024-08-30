@@ -10,7 +10,6 @@ Settings::Settings() {
  * aligns the values into a uint8_t buffer.
  */
 void Settings::serialize(uint8_t * buf, int len) {
-
     // Build the offset for the pointer arithmatic
     int offset = STARTING_ADDR;
 
@@ -22,12 +21,20 @@ void Settings::serialize(uint8_t * buf, int len) {
     // Copy the password
     const char * password_c_str = this->password->c_str();
     memcpy(buf + offset, password_c_str, this->password->length());
-
-    for (int i = 0; i < 126; i ++) {
-        Serial.printf("Byte[%d] = %c\n",i, buf[i]); 
-    }
 }
 
 void Settings::deserialize(uint8_t * buf, int len) {
-    
+    // Build the offset for the pointer arithmatic
+    int offset = 0x00;
+
+    // Copy the ssid
+    char ssid[SSID_LEN];
+    memcpy(ssid, buf + offset, SSID_LEN);
+    offset += SSID_LEN;
+    this->ssid = new String(ssid);
+
+    // Copy the password
+    char password[PASSWORD_LEN];
+    memcpy(password, buf + offset, PASSWORD_LEN);
+    this->password = new String(password);
 }
