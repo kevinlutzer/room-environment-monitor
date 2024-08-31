@@ -20,7 +20,7 @@
 				"$platformio"
 			],
 			"group": {
-				"kind": "build",
+				"kind": "test",
 				"isDefault": false
 			},
 			"label": "PlatformIO: Test"

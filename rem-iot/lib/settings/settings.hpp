@@ -22,8 +22,8 @@ class Settings {
     public:
         Settings();
 
-        String * ssid;
-        String * password;
+        char ssid[SSID_LEN];
+        char password[PASSWORD_LEN];
 
         void serialize(uint8_t * buf, int len);
         void deserialize(uint8_t * buf, int len);

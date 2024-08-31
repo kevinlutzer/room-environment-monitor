@@ -1,8 +1,8 @@
 #include "settings.hpp"
 
 Settings::Settings() {
-    this->ssid = new String("");
-    this->password = new String("");
+    memset(this->ssid, 0x00, SSID_LEN);
+    memset(this->password, 0x00, SSID_LEN);
 }
 
 /**
@@ -11,16 +11,14 @@ Settings::Settings() {
  */
 void Settings::serialize(uint8_t * buf, int len) {
     // Build the offset for the pointer arithmatic
-    int offset = STARTING_ADDR;
+    int offset = 0x00;
 
     // Copy the ssid
-    const char * ssid_c_str = this->ssid->c_str();
-    memcpy(buf + offset, ssid_c_str, this->ssid->length());
+    memcpy(buf + offset, this->ssid, SSID_LEN);
     offset += SSID_LEN;
 
     // Copy the password
-    const char * password_c_str = this->password->c_str();
-    memcpy(buf + offset, password_c_str, this->password->length());
+    memcpy(buf + offset, this->password, PASSWORD_LEN);
 }
 
 void Settings::deserialize(uint8_t * buf, int len) {
@@ -28,13 +26,11 @@ void Settings::deserialize(uint8_t * buf, int len) {
     int offset = 0x00;
 
     // Copy the ssid
-    char ssid[SSID_LEN];
-    memcpy(ssid, buf + offset, SSID_LEN);
+    memcpy(this->ssid, buf + offset, SSID_LEN);
+    this->ssid[SSID_LEN - 1] = '\0';
     offset += SSID_LEN;
-    this->ssid = new String(ssid);
 
     // Copy the password
-    char password[PASSWORD_LEN];
-    memcpy(password, buf + offset, PASSWORD_LEN);
-    this->password = new String(password);
+    memcpy(this->password, buf + offset, PASSWORD_LEN);
+    this->password[PASSWORD_LEN - 1] = '\0';
 }

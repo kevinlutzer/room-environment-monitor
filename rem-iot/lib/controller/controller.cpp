@@ -148,11 +148,12 @@ bool REMController::setupWiFi() {
     this->wifi->useStaticBuffers(true);
     bool success = this->wifi->mode(WIFI_STA);
     if (!success) {
+        this->terminal->debugln("Failed to set wifi mode to WIFI_STA");
         return false;
     }
 
-    String wifissid = this->settingsManager->getWifiSSID();
-    String wifipass = this->settingsManager->getWifiPass();
+    const char * wifissid = this->settingsManager->getWifiSSID();
+    const char * wifipass = this->settingsManager->getWifiPass();
 
     wl_status_t wifi_status = this->wifi->begin(wifissid, wifipass);
 
@@ -161,6 +162,7 @@ bool REMController::setupWiFi() {
     while (wifi_status != WL_CONNECTED) {
         // Try 10 times and then restart the ESP32C3
         if (count > 10) {
+            this->terminal->debugln("Reached retry count and still didn't setup wifi successfully");
             return false;
         }
 
@@ -168,7 +170,6 @@ bool REMController::setupWiFi() {
         wifi_status = this->wifi->status();
         count ++;
     }
-
 
     this->terminal->debugln("Connected to WiFi");
 

@@ -10,12 +10,14 @@
 #include "settings_manager.hpp"
 #include "terminal.hpp"
 
-#define DEBUG false
+#define DEBUG true
 
 #define PUBLISH_DATA_STACK 2048
 #define PUBLISH_STATUS_STACK 1024
 #define PUBLISH_TERMINAL_STACK 1024
 
+// Statically create pointers to all of the providers. 
+// These instances should last the lifetime of the program
 REMController * controller;
 SettingsManager * settingsManager;
 PM1006K * pm1006k;
@@ -37,86 +39,72 @@ void setup() {
   digitalWrite(FAN, HIGH);
 
   // Setup debug construct
-  Serial.begin(9600);
+  Serial.begin(115200);
   terminal = new Terminal(DEBUG, &Serial);
   
+  // Setup EEPROM
+  int count = 0;
+  while (count < 5 && !EEPROM.begin(EEPROM_SIZE)) {
+    terminal->debugln("Failed to setup EEPROM, retrying...");
+    count ++;
+    delay(1000);
+  }
+
   // Setup secrets instance
   settingsManager = new SettingsManager(terminal, &EEPROM);
-  if (!settingsManager->begin()) {
-    terminal->debugln("Failed to setup the eeprom");
-  }
-
-  if (!settingsManager->setWifiCredentials("password", "ssid")) {
-    terminal->debugln("Failed to write data to eeprom");
-  }
-
-  delete settingsManager;
-  settingsManager = new SettingsManager(terminal, &EEPROM);
-  if (!settingsManager->begin()) {
-    terminal->debugln("Failed to setup the eeprom");
-  }
+  // if(!settingsManager->setWifiCredentials("ZkwTITOt5EWOUPvr6d2jOdvR742ZDYYo", "lz-iot")) {
+  //   terminal->debugln("Failed to setup wifi credentials");
+  // }
 
   if (!settingsManager->loadSettings()) {
     terminal->debugln("Failed to load settings");
   }
 
-  terminal->debugln(settingsManager->getWifiPass());
-  terminal->debugln(settingsManager->getWifiSSID());
+  // Setup Controller and Controller Depedencies
+  Serial1.begin(PM1006K::BAUD_RATE, SERIAL_8N1, PM1006K_RX_PIN, PM1006K_TX_PIN);
+  pm1006k = new PM1006K(&Serial1);
 
-  // if(!settingsManager->loadSettings()) {
-  //   terminal->debugln("Failed to load secrets");
-  // }
+  // Setup I2C and BME280 Driver
+  Wire.begin(I2C_SDA, I2C_SCL);
+  bme280 = new Adafruit_BME280();
+  bme280->begin(BME280_ADDRESS, &Wire);
 
-  // uint8_t * buf[126]; 
-  // Serial.printf("Bytes read: %d", EEPROM.readBytes(0x00, (void *)buf, 126));
+  // Setup Pubsub Driver
+  pubsubClient = new PubSubClient(espClient);
 
-  // // Setup Controller and Controller Depedencies
-  // Serial1.begin(PM1006K::BAUD_RATE, SERIAL_8N1, PM1006K_RX_PIN, PM1006K_TX_PIN);
-  // pm1006k = new PM1006K(&Serial1);
+  // Setup Controller
+  controller = new REMController(&WiFi, pm1006k, bme280, pubsubClient, terminal, settingsManager);
 
-  // // Setup I2C and BME280 Driver
-  // Wire.begin(I2C_SDA, I2C_SCL);
-  // bme280 = new Adafruit_BME280();
-  // bme280->begin(BME280_ADDRESS, &Wire);
-
-  // // Setup Pubsub Driver
-  // pubsubClient = new PubSubClient(espClient);
-
-  // // Setup Controller
-  // controller = new REMController(&WiFi, pm1006k, bme280, pubsubClient, terminal, settingsManager);
-
-  // if (!controller->setupWiFi()) {
-  //   terminal->debugln("Wifi Setup Failed");
-  // }
-
-  // uint8_t count = 0;
+  if (!controller->setupWiFi()) {
+    terminal->debugln("Wifi Setup Failed");
+  }
   
-  // // // Wait about 10 seconds for the esp client to become avaliable. If it doesn't, 
-  // // // reboot the microcontroller.
-  // // while(!espClient.available()) {
-  // //   if (count > 10) {
-  // //     terminal->debugln("Failed to setup the esp32 networking client, trying to rebooting");
-  // //     ESP.restart();
-  // //   }
+  // Wait about 10 seconds for the esp client to become avaliable. If it doesn't, 
+  // reboot the microcontroller.
+  while(!espClient.available()) {
+    if (count > 10) {
+      terminal->debugln("Failed to setup the esp32 networking client, trying to rebooting");
+      ESP.restart();
+    }
 
-  // //   delay(1000);
-  // //   count ++;
-  // // }
+    delay(1000);
+    count ++;
+  }
 
-  // pubsubClient->setServer(MQTT_SERVER, 1883);
-  // pubsubClient->connect("arduinoClient");
-  // if(controller->publish("rem/esp32/status", "online")) {
-  //   terminal->debugln("Published");
-  // } else {
-  //   terminal->debugln("Publish Failed");
-  // }
+  pubsubClient->setServer(MQTT_SERVER, 1883);
+  pubsubClient->connect("arduinoClient");
+  if(controller->publish("rem/esp32/status", "online")) {
+    terminal->debugln("Published");
+  } else {
+    terminal->debugln("Publish Failed");
+  }
 
-  // String config = controller->wifiConfig();
-  // terminal->debugln(config);
+  String config = controller->wifiConfig();
+  terminal->debugln(config);
 
-  // // Setup Tasks
-  // xTaskCreate(PublishDataTask, "Publish Data", PUBLISH_DATA_STACK, NULL, 1, NULL);
-  // xTaskCreate(PublishStatusTask, "Publish Status", PUBLISH_STATUS_STACK, NULL, 1, NULL);
+  // Setup Tasks
+  xTaskCreate(PublishDataTask, "Publish Data", PUBLISH_DATA_STACK, NULL, 1, NULL);
+  xTaskCreate(PublishStatusTask, "Publish Status", PUBLISH_STATUS_STACK, NULL, 1, NULL);
   // xTaskCreate(TerminalTask, "Terminal Task", PUBLISH_TERMINAL_STACK, NULL, 1, NULL);
 }
 
