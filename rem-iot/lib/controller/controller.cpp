@@ -3,19 +3,20 @@
 #include "ArduinoJson.h"
 #include "PubSubClient.h"
 #include "UUID.h"
+#include "Arduino.h"
 
+#include "mqtt_msg.hpp"
 #include "settings_manager.hpp"
 #include "terminal.hpp"
 #include "pin_config.hpp"
 #include "controller.hpp" 
 
-REMController::REMController(WiFiClass *wifi, PM1006K *pm1006k, Adafruit_BME280 *bme280, PubSubClient *pubsubClient, Terminal * terminal, SettingsManager * settingsManager) {
+REMController::REMController(PM1006K *pm1006k, Adafruit_BME280 *bme280, Terminal * terminal, SettingsManager * settingsManager, QueueHandle_t * msgQueue) {
     this->pm1006k = pm1006k;
     this->bme280 = bme280;
-    this->wifi = wifi;
-    this->pubsubClient = pubsubClient;
     this->terminal = terminal;
     this->settingsManager = settingsManager;
+    this->msgQueue = msgQueue;
 
     randomSeed(analogRead(A0) || analogRead(A1) || analogRead(A2));
     uint32_t rn = random();
@@ -24,76 +25,47 @@ REMController::REMController(WiFiClass *wifi, PM1006K *pm1006k, Adafruit_BME280 
     this->uuidGenerator->seed(rn);
 }
 
-bool REMController::publishStatus() {
-    DynamicJsonDocument json(156);
+// bool REMController::publishStatus() {
+//     // DynamicJsonDocument json(156);
     
-    this->uuidGenerator->generate();
-    json["id"] = this->uuidGenerator->toCharArray();
-    json["deviceId"] = this->settingsManager->getSetting(DEVICE_ID_ID);    
+//     // this->uuidGenerator->generate();
+//     // json["id"] = this->uuidGenerator->toCharArray();
+//     // json["deviceId"] = this->settingsManager->getSetting(DEVICE_ID_ID);    
     
-    if (this->terminal->isDebug()) {
-        this->terminal->debugln("Status to be serialized:");
-        serializeJson(json, Serial);
-    }
+//     // if (this->terminal->isDebug()) {
+//     //     this->terminal->debugln("Status to be serialized:");
+//     //     serializeJson(json, Serial);
+//     // }
 
-    const char * statusTopic = this->settingsManager->getSetting(STATUS_TOPIC_ID);
-    return this->publish(statusTopic, json.as<String>().c_str());
-}
+//     // const char * statusTopic = this->settingsManager->getSetting(STATUS_TOPIC_ID);
+//     // return this->publish(statusTopic, json.as<String>().c_str());
+//     return false;
+// }
 
-bool REMController::publishData() {
-    this->terminal->debugln("Going to be publishing data");
+void REMController::queueLatestSensorData() {
     const char * deviceId  = this->settingsManager->getSetting(DEVICE_ID_ID);
-    DynamicJsonDocument json(1024);
-    json["pm2_5"] = this->pm2_5;
-    json["pm1_0"] = this->pm1_0;
-    json["pm10"] = this->pm10;
-    json["deviceId"] = deviceId;
-
-    json["temperature"] = this->temperature;
-    json["humidity"] = this->humidity;
-    json["pressure"] = this->pressure;
+    const char * dataTopic = this->settingsManager->getSetting(DATA_TOPIC_ID);
 
     // Generate a UUID and append it to the data struct
     this->uuidGenerator->generate();
-    json["id"] = this->uuidGenerator->toCharArray();
+    MQTTMsg * msg = new MQTTMsg(dataTopic, deviceId, this->uuidGenerator->toCharArray());
 
-    // Get local time and append it to the data struct
-    // struct tm timeinfo;
-    // getLocalTime(&timeinfo);
-    // char buf[24];
-    // sprintf(buf, "%04d-%02d-%02dT%02d:%02d:%02d.000Z", timeinfo.tm_year + 1900, timeinfo.tm_mon + 1, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
-
-    // json["created"] = buf;
-
-    // if (this->terminal->isDebug()) {
-    //     this->terminal->debugln("Data to be serialized:");
-    //     serializeJson(json, Serial);        
-    // }
-    const char * dataTopic = this->settingsManager->getSetting(DATA_TOPIC_ID);
-    return this->publish(dataTopic, json.as<String>().c_str());\
-}
-
-bool REMController::publish(const char * topic, const char * payload) {
-    return this->pubsubClient->publish(topic, payload);
-}
-
-bool REMController::refreshPM25() {
+    // If we can get pm1006 data, add it to the msg
     if (!this->pm1006k->takeMeasurement()) {
         this->terminal->debugln("Failed to take measurement");
-        return false;
     }
- 
-    this->pm2_5 = this->pm1006k->getPM2_5();
-    this->pm1_0 = this->pm1006k->getPM1_0();
-    this->pm10 = this->pm1006k->getPM10();
 
-    return true;
-}
+    // Apply PM1006K data to the msg
+    msg->setField("pm2_5", this->pm1006k->getPM2_5());
+    msg->setField("pm1_0", this->pm1006k->getPM1_0());
+    msg->setField("pm10", this->pm1006k->getPM10());
 
-bool REMController::refreshBME280() {
-    this->temperature = this->bme280->readTemperature();
-    this->humidity = this->bme280->readHumidity();
-    this->pressure = this->bme280->readPressure();
+    // Apply BMP280 data to the msg
+    msg->setField("temperature", this->bme280->readTemperature());
+    msg->setField("humidity", this->bme280->readHumidity());
+    msg->setField("pressure", this->bme280->readPressure());
 
-    return true;
+    if ( xQueueSend( *this->msgQueue, ( void * ) &msg, MSG_QUEUE_TIMEOUT ) != pdPASS) {
+        this->terminal->debugln("Failed to send message to the queue");
+    }
 }

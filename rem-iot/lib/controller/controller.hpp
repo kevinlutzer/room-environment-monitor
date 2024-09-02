@@ -11,38 +11,23 @@
 #include "terminal.hpp"
 #include "settings_manager.hpp"
 
+#define MSG_QUEUE_TIMEOUT pdMS_TO_TICKS(10) // 10ms 
+
 class REMController {
     public:
-        REMController(WiFiClass *wifi, PM1006K *pm1006k, Adafruit_BME280 *bme280, PubSubClient *pubsubClient, Terminal * terminal, SettingsManager * settingsManager);
-
-        bool refreshPM25();
-        bool refreshBME280();
-
-        bool publish(const char * topic, const char * payload);
-        bool publishData();
-        bool publishStatus();
-
-
+        REMController(PM1006K *pm1006k, Adafruit_BME280 *bme280, Terminal * terminal, SettingsManager * settingsManager, QueueHandle_t * msgQueue);
+        void queueLatestSensorData();
 
     private:
         // Drivers
         PM1006K *pm1006k;
-        WiFiClass *wifi;
         Adafruit_BME280 *bme280;
         Terminal * terminal;
         SettingsManager * settingsManager;
-        PubSubClient *pubsubClient;
+        QueueHandle_t * msgQueue;
         
         // Utilities
         UUID *uuidGenerator;
-
-        // Data
-        int pm2_5;
-        int pm1_0;
-        int pm10;
-        float humidity;
-        float temperature;
-        float pressure;
 };
 
 #endif

@@ -8,6 +8,7 @@
 #include "Wire.h"
 
 #include "controller.hpp"
+#include "mqtt_msg.hpp"
 #include "pin_config.hpp"
 #include "settings_manager.hpp"
 #include "wifi_controller.hpp"
@@ -16,10 +17,10 @@
 #define INIT_DEBUG true
 
 #define PUBLISH_DATA_STACK 2048
-#define PUBLISH_STATUS_STACK 1024
+#define PUBLISH_STATUS_STACK 4096
 #define PUBLISH_TERMINAL_STACK 4096
 
-#define SAMPLE_RATE 30000
+#define SAMPLE_RATE 5000
 
 // Statically create pointers to all of the providers.
 // These instances should last the lifetime of the program
@@ -30,10 +31,11 @@ Adafruit_BME280 *bme280;
 WiFiClient espClient;
 Terminal *terminal;
 PubSubClient * pubSubClient;
+QueueHandle_t msgQueue;
 
 // Task Defs
 void PublishDataTask(void *paramater);
-void PublishStatusTask(void *paramater);
+void PublishMQTTMsg(void *paramater);
 void TerminalTask(void *paramater);
 
 static BaseType_t prvRebootCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
@@ -115,7 +117,7 @@ void setup() {
 
   // Setup the Wifi connection as well as NTP. Once that is completed
   // verify that the internal clock is synced with the NTP server
-  WiFiController * wifiController = new WiFiController(&WiFi, terminal, settingsManager);
+  WiFiController *wifiController = new WiFiController(&WiFi, terminal, settingsManager);
   if (!wifiController->setupWiFi()) {
     terminal->debugln("Wifi Setup Failed"); 
   }
@@ -126,7 +128,7 @@ void setup() {
   }
 
   // Controller isn't needed again execpt for initial networking config
-  free(wifiController);
+  delete wifiController;
 
   // Setup Controller and Controller Depedencies
   Serial1.begin(PM1006K::BAUD_RATE, SERIAL_8N1, PM1006K_RX_PIN,
@@ -137,23 +139,25 @@ void setup() {
   bme280 = new Adafruit_BME280();
   bme280->begin(BME280_ADDRESS, &Wire);
 
-  terminal->debugln("Setup Room Environment Monitor");
-
   // Create the PubSubClient
   PubSubClient * pubSubClient = new PubSubClient(espClient);
   pubSubClient->setServer(settingsManager->getSetting(MQTT_SERVER_ID), 1883);
   pubSubClient->connect("arduinoClient");
 
+  // Create the message queue
+  msgQueue = xQueueCreate(10, sizeof(MQTTMsg *));
+
   // Setup Controller
-  controller = new REMController(&WiFi, pm1006k, bme280, pubSubClient,
-  terminal, settingsManager);
+  controller = new REMController(pm1006k, bme280, terminal, settingsManager, &msgQueue);
 
   // Setup the remaining tasks to publish data and the status of the device
   xTaskCreate(PublishDataTask, "Publish Data", PUBLISH_DATA_STACK, NULL, 1,
   NULL); 
   
-  xTaskCreate(PublishStatusTask, "Publish Status",
+  xTaskCreate(PublishMQTTMsg, "Publish Status",
   PUBLISH_STATUS_STACK, NULL, 1, NULL);  
+
+  terminal->debugln("Setup Room Environment Monitor");
 }
 
 // Main loop is uneeded because we are using freertos tasks to persist the
@@ -163,28 +167,39 @@ void loop() { return; }
 //
 // Begin the FreeRTOS task definitions
 //
-
 void PublishDataTask(void *paramater) {
   while (true) {
     delay(SAMPLE_RATE);
-    controller->refreshPM25();
-    controller->refreshBME280();
-    if (!controller->publishData()) {
-      terminal->debugln("Publish Data Failed");
-    } else {
-      terminal->debugln("Published Data");
-    }
+    controller->queueLatestSensorData();
   }
 }
 
-void PublishStatusTask(void *paramater) {
+void PublishMQTTMsg(void * parameter) {
+  MQTTMsg * msg;
+
   while (true) {
-    delay(STATUS_RATE);
-    if (!controller->publishStatus()) {
-      terminal->debugln("Publish Data Failed");
-    } else {
-      terminal->debugln("Published Data");
+    
+    Serial.println("Check Queue");
+
+    // Wait for a message to be received from the queue indefinitely
+    // note that this doesn't actually block. 
+    if (xQueueReceive(msgQueue, &msg, portMAX_DELAY) == pdTRUE) {
+      Serial.println("Handling Message");
+
+      if (!pubSubClient->publish("rem/data", msg->getDocStr())) {
+        terminal->debugln("Failed to publish message");
+      }
+
+      terminal->debugln("Published Message");
+
+      // Assume that all messages passed to the queue must be deleted after
+      // they are published to the MQTT server here. 
+      delete msg;
     }
+
+    // Yield to the core to allow other tasks to run
+    // This task should be queued with a lower priority than the other tasks
+    delay(10);
   }
 }
 
