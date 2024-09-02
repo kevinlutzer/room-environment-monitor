@@ -29,11 +29,10 @@ PM1006K *pm1006k;
 Adafruit_BME280 *bme280;
 WiFiClient espClient;
 Terminal *terminal;
-WiFiController *wifiController;
 PubSubClient * pubSubClient;
 
 // Task Defs
-void PublishDataasdTask(void *paramater);
+void PublishDataTask(void *paramater);
 void PublishStatusTask(void *paramater);
 void TerminalTask(void *paramater);
 
@@ -116,7 +115,7 @@ void setup() {
 
   // Setup the Wifi connection as well as NTP. Once that is completed
   // verify that the internal clock is synced with the NTP server
-  wifiController = new WiFiController(&WiFi, terminal, settingsManager);
+  WiFiController * wifiController = new WiFiController(&WiFi, terminal, settingsManager);
   if (!wifiController->setupWiFi()) {
     terminal->debugln("Wifi Setup Failed"); 
   }
@@ -125,6 +124,9 @@ void setup() {
   if (!wifiController->verifyClockSync()) {
     terminal->debugln("Failed to sync the clock with the NTP server");
   }
+
+  // Controller isn't needed again execpt for initial networking config
+  free(wifiController);
 
   // Setup Controller and Controller Depedencies
   Serial1.begin(PM1006K::BAUD_RATE, SERIAL_8N1, PM1006K_RX_PIN,
@@ -142,74 +144,47 @@ void setup() {
   pubSubClient->setServer(settingsManager->getSetting(MQTT_SERVER_ID), 1883);
   pubSubClient->connect("arduinoClient");
 
-  // // Setup Controller
-  // controller = new REMController(&WiFi, pm1006k, bme280, pubsubClient,
-  // terminal, settingsManager);
+  // Setup Controller
+  controller = new REMController(&WiFi, pm1006k, bme280, pubSubClient,
+  terminal, settingsManager);
 
-  // // Wait about 10 seconds for the esp client to become avaliable. If it
-  // doesn't,
-  // // reboot the microcontroller.
-  // while(!espClient.available()) {
-  //   if (count > 10) {
-  //     terminal->debugln("Failed to setup the esp32 networking client, trying
-  //     to rebooting"); ESP.restart();
-  //   }
-
-  //   delay(1000);
-  //   count ++;
-  // }
-
-  // pubsubClient->setServer(MQTT_SERVER, 1883);
-  // pubsubClient->connect("arduinoClient");
-  // if(controller->publish("rem/esp32/status", "online")) {
-  //   terminal->debugln("Published");
-  // } else {
-  //   terminal->debugln("Publish Failed");
-  // }
-
-  // String config = controller->wifiConfig();
-  // terminal->debugln(config);
-
-
-  // // Setup Tasks
-  // xTaskCreate(PublishDataTask, "Publish Data", PUBLISH_DATA_STACK, NULL, 1,
-  // NULL); 
+  // Setup the remaining tasks to publish data and the status of the device
+  xTaskCreate(PublishDataTask, "Publish Data", PUBLISH_DATA_STACK, NULL, 1,
+  NULL); 
   
-  // xTaskCreate(PublishStatusTask, "Publish Status",
-  // PUBLISH_STATUS_STACK, NULL, 1, NULL);
-  
-
+  xTaskCreate(PublishStatusTask, "Publish Status",
+  PUBLISH_STATUS_STACK, NULL, 1, NULL);  
 }
 
 // Main loop is uneeded because we are using freertos tasks to persist the
 // application
 void loop() { return; }
 
-/*
- * Begin task definitions
- */
+//
+// Begin the FreeRTOS task definitions
+//
 
 void PublishDataTask(void *paramater) {
   while (true) {
     delay(SAMPLE_RATE);
-    // controller->refreshPM25();
-    // controller->refreshBME280();
-    // if (!controller->publishData()) {
-    //   terminal->debugln("Publish Data Failed");
-    // } else {
-    //   terminal->debugln("Published Data");
-    // }
+    controller->refreshPM25();
+    controller->refreshBME280();
+    if (!controller->publishData()) {
+      terminal->debugln("Publish Data Failed");
+    } else {
+      terminal->debugln("Published Data");
+    }
   }
 }
 
 void PublishStatusTask(void *paramater) {
   while (true) {
     delay(STATUS_RATE);
-    // if (!controller->publishStatus()) {
-    //   terminal->debugln("Publish Data Failed");
-    // } else {
-    //   terminal->debugln("Published Data");
-    // }
+    if (!controller->publishStatus()) {
+      terminal->debugln("Publish Data Failed");
+    } else {
+      terminal->debugln("Published Data");
+    }
   }
 }
 
@@ -217,6 +192,10 @@ void TerminalTask(void *paramater) {
   // Just handle input characters and the yield back to the core
   terminal->handleCharacter();
 }
+
+//
+// Begin the CLI Command Definitions
+//
 
 BaseType_t prvRebootCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
                             const char *pcCommandString) {

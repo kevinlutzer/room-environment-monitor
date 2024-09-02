@@ -26,9 +26,7 @@ REMController::REMController(WiFiClass *wifi, PM1006K *pm1006k, Adafruit_BME280 
 
 bool REMController::publishStatus() {
     DynamicJsonDocument json(156);
-
-    this->terminal->debugln("Going to be publishing status");
-
+    
     this->uuidGenerator->generate();
     json["id"] = this->uuidGenerator->toCharArray();
     json["deviceId"] = this->settingsManager->getSetting(DEVICE_ID_ID);    
@@ -49,7 +47,7 @@ bool REMController::publishData() {
     json["pm2_5"] = this->pm2_5;
     json["pm1_0"] = this->pm1_0;
     json["pm10"] = this->pm10;
-    json["deviceid"] = deviceId;
+    json["deviceId"] = deviceId;
 
     json["temperature"] = this->temperature;
     json["humidity"] = this->humidity;
@@ -81,7 +79,7 @@ bool REMController::publish(const char * topic, const char * payload) {
 
 bool REMController::refreshPM25() {
     if (!this->pm1006k->takeMeasurement()) {
-        Serial.println("Failed to take measurement");
+        this->terminal->debugln("Failed to take measurement");
         return false;
     }
  

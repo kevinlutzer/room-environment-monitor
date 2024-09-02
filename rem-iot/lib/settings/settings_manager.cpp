@@ -1,6 +1,9 @@
 #include "settings_manager.hpp"
 #include "terminal.hpp"
 #include "EEPROM.h"
+#include "Arduino.h"
+
+#define SETTING_MUTEX_TIMEOUT pdMS_TO_TICKS(10) // 10ms 
 
 SettingsManager::SettingsManager(Terminal * terminal, EEPROMClass * eeprom) {
     this->terminal = terminal;
@@ -10,31 +13,37 @@ SettingsManager::SettingsManager(Terminal * terminal, EEPROMClass * eeprom) {
 }
 
 bool SettingsManager::loadSettings() {
-    // First few bytes of eeprom can't be written to one of my devices for some reason
-    // hence we write/read from a starting address > 0x00. 
-    size_t read_len = EEPROM_SIZE - EEPROM_START_ADDR;
     uint8_t buf[EEPROM_SIZE];
    
-    size_t read_total = this->eeprom->readBytes(EEPROM_START_ADDR, (void *)buf, read_len);
-    if (read_total != read_len) {
+    size_t read_total = this->eeprom->readBytes(EEPROM_START_ADDR, (void *)buf, EEPROM_READ_LEN);
+    if (read_total != EEPROM_READ_LEN) {
         this->terminal->debugln("Failed to read from the EEPROM");   
         return false;
     }
 
     this->settings = new Settings();
-    this->settings->deserialize(buf, read_len); 
+    this->settings->deserialize(buf, EEPROM_READ_LEN); 
 
     return true;
 }
 
 const char * SettingsManager::getSetting(const char * name) {
+
     if (strncmp(name, SSID_ID, 4) == 0) {
         return this->settings->ssid;
     } else if (strncmp(name, PASSWORD_ID, 8) == 0) {
         return this->settings->password;
-    } else {
-        return NULL;
+    } else if (strncmp(name, MQTT_SERVER_ID, 10) == 0) {
+        return this->settings->mqtt_server;
+    } else if (strncmp(name, DEVICE_ID_ID, 9) == 0) {
+        return this->settings->device_id;
+    } else if (strncmp(name, DATA_TOPIC_ID, 10) == 0) {
+        return this->settings->data_topic;
+    } else if (strncmp(name, STATUS_TOPIC_ID, 12) == 0) {
+        return this->settings->status_topic;
     }
+
+    return NULL;
 }
 
 bool SettingsManager::printSettings(char * buf, size_t len) {
@@ -65,6 +74,12 @@ bool SettingsManager::printSettings(char * buf, size_t len) {
 }
 
 bool SettingsManager::updateSetting(const char * name, const char * value, int value_len) {
+    
+    // Grab mutex, block multiple writes 
+    if( xSemaphoreTake( this->mutex, SETTING_MUTEX_TIMEOUT ) != pdTRUE ) {
+        return false;
+    }
+
     // Update the settings object based on the passed name and value
     // Verify the length of the value is not greater than the max length of the setting
     if (strncmp(name, SSID_ID, 4) == 0 && value_len <= SETTING_LEN) {
@@ -79,25 +94,26 @@ bool SettingsManager::updateSetting(const char * name, const char * value, int v
         memcpy(this->settings->data_topic, value, SETTING_LEN);
     } else if (strncmp(name, STATUS_TOPIC_ID, 12) == 0 && value_len <= SETTING_LEN) {
         memcpy(this->settings->status_topic, value, SETTING_LEN);
-    } else {        
+    } else {
+        xSemaphoreGive( this->mutex );
         return false;
     }
-
-    size_t read_len = EEPROM_SIZE - EEPROM_START_ADDR;
 
     // Build a buf the size of the eeprom memory alloc
     // and manually clear it.
-    uint8_t * buf = (uint8_t *)malloc(sizeof(uint8_t) * read_len);
+    uint8_t * buf = (uint8_t *)malloc(sizeof(uint8_t) * EEPROM_READ_LEN);
     if (buf == NULL) {
         this->terminal->debugln("Failed to allocate memory for the buffer when setting wifi credentials");
+        xSemaphoreGive( this->mutex );
         return false;
     }
-    memset(buf, 0x00, read_len);
-       
-    this->settings->serialize(buf, read_len);
+    memset(buf, 0x00, EEPROM_READ_LEN);
 
-    if (!EEPROM.writeBytes(EEPROM_START_ADDR, (void *)buf, read_len)) {
+    this->settings->serialize(buf, EEPROM_READ_LEN);
+
+    if (!EEPROM.writeBytes(EEPROM_START_ADDR, (void *)buf, EEPROM_READ_LEN)) {
         this->terminal->debugln("Failed to commit changes to EEPROM");
+        xSemaphoreGive( this->mutex );
         return false;
     }
 
@@ -105,8 +121,10 @@ bool SettingsManager::updateSetting(const char * name, const char * value, int v
 
     if (!EEPROM.commit()) {
         this->terminal->debugln("Failed to commit changes to EEPROM");
+        xSemaphoreGive( this->mutex );
         return false;
     }
 
+    xSemaphoreGive( this->mutex );
     return true;
 }

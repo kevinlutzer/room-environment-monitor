@@ -15,6 +15,10 @@
 // of space specified by this macro to store the settings properly
 #define EEPROM_SIZE 2048
 
+// First few bytes of eeprom can't be written to one of my devices for some reason
+// hence we write/read from a starting address > 0x00. 
+#define EEPROM_READ_LEN EEPROM_SIZE - EEPROM_START_ADDR
+
 // This is the length of a single setting in characters. 
 #define SETTING_LEN 40
 
