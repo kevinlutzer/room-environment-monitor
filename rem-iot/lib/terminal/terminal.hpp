@@ -32,9 +32,6 @@ class Terminal {
         bool _debug;
         SemaphoreHandle_t txMutex;
         Stream * stream;
-
-        static char cInputString[ cmdMAX_INPUT_SIZE ];
-        char * pcOutputString;
 };
 
 #endif

@@ -157,6 +157,7 @@ size_t xCommandStringLength;
 			a sub-string of a longer command, check the byte after the expected
 			end of the string is either the end of the string or a space before
 			a parameter. */
+
 			if( ( pcCommandInput[ xCommandStringLength ] == ' ' ) || ( pcCommandInput[ xCommandStringLength ] == 0x00 ) )
 			{
 				if( strncmp( pcCommandInput, pcRegisteredCommandString, xCommandStringLength ) == 0 )

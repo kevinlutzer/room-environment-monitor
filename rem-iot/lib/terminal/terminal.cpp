@@ -61,31 +61,35 @@ void Terminal::debug(String str) {
 
 void Terminal::handleCharacter() {
 
-    // grab the ptr reference to where the output buf lives
-    this->pcOutputString = FreeRTOS_CLIGetOutputBuffer();
+    
+    // Create a buffer to store the input string and the last input string
     static char cInputString[ cmdMAX_INPUT_SIZE ];
+    static char lInputString[ cmdMAX_INPUT_SIZE ];
+    
+    // Grab and store grab the ptr reference to where the output buf lives
+    char * pcOutputString = FreeRTOS_CLIGetOutputBuffer();
+    uint8_t rxCmdIndex = 0;
+    char rxChar = '\0';
+    int rx = 0;
 
     while(true) {
-        // No data, so just short circuit
+        // No data, so just yield and wait
         if (!this->stream->available()) {
-            return;
+            yield();
+            continue;
         }
 
-        int rx = this->stream->read();
-        char rxChar = (char)(rx & 0xFF);
-        uint8_t rxCmdIndex = 0;
+        rxChar = (char)this->stream->read();
 
         // Grab the mutex so we can echo and return command results
         if( xSemaphoreTake( this->txMutex, TERMINAL_TIMEOUT_TICK ) == pdTRUE ) {
 
-            // Echo the character back and copy it to the cmd buffer 
-            this->stream->print(rxChar);
-            cInputString[rxCmdIndex] = rxChar;
-            rxCmdIndex++;
-
             // Are we one character away from reaching buffer length or was the last char
-            // a '\r' or '\n'?. If so execute commands
-            if (rxCmdIndex == cmdMAX_INPUT_SIZE - 2 || rxChar == '\r' || rxChar == '\n') {
+            // a '\r'?. If so execute commands
+            if (rxCmdIndex == cmdMAX_INPUT_SIZE - 2 || rxChar == '\r') {
+
+                    this->stream->println();
+
                     /* Pass the received command to the command interpreter.  The
                     command interpreter is called repeatedly until it returns
                     pdFALSE	(indicating there is no more output) as it might
@@ -94,21 +98,33 @@ void Terminal::handleCharacter() {
                     for(;;)
                     {
                         // Get the command output from the processing function, this goes to std out
-                        FreeRTOS_CLIProcessCommand( cInputString, this->pcOutputString, (size_t)200 );
+                        xReturned = FreeRTOS_CLIProcessCommand( cInputString, pcOutputString, (size_t)200 );
                         
-                        this->stream->print(this->pcOutputString);
+                        this->stream->print(pcOutputString);
 
                         // Short circuit when we finally don't have any more commands to execute
-                        // if (xReturned == pdFALSE) {
-                        //     break;
-                        // }
+                        if (xReturned == pdFALSE) {
+                            break;
+                        }
 
                     }
+
+                    // Clean up the input string buffer and release the mutex
+                    // Also store the last input string for command replay when pressing enter
+                    memcpy(lInputString, cInputString, cmdMAX_INPUT_SIZE);
+                    memset(cInputString, 0x00, cmdMAX_INPUT_SIZE);
+                    memset((void *)pcOutputString, 0x00, configCOMMAND_INT_MAX_OUTPUT_SIZE);
+                    rxCmdIndex = 0;
+
+            // Check if the character is a printable ascii character between space and ~
+            } else if (rxChar >= 32 && rxChar <= 126) {
+    
+                // Echo the character back and copy it to the cmd buffer 
+                this->stream->print(rxChar);
+                cInputString[rxCmdIndex] = rxChar;
+                rxCmdIndex++;
             }
 
-            // cleanup input string
-            memset(cInputString, 0x00, cmdMAX_INPUT_SIZE);
-            memset(this->pcOutputString, 0x00, configCOMMAND_INT_MAX_OUTPUT_SIZE);
             xSemaphoreGive( this->txMutex);
         }
 

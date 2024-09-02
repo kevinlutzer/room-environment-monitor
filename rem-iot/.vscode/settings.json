@@ -22,7 +22,8 @@
         "stdexcept": "cpp",
         "deque": "cpp",
         "unordered_set": "cpp",
-        "*.tcc": "cpp"
+        "*.tcc": "cpp",
+        "random": "cpp"
     },
     "C_Cpp.default.compilerPath": "/usr/bin/clang++"
 }
