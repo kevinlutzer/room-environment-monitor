@@ -33,6 +33,17 @@ void PublishDataTask(void * paramater);
 void PublishStatusTask(void * paramater);
 void TerminalTask(void * paramater);
 
+// Terminal cmd definitions
+static BaseType_t prvRebootCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString );
+
+static const CLI_Command_Definition_t xRebootCommand =
+{
+	"reboot",
+	"\r\nreboot:\r\n this command reboots the esp32\r\n\r\n",
+	prvRebootCommand,
+	0
+};
+
 void setup() {
   // Turn on Fan
   pinMode(FAN, OUTPUT);
@@ -103,11 +114,19 @@ void setup() {
   // xTaskCreate(PublishDataTask, "Publish Data", PUBLISH_DATA_STACK, NULL, 1, NULL);
   // xTaskCreate(PublishStatusTask, "Publish Status", PUBLISH_STATUS_STACK, NULL, 1, NULL);
   xTaskCreate(TerminalTask, "Terminal Task", PUBLISH_TERMINAL_STACK, NULL, 1, NULL);
+
+  // Setup CLI Commands
+  FreeRTOS_CLIRegisterCommand(&xRebootCommand);
 }
 
+// Main loop is uneeded because we are using freertos tasks to persist the application
 void loop() {
   return;
 }
+
+/*
+* Begin task definitions
+*/
 
 void PublishDataTask(void * paramater) {
   while(true) {
@@ -136,4 +155,9 @@ void PublishStatusTask(void * paramater) {
 void TerminalTask(void * paramater) {
   // Just handle input characters and the yield back to the core
   terminal->handleCharacter();
+}
+
+BaseType_t prvRebootCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString ) {
+  ESP.restart();
+  return pdTRUE;
 }
