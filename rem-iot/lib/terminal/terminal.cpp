@@ -10,7 +10,13 @@ Terminal::Terminal(bool init, Stream * stream) {
     this->txMutex = xSemaphoreCreateMutex();
 }
 
+
 bool Terminal::isDebug() {
+    return this->_debug;
+}
+
+bool Terminal::toggleDebug() {
+    this->_debug = !this->_debug;
     return this->_debug;
 }
 
@@ -61,16 +67,17 @@ void Terminal::debug(String str) {
 
 void Terminal::handleCharacter() {
 
-    
     // Create a buffer to store the input string and the last input string
     static char cInputString[ cmdMAX_INPUT_SIZE ];
-    static char lInputString[ cmdMAX_INPUT_SIZE ];
     
     // Grab and store grab the ptr reference to where the output buf lives
     char * pcOutputString = FreeRTOS_CLIGetOutputBuffer();
     uint8_t rxCmdIndex = 0;
     char rxChar = '\0';
     int rx = 0;
+
+    // Print the prompt character
+    this->stream->printf("\r\n> ");
 
     while(true) {
         // No data, so just yield and wait
@@ -98,9 +105,9 @@ void Terminal::handleCharacter() {
                     for(;;)
                     {
                         // Get the command output from the processing function, this goes to std out
-                        xReturned = FreeRTOS_CLIProcessCommand( cInputString, pcOutputString, (size_t)200 );
+                        xReturned = FreeRTOS_CLIProcessCommand( cInputString, pcOutputString, (size_t)configCOMMAND_INT_MAX_OUTPUT_SIZE );
                         
-                        this->stream->print(pcOutputString);
+                        this->stream->println(pcOutputString);
 
                         // Short circuit when we finally don't have any more commands to execute
                         if (xReturned == pdFALSE) {
@@ -109,9 +116,10 @@ void Terminal::handleCharacter() {
 
                     }
 
-                    // Clean up the input string buffer and release the mutex
-                    // Also store the last input string for command replay when pressing enter
-                    memcpy(lInputString, cInputString, cmdMAX_INPUT_SIZE);
+                    // Print the prompt character
+                    this->stream->print("> ");
+
+                    // Clean up the input string buffer and the output buffer
                     memset(cInputString, 0x00, cmdMAX_INPUT_SIZE);
                     memset((void *)pcOutputString, 0x00, configCOMMAND_INT_MAX_OUTPUT_SIZE);
                     rxCmdIndex = 0;

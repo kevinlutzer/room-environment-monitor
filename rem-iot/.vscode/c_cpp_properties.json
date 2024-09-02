@@ -1,8 +1,3 @@
-//
-// !!! WARNING !!! AUTO-GENERATED FILE!
-// PLEASE DO NOT MODIFY IT AND USE "platformio.ini":
-// https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
-//
 {
     "configurations": [
         {
@@ -533,7 +528,7 @@
             ],
             "cStandard": "gnu99",
             "cppStandard": "gnu++11",
-            "compilerPath": "/Users/kevinlutzer/.platformio/packages/toolchain-riscv32-esp/bin/riscv32-esp-elf-gcc",
+            "compilerPath": "/usr/bin/clang++",
             "compilerArgs": [
                 "-march=rv32imc",
                 ""

@@ -31,7 +31,7 @@ Terminal *terminal;
 int count = 0;
 
 // Task Defs
-void PublishDataTask(void *paramater);
+void PublishDataasdTask(void *paramater);
 void PublishStatusTask(void *paramater);
 void TerminalTask(void *paramater);
 
@@ -42,14 +42,32 @@ static const CLI_Command_Definition_t xRebootCommand = {
     "reboot", "\r\nreboot:\r\n this command reboots the esp32\r\n\r\n",
     prvRebootCommand, 0};
 
-static BaseType_t prvUpdateSettingsCommand(char *pcWriteBuffer,
+static BaseType_t prvUpdateSettingCommand(char *pcWriteBuffer,
                                        size_t xWriteBufferLen,
                                        const char *pcCommandString);
 
-static const CLI_Command_Definition_t xUpdateSettingsCommand = {
+static const CLI_Command_Definition_t xUpdateSettingCommand = {
     "update-setting",
-    "\r\nupdate-setting <NAME> <VALUE>:\r\n this command reboots the esp32. Valid settings include `ssid` and `password`\r\n\r\n",
-    prvUpdateSettingsCommand, 2};
+    "\r\nupdate-setting <NAME> <VALUE>:\r\n This command reboots the esp32. Valid settings include `ssid` and `password`\r\n\r\n",
+    prvUpdateSettingCommand, 2};
+
+static BaseType_t prvPrintSettingsCommand(char *pcWriteBuffer,
+                                       size_t xWriteBufferLen,
+                                       const char *pcCommandString);
+
+static const CLI_Command_Definition_t xPrintSettingsCommand = {
+    "print-settings",
+    "\r\nprint-settings: \r\n This command will return a list of all of the settings and their values. \r\n\r\n",
+    prvPrintSettingsCommand, 0};
+
+static BaseType_t prvDebugCommand(char *pcWriteBuffer,
+                                       size_t xWriteBufferLen,
+                                       const char *pcCommandString);
+
+static const CLI_Command_Definition_t xDebugCommand = {
+    "debug",
+    "\r\ndebug: \r\n This toggles the debug logging\r\n\r\n",
+    prvDebugCommand, };
 
 
 void setup() {
@@ -120,16 +138,22 @@ void setup() {
   // String config = controller->wifiConfig();
   // terminal->debugln(config);
 
+
   // // Setup Tasks
   // xTaskCreate(PublishDataTask, "Publish Data", PUBLISH_DATA_STACK, NULL, 1,
-  // NULL); xTaskCreate(PublishStatusTask, "Publish Status",
+  // NULL); 
+  
+  // xTaskCreate(PublishStatusTask, "Publish Status",
   // PUBLISH_STATUS_STACK, NULL, 1, NULL);
+  
   xTaskCreate(TerminalTask, "Terminal Task", PUBLISH_TERMINAL_STACK, NULL, 1,
               NULL);
 
   // Setup CLI Commands
   FreeRTOS_CLIRegisterCommand(&xRebootCommand);
-  FreeRTOS_CLIRegisterCommand(&xUpdateSettingsCommand);
+  FreeRTOS_CLIRegisterCommand(&xUpdateSettingCommand);
+  FreeRTOS_CLIRegisterCommand(&xDebugCommand);
+  FreeRTOS_CLIRegisterCommand(&xPrintSettingsCommand);
 }
 
 // Main loop is uneeded because we are using freertos tasks to persist the
@@ -177,7 +201,7 @@ BaseType_t prvRebootCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
   return pdTRUE;
 }
 
-BaseType_t prvUpdateSettingsCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
+BaseType_t prvUpdateSettingCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
                                 const char *pcCommandString) {
 
   BaseType_t nameParamToStringLength, valueParamToStringLength; 
@@ -189,13 +213,34 @@ BaseType_t prvUpdateSettingsCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
                                             2,
                                             &valueParamToStringLength );
 
-  // Call the update function and validate the response
-  bool res = settingsManager->updateSetting(nameParam, valueParam, (int)valueParamToStringLength); 
-  Serial.printf("Result: %d\n", res);
-  if(res) {
+  // Call the update function and validate the response note that if it is false, it coul;d
+  if (settingsManager->updateSetting(nameParam, valueParam, (int)valueParamToStringLength)) {
     snprintf(pcWriteBuffer, xWriteBufferLen, "Update setting successfully");
   } else {
-    snprintf(pcWriteBuffer, xWriteBufferLen, "Failed to update setting"); 
+    snprintf(pcWriteBuffer, xWriteBufferLen, "Failed to update setting check to make sure the setting name is valid and the length of the value is under %d characters", SETTING_LEN);
+  }
+
+  return pdFALSE;
+}
+
+BaseType_t prvDebugCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
+                                const char *pcCommandString) {
+
+  bool debug_val = terminal->toggleDebug();
+  snprintf(pcWriteBuffer, xWriteBufferLen, "Debug logging is now is now %s\r\n", debug_val ? "enabled" : "disabled");
+
+  return pdFALSE;
+}
+
+BaseType_t prvPrintSettingsCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
+                                const char *pcCommandString) {
+
+  BaseType_t nameParamToStringLength, valueParamToStringLength; 
+
+  // If we get a false response from the print settings function, print an error message
+  // It mostlikely is a memory allocation issue where xWriteBufferLen is too small
+  if (!settingsManager->printSettings(pcWriteBuffer, xWriteBufferLen)) {
+    snprintf(pcWriteBuffer, xWriteBufferLen, "Failed to print the settings\r\n");
   }
 
   return pdFALSE;

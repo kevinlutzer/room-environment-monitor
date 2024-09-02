@@ -21,6 +21,8 @@ class Terminal {
         void debug(const char[]);
         void debug(String str);
 
+        bool toggleDebug();
+
         // Debug getter
         bool isDebug();
 

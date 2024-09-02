@@ -152,8 +152,8 @@ bool REMController::setupWiFi() {
         return false;
     }
 
-    const char * wifissid = this->settingsManager->getWifiSSID();
-    const char * wifipass = this->settingsManager->getWifiPass();
+    const char * wifissid = this->settingsManager->getSetting(PASSWORD_ID);
+    const char * wifipass = this->settingsManager->getSetting(SSID_ID);
 
     wl_status_t wifi_status = this->wifi->begin(wifissid, wifipass);
 

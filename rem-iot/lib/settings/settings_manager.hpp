@@ -9,12 +9,11 @@ class SettingsManager {
 
     public:
         SettingsManager(Terminal * debug, EEPROMClass * eeprom);
-        bool loadSettings();
-        const char * getWifiPass();
-        const char * getWifiSSID();
-        bool setWifiCredentials(const char * wifipass, const char * wifissid);
-        bool updateSetting(const char * name, const char * value, int value_length);
 
+        bool loadSettings();
+        bool updateSetting(const char * name, const char * value, int value_length);
+        const char * getSetting(const char * name);
+        bool printSettings(char * buf, size_t len);
 
     private:
         Terminal * terminal;

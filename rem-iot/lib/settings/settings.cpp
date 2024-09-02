@@ -1,8 +1,8 @@
 #include "settings.hpp"
 
 Settings::Settings() {
-    memset(this->ssid, 0x00, SSID_LEN);
-    memset(this->password, 0x00, SSID_LEN);
+    memset(this->ssid, 0x00, SETTING_LEN);
+    memset(this->password, 0x00, SETTING_LEN);
 }
 
 /**
@@ -14,11 +14,11 @@ void Settings::serialize(uint8_t * buf, int len) {
     int offset = 0x00;
 
     // Copy the ssid
-    memcpy(buf + offset, this->ssid, SSID_LEN);
-    offset += SSID_LEN;
+    memcpy(buf + offset, this->ssid, SETTING_LEN);
+    offset += SETTING_LEN;
 
     // Copy the password
-    memcpy(buf + offset, this->password, PASSWORD_LEN);
+    memcpy(buf + offset, this->password, SETTING_LEN);
 }
 
 void Settings::deserialize(uint8_t * buf, int len) {
@@ -26,11 +26,11 @@ void Settings::deserialize(uint8_t * buf, int len) {
     int offset = 0x00;
 
     // Copy the ssid
-    memcpy(this->ssid, buf + offset, SSID_LEN);
-    this->ssid[SSID_LEN - 1] = '\0';
-    offset += SSID_LEN;
+    memcpy(this->ssid, buf + offset, SETTING_LEN);
+    this->ssid[SETTING_LEN - 1] = '\0';
+    offset += SETTING_LEN;
 
     // Copy the password
-    memcpy(this->password, buf + offset, PASSWORD_LEN);
-    this->password[PASSWORD_LEN - 1] = '\0';
+    memcpy(this->password, buf + offset, SETTING_LEN);
+    this->password[SETTING_LEN - 1] = '\0';
 }
