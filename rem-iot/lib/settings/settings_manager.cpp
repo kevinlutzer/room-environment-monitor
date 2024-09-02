@@ -6,12 +6,7 @@ SettingsManager::SettingsManager(Terminal * terminal, EEPROMClass * eeprom) {
     this->terminal = terminal;
     this->eeprom = eeprom;
     this->settings = new Settings();
-}
-
-SettingsManager::~SettingsManager() {
-    // eeprom and terminal are shared so don't delete the 
-    // references. Settings is created as a new instance in this class
-    delete this->settings;
+    this->mutex = xSemaphoreCreateMutex();
 }
 
 bool SettingsManager::loadSettings() {
@@ -40,10 +35,21 @@ const char * SettingsManager::getWifiSSID() {
     return this->settings->ssid;
 }
 
-bool SettingsManager::setWifiCredentials(const char * wifiPass, const char * wifiSSID) {
+bool SettingsManager::updateSetting(const char * name, const char * value, int value_len) {
+    // Update the settings object based on the passed name and value
+    // Verify the length of the value is not greater than the max length of the setting
 
-    strcpy(this->settings->password, wifiPass);
-    strcpy(this->settings->ssid, wifiSSID);
+    for (int i = 0; i < value_len; i++) {
+        Serial.printf("Buf[%d]=%c", i, name[i]);
+    }
+
+    if (strncmp(name, "ssid", 4) == 0 && value_len <= SSID_LEN) {
+        memcpy(this->settings->ssid, value, SSID_LEN);
+    } else if (strncmp(name, "password", 8) == 0 && value_len <= PASSWORD_LEN) {
+        memcpy(this->settings->password, value, PASSWORD_LEN);
+    } else {        
+        return false;
+    }
 
     size_t read_len = EEPROM_SIZE - STARTING_ADDR;
 

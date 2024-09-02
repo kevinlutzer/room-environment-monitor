@@ -9,17 +9,23 @@ class SettingsManager {
 
     public:
         SettingsManager(Terminal * debug, EEPROMClass * eeprom);
-        ~SettingsManager();
         bool loadSettings();
         const char * getWifiPass();
         const char * getWifiSSID();
         bool setWifiCredentials(const char * wifipass, const char * wifissid);
-        void print();
+        bool updateSetting(const char * name, const char * value, int value_length);
+
 
     private:
         Terminal * terminal;
         EEPROMClass * eeprom;
         Settings * settings;
+
+        // Used for protecting the settings objects for reads and writes
+        SemaphoreHandle_t mutex; 
+
+        
+
 };
 
 #endif

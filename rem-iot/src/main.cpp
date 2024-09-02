@@ -16,7 +16,7 @@
 
 #define PUBLISH_DATA_STACK 2048
 #define PUBLISH_STATUS_STACK 1024
-#define PUBLISH_TERMINAL_STACK 1024
+#define PUBLISH_TERMINAL_STACK 4096
 
 // Statically create pointers to all of the providers.
 // These instances should last the lifetime of the program
@@ -42,14 +42,16 @@ static const CLI_Command_Definition_t xRebootCommand = {
     "reboot", "\r\nreboot:\r\n this command reboots the esp32\r\n\r\n",
     prvRebootCommand, 0};
 
-static BaseType_t prvReadEEPROMCommand(char *pcWriteBuffer,
+static BaseType_t prvUpdateSettingsCommand(char *pcWriteBuffer,
                                        size_t xWriteBufferLen,
                                        const char *pcCommandString);
 
-static const CLI_Command_Definition_t xReadEEPROMCommand = {
-    "read-eeprom",
-    "\r\nread-eeprom:\r\n this command reboots the esp32\r\n\r\n",
-    prvReadEEPROMCommand, 1};
+static const CLI_Command_Definition_t xUpdateSettingsCommand = {
+    "update-setting",
+    "\r\nupdate-setting <NAME> <VALUE>:\r\n this command reboots the esp32. Valid settings include `ssid` and `password`\r\n\r\n",
+    prvUpdateSettingsCommand, 2};
+
+
 void setup() {
   // Turn on Fan
   pinMode(FAN, OUTPUT);
@@ -127,7 +129,7 @@ void setup() {
 
   // Setup CLI Commands
   FreeRTOS_CLIRegisterCommand(&xRebootCommand);
-  FreeRTOS_CLIRegisterCommand(&xReadEEPROMCommand);
+  FreeRTOS_CLIRegisterCommand(&xUpdateSettingsCommand);
 }
 
 // Main loop is uneeded because we are using freertos tasks to persist the
@@ -175,13 +177,27 @@ BaseType_t prvRebootCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
   return pdTRUE;
 }
 
-BaseType_t prvReadEEPROMCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
+BaseType_t prvUpdateSettingsCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
                                 const char *pcCommandString) {
 
-  Serial.println("Reading EEPROM");
-  Serial.write(pcWriteBuffer, xWriteBufferLen);
-  Serial.println("Done");
-  Serial.print(pcCommandString);
+  BaseType_t nameParamToStringLength, valueParamToStringLength; 
+  const char * nameParam = FreeRTOS_CLIGetParameter( pcCommandString,
+                                            1,
+                                            &nameParamToStringLength );
+
+  const char * valueParam = FreeRTOS_CLIGetParameter( pcCommandString,
+                                            2,
+                                            &valueParamToStringLength );
+
+  // Call the update function and validate the response
+  bool res = settingsManager->updateSetting(nameParam, valueParam, (int)valueParamToStringLength); 
+  Serial.printf("Result: %d\n", res);
+  if(res) {
+    snprintf(pcWriteBuffer, xWriteBufferLen, "Update setting successfully");
+  } else {
+    snprintf(pcWriteBuffer, xWriteBufferLen, "Failed to update setting"); 
+  }
 
   return pdFALSE;
 }
+
