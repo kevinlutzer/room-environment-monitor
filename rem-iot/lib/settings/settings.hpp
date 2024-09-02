@@ -21,11 +21,15 @@
 // The total amount of settings that are stored in the eeprom. This is used for
 // verifying the amount of memory needed for concating all of the settings objects
 // into a single buffer.
-#define SETTING_QUANTITY 2
+#define SETTING_QUANTITY 6
 
 // String ids of each of the settings fields
 #define PASSWORD_ID "password"
 #define SSID_ID "ssid"
+#define MQTT_SERVER_ID "mqtt-server"
+#define DEVICE_ID_ID "device-id"
+#define DATA_TOPIC_ID "data-topic"
+#define STATUS_TOPIC_ID "status-topic"
 
 class Settings {
 
@@ -34,6 +38,10 @@ class Settings {
 
         char ssid[SETTING_LEN];
         char password[SETTING_LEN];
+        char mqtt_server[SETTING_LEN];
+        char device_id[SETTING_LEN];
+        char data_topic[SETTING_LEN];
+        char status_topic[SETTING_LEN];
 
         void serialize(uint8_t * buf, int len);
         void deserialize(uint8_t * buf, int len);

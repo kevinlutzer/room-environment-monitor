@@ -30,7 +30,7 @@
 
 #include "Arduino.h"
 
-#define configCOMMAND_INT_MAX_OUTPUT_SIZE 400
+#define configCOMMAND_INT_MAX_OUTPUT_SIZE 800
 #define cmdMAX_INPUT_SIZE 200
 
 /* The prototype to which callback functions used to process command line

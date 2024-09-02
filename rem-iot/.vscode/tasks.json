@@ -11,19 +11,7 @@
 				"kind": "build",
 				"isDefault": true,
 			},
-			"label": "PlatformIO: Build"
+			"label": "PlatformIO: Build",
 		},
-		{
-			"type": "PlatformIO",
-			"task": "Test",
-			"problemMatcher": [
-				"$platformio"
-			],
-			"group": {
-				"kind": "test",
-				"isDefault": false
-			},
-			"label": "PlatformIO: Test"
-		}
 	]
 }

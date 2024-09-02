@@ -40,14 +40,27 @@ const char * SettingsManager::getSetting(const char * name) {
 bool SettingsManager::printSettings(char * buf, size_t len) {
     // Calculate the amount of characters needed for each of the settings, their names, and some formating character (4)
     // Like :, ' ', and \r\n for each character as well as before the first string.
-    size_t minLen = SETTING_LEN * (SETTING_QUANTITY + 4) + 2 + strlen(SSID_ID) + strlen(PASSWORD_ID);
+    size_t minLen = SETTING_LEN * (SETTING_QUANTITY + 4) + 2 + strlen(SSID_ID) + strlen(PASSWORD_ID) + strlen(MQTT_SERVER_ID) + strlen(DEVICE_ID_ID) + strlen(DATA_TOPIC_ID) + strlen(STATUS_TOPIC_ID);
 
     if (len < minLen) {
         Serial.printf("Minlen %d, len %d\n", minLen, len);
         return false;
     }
 
-    snprintf(buf, len, "\r\nssid: %s\r\npassword: %s\r\n", this->settings->ssid, this->settings->password);
+    snprintf(buf, len,
+        "\r\n%s: %s\r\n%s: %s\r\n%s: %s\r\n%s: %s\r\n%s: %s\r\n%s: %s\r\n", 
+        SSID_ID, 
+        this->settings->ssid, 
+        PASSWORD_ID,
+        this->settings->password,
+        MQTT_SERVER_ID,
+        this->settings->mqtt_server,
+        DEVICE_ID_ID,
+        this->settings->device_id,
+        DATA_TOPIC_ID,
+        this->settings->data_topic,
+        STATUS_TOPIC_ID,
+        this->settings->status_topic);
     return true;
 }
 
@@ -58,6 +71,14 @@ bool SettingsManager::updateSetting(const char * name, const char * value, int v
         memcpy(this->settings->ssid, value, SETTING_LEN);
     } else if (strncmp(name, PASSWORD_ID, 8) == 0 && value_len <= SETTING_LEN) {
         memcpy(this->settings->password, value, SETTING_LEN);
+    } else if (strncmp(name, MQTT_SERVER_ID, 10) == 0 && value_len <= SETTING_LEN) {
+        memcpy(this->settings->mqtt_server, value, SETTING_LEN);
+    } else if (strncmp(name, DEVICE_ID_ID, 9) == 0 && value_len <= SETTING_LEN) {
+        memcpy(this->settings->device_id, value, SETTING_LEN);
+    } else if (strncmp(name, DATA_TOPIC_ID, 10) == 0 && value_len <= SETTING_LEN) {
+        memcpy(this->settings->data_topic, value, SETTING_LEN);
+    } else if (strncmp(name, STATUS_TOPIC_ID, 12) == 0 && value_len <= SETTING_LEN) {
+        memcpy(this->settings->status_topic, value, SETTING_LEN);
     } else {        
         return false;
     }

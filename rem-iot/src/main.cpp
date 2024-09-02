@@ -10,13 +10,16 @@
 #include "controller.hpp"
 #include "pin_config.hpp"
 #include "settings_manager.hpp"
+#include "wifi_controller.hpp"
 #include "terminal.hpp"
 
-#define DEBUG true
+#define INIT_DEBUG true
 
 #define PUBLISH_DATA_STACK 2048
 #define PUBLISH_STATUS_STACK 1024
 #define PUBLISH_TERMINAL_STACK 4096
+
+#define SAMPLE_RATE 30000
 
 // Statically create pointers to all of the providers.
 // These instances should last the lifetime of the program
@@ -24,11 +27,10 @@ REMController *controller;
 SettingsManager *settingsManager;
 PM1006K *pm1006k;
 Adafruit_BME280 *bme280;
-PubSubClient *pubsubClient;
 WiFiClient espClient;
 Terminal *terminal;
-
-int count = 0;
+WiFiController *wifiController;
+PubSubClient * pubSubClient;
 
 // Task Defs
 void PublishDataasdTask(void *paramater);
@@ -39,7 +41,7 @@ static BaseType_t prvRebootCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
                                    const char *pcCommandString);
 
 static const CLI_Command_Definition_t xRebootCommand = {
-    "reboot", "\r\nreboot:\r\n this command reboots the esp32\r\n\r\n",
+    "reboot", "\r\nreboot:\r\n this command reboots the esp32\r\n",
     prvRebootCommand, 0};
 
 static BaseType_t prvUpdateSettingCommand(char *pcWriteBuffer,
@@ -48,7 +50,7 @@ static BaseType_t prvUpdateSettingCommand(char *pcWriteBuffer,
 
 static const CLI_Command_Definition_t xUpdateSettingCommand = {
     "update-setting",
-    "\r\nupdate-setting <NAME> <VALUE>:\r\n This command reboots the esp32. Valid settings include `ssid` and `password`\r\n\r\n",
+    "\r\nupdate-setting <NAME> <VALUE>:\r\n This command reboots the esp32. Valid settings include `ssid` and `password`\r\n",
     prvUpdateSettingCommand, 2};
 
 static BaseType_t prvPrintSettingsCommand(char *pcWriteBuffer,
@@ -57,7 +59,7 @@ static BaseType_t prvPrintSettingsCommand(char *pcWriteBuffer,
 
 static const CLI_Command_Definition_t xPrintSettingsCommand = {
     "print-settings",
-    "\r\nprint-settings: \r\n This command will return a list of all of the settings and their values. \r\n\r\n",
+    "\r\nprint-settings: \r\n This command will return a list of all of the settings and their values. \r\n",
     prvPrintSettingsCommand, 0};
 
 static BaseType_t prvDebugCommand(char *pcWriteBuffer,
@@ -66,18 +68,37 @@ static BaseType_t prvDebugCommand(char *pcWriteBuffer,
 
 static const CLI_Command_Definition_t xDebugCommand = {
     "debug",
-    "\r\ndebug: \r\n This toggles the debug logging\r\n\r\n",
-    prvDebugCommand, };
+    "\r\ndebug: \r\n This toggles the debug logging\r\n",
+    prvDebugCommand, 0 };
 
+static BaseType_t prvWiFiStatusCommand(char *pcWriteBuffer,
+                                       size_t xWriteBufferLen,
+                                       const char *pcCommandString);
+
+static const CLI_Command_Definition_t xWiFIStatusCommand = {
+    "wifi-status",
+    "\r\nwifi-status: \r\n Returns the wifi connected status\r\n",
+    prvWiFiStatusCommand, 0 };
 
 void setup() {
   // Turn on Fan
   pinMode(FAN, OUTPUT);
   digitalWrite(FAN, HIGH);
 
-  // Setup debug construct
+  // Setup terminal that will be used for the cli tool and debug logging
   Serial.begin(115200);
-  terminal = new Terminal(DEBUG, &Serial);
+  terminal = new Terminal(INIT_DEBUG, &Serial);
+
+  // Setup the terminal task that handles the input and output of the terminal
+  xTaskCreate(TerminalTask, "Terminal Task", PUBLISH_TERMINAL_STACK, NULL, 1,
+            NULL);
+
+  // Setup CLI Commands
+  FreeRTOS_CLIRegisterCommand(&xRebootCommand);
+  FreeRTOS_CLIRegisterCommand(&xUpdateSettingCommand);
+  FreeRTOS_CLIRegisterCommand(&xPrintSettingsCommand);
+  FreeRTOS_CLIRegisterCommand(&xDebugCommand);
+  FreeRTOS_CLIRegisterCommand(&xWiFIStatusCommand);
 
   // Setup EEPROM
   int count = 0;
@@ -87,32 +108,43 @@ void setup() {
     delay(1000);
   }
 
-  // Setup secrets instance
+  // Setup settings manager and load settings from eeprom
   settingsManager = new SettingsManager(terminal, &EEPROM);
-
   if (!settingsManager->loadSettings()) {
     terminal->debugln("Failed to load settings");
   }
 
-  // // Setup Controller and Controller Depedencies
-  // Serial1.begin(PM1006K::BAUD_RATE, SERIAL_8N1, PM1006K_RX_PIN,
-  // PM1006K_TX_PIN); pm1006k = new PM1006K(&Serial1);
+  // Setup the Wifi connection as well as NTP. Once that is completed
+  // verify that the internal clock is synced with the NTP server
+  wifiController = new WiFiController(&WiFi, terminal, settingsManager);
+  if (!wifiController->setupWiFi()) {
+    terminal->debugln("Wifi Setup Failed"); 
+  }
 
-  // // Setup I2C and BME280 Driver
-  // Wire.begin(I2C_SDA, I2C_SCL);
-  // bme280 = new Adafruit_BME280();
-  // bme280->begin(BME280_ADDRESS, &Wire);
+  wifiController->setupSNTP();
+  if (!wifiController->verifyClockSync()) {
+    terminal->debugln("Failed to sync the clock with the NTP server");
+  }
 
-  // // Setup Pubsub Driver
-  // pubsubClient = new PubSubClient(espClient);
+  // Setup Controller and Controller Depedencies
+  Serial1.begin(PM1006K::BAUD_RATE, SERIAL_8N1, PM1006K_RX_PIN,
+  PM1006K_TX_PIN); pm1006k = new PM1006K(&Serial1);
+
+  // Setup I2C and BME280 Driver
+  Wire.begin(I2C_SDA, I2C_SCL);
+  bme280 = new Adafruit_BME280();
+  bme280->begin(BME280_ADDRESS, &Wire);
+
+  terminal->debugln("Setup Room Environment Monitor");
+
+  // Create the PubSubClient
+  PubSubClient * pubSubClient = new PubSubClient(espClient);
+  pubSubClient->setServer(settingsManager->getSetting(MQTT_SERVER_ID), 1883);
+  pubSubClient->connect("arduinoClient");
 
   // // Setup Controller
   // controller = new REMController(&WiFi, pm1006k, bme280, pubsubClient,
   // terminal, settingsManager);
-
-  // if (!controller->setupWiFi()) {
-  //   terminal->debugln("Wifi Setup Failed");
-  // }
 
   // // Wait about 10 seconds for the esp client to become avaliable. If it
   // doesn't,
@@ -146,14 +178,7 @@ void setup() {
   // xTaskCreate(PublishStatusTask, "Publish Status",
   // PUBLISH_STATUS_STACK, NULL, 1, NULL);
   
-  xTaskCreate(TerminalTask, "Terminal Task", PUBLISH_TERMINAL_STACK, NULL, 1,
-              NULL);
 
-  // Setup CLI Commands
-  FreeRTOS_CLIRegisterCommand(&xRebootCommand);
-  FreeRTOS_CLIRegisterCommand(&xUpdateSettingCommand);
-  FreeRTOS_CLIRegisterCommand(&xDebugCommand);
-  FreeRTOS_CLIRegisterCommand(&xPrintSettingsCommand);
 }
 
 // Main loop is uneeded because we are using freertos tasks to persist the
@@ -167,24 +192,24 @@ void loop() { return; }
 void PublishDataTask(void *paramater) {
   while (true) {
     delay(SAMPLE_RATE);
-    controller->refreshPM25();
-    controller->refreshBME280();
-    if (!controller->publishData()) {
-      terminal->debugln("Publish Data Failed");
-    } else {
-      terminal->debugln("Published Data");
-    }
+    // controller->refreshPM25();
+    // controller->refreshBME280();
+    // if (!controller->publishData()) {
+    //   terminal->debugln("Publish Data Failed");
+    // } else {
+    //   terminal->debugln("Published Data");
+    // }
   }
 }
 
 void PublishStatusTask(void *paramater) {
   while (true) {
     delay(STATUS_RATE);
-    if (!controller->publishStatus()) {
-      terminal->debugln("Publish Data Failed");
-    } else {
-      terminal->debugln("Published Data");
-    }
+    // if (!controller->publishStatus()) {
+    //   terminal->debugln("Publish Data Failed");
+    // } else {
+    //   terminal->debugln("Published Data");
+    // }
   }
 }
 
@@ -242,6 +267,15 @@ BaseType_t prvPrintSettingsCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
   if (!settingsManager->printSettings(pcWriteBuffer, xWriteBufferLen)) {
     snprintf(pcWriteBuffer, xWriteBufferLen, "Failed to print the settings\r\n");
   }
+
+  return pdFALSE;
+}
+
+BaseType_t prvWiFiStatusCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
+                                const char *pcCommandString) {
+
+  wl_status_t status = WiFi.status();
+  snprintf(pcWriteBuffer, xWriteBufferLen, "WiFi status: %d \r\n", status);
 
   return pdFALSE;
 }

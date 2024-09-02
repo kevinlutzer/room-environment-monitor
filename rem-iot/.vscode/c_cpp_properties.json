@@ -1,12 +1,15 @@
+//
+// !!! WARNING !!! AUTO-GENERATED FILE!
+// PLEASE DO NOT MODIFY IT AND USE "platformio.ini":
+// https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
+//
 {
     "configurations": [
         {
             "name": "PlatformIO",
             "includePath": [
-                "/Users/kevinlutzer/Projects/room-environment-monitor/rem-iot/include",
                 "/Users/kevinlutzer/Projects/room-environment-monitor/rem-iot/src",
                 "/Users/kevinlutzer/Projects/room-environment-monitor/rem-iot/lib/controller",
-                "/Users/kevinlutzer/Projects/room-environment-monitor/rem-iot/lib/pin_config",
                 "/Users/kevinlutzer/Documents/Arduino/libraries/ArduinoJson/src",
                 "/Users/kevinlutzer/Projects/room-environment-monitor/rem-iot/lib/settings",
                 "/Users/kevinlutzer/Projects/room-environment-monitor/rem-iot/lib/terminal",
@@ -21,6 +24,7 @@
                 "/Users/kevinlutzer/Documents/Arduino/libraries/Adafruit_BusIO",
                 "/Users/kevinlutzer/.platformio/packages/framework-arduinoespressif32/libraries/SPI/src",
                 "/Users/kevinlutzer/.platformio/packages/framework-arduinoespressif32/libraries/Wire/src",
+                "/Users/kevinlutzer/Projects/room-environment-monitor/rem-iot/include",
                 "/Users/kevinlutzer/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32c3/include/newlib/platform_include",
                 "/Users/kevinlutzer/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32c3/include/freertos/include",
                 "/Users/kevinlutzer/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32c3/include/freertos/include/esp_additions/freertos",
@@ -220,7 +224,7 @@
                 "/Users/kevinlutzer/Documents/Arduino/libraries/Adafruit_SGP40_Sensor/src",
                 "/Users/kevinlutzer/Documents/Arduino/libraries/Adafruit_SHT31_Library",
                 "/Users/kevinlutzer/Documents/Arduino/libraries/SparkFun_ATECCX08a_Arduino_Library/src",
-                "/Users/kevinlutzer/Projects/room-environment-monitor/rem-iot/.pio/libdeps/esp32-c3-devkitm-1/Unity/src",
+                "/Users/kevinlutzer/Projects/room-environment-monitor/rem-iot/lib/wifi-controller",
                 "/Users/kevinlutzer/.platformio/packages/framework-arduinoespressif32/libraries/ArduinoOTA/src",
                 "/Users/kevinlutzer/.platformio/packages/framework-arduinoespressif32/libraries/AsyncUDP/src",
                 "/Users/kevinlutzer/.platformio/packages/framework-arduinoespressif32/libraries/BLE/src",
@@ -255,10 +259,8 @@
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "/Users/kevinlutzer/Projects/room-environment-monitor/rem-iot/include",
                     "/Users/kevinlutzer/Projects/room-environment-monitor/rem-iot/src",
                     "/Users/kevinlutzer/Projects/room-environment-monitor/rem-iot/lib/controller",
-                    "/Users/kevinlutzer/Projects/room-environment-monitor/rem-iot/lib/pin_config",
                     "/Users/kevinlutzer/Documents/Arduino/libraries/ArduinoJson/src",
                     "/Users/kevinlutzer/Projects/room-environment-monitor/rem-iot/lib/settings",
                     "/Users/kevinlutzer/Projects/room-environment-monitor/rem-iot/lib/terminal",
@@ -273,6 +275,7 @@
                     "/Users/kevinlutzer/Documents/Arduino/libraries/Adafruit_BusIO",
                     "/Users/kevinlutzer/.platformio/packages/framework-arduinoespressif32/libraries/SPI/src",
                     "/Users/kevinlutzer/.platformio/packages/framework-arduinoespressif32/libraries/Wire/src",
+                    "/Users/kevinlutzer/Projects/room-environment-monitor/rem-iot/include",
                     "/Users/kevinlutzer/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32c3/include/newlib/platform_include",
                     "/Users/kevinlutzer/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32c3/include/freertos/include",
                     "/Users/kevinlutzer/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32c3/include/freertos/include/esp_additions/freertos",
@@ -472,7 +475,7 @@
                     "/Users/kevinlutzer/Documents/Arduino/libraries/Adafruit_SGP40_Sensor/src",
                     "/Users/kevinlutzer/Documents/Arduino/libraries/Adafruit_SHT31_Library",
                     "/Users/kevinlutzer/Documents/Arduino/libraries/SparkFun_ATECCX08a_Arduino_Library/src",
-                    "/Users/kevinlutzer/Projects/room-environment-monitor/rem-iot/.pio/libdeps/esp32-c3-devkitm-1/Unity/src",
+                    "/Users/kevinlutzer/Projects/room-environment-monitor/rem-iot/lib/wifi-controller",
                     "/Users/kevinlutzer/.platformio/packages/framework-arduinoespressif32/libraries/ArduinoOTA/src",
                     "/Users/kevinlutzer/.platformio/packages/framework-arduinoespressif32/libraries/AsyncUDP/src",
                     "/Users/kevinlutzer/.platformio/packages/framework-arduinoespressif32/libraries/BLE/src",
@@ -508,7 +511,6 @@
             "defines": [
                 "PLATFORMIO=60115",
                 "ARDUINO_ESP32C3_DEV",
-                "SAMPLE_RATE=30000",
                 "HAVE_CONFIG_H",
                 "MBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\"",
                 "UNITY_INCLUDE_CONFIG_H",
@@ -528,7 +530,7 @@
             ],
             "cStandard": "gnu99",
             "cppStandard": "gnu++11",
-            "compilerPath": "/usr/bin/clang++",
+            "compilerPath": "/Users/kevinlutzer/.platformio/packages/toolchain-riscv32-esp/bin/riscv32-esp-elf-gcc",
             "compilerArgs": [
                 "-march=rv32imc",
                 ""

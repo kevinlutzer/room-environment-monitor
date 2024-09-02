@@ -1,6 +1,5 @@
 #include "WiFi.h"
 #include "Adafruit_BME280.h"
-#include "esp_sntp.h"
 #include "ArduinoJson.h"
 #include "PubSubClient.h"
 #include "UUID.h"
@@ -30,25 +29,27 @@ bool REMController::publishStatus() {
 
     this->terminal->debugln("Going to be publishing status");
 
-    json["id"] = DEVICE_ID;
-    json["description"] = DEVICE_DESCRIPTION;
+    this->uuidGenerator->generate();
+    json["id"] = this->uuidGenerator->toCharArray();
+    json["deviceId"] = this->settingsManager->getSetting(DEVICE_ID_ID);    
     
     if (this->terminal->isDebug()) {
         this->terminal->debugln("Status to be serialized:");
         serializeJson(json, Serial);
     }
 
-    return this->publish(STATUS_TOPIC, json.as<String>().c_str());
+    const char * statusTopic = this->settingsManager->getSetting(STATUS_TOPIC_ID);
+    return this->publish(statusTopic, json.as<String>().c_str());
 }
 
 bool REMController::publishData() {
     this->terminal->debugln("Going to be publishing data");
-
+    const char * deviceId  = this->settingsManager->getSetting(DEVICE_ID_ID);
     DynamicJsonDocument json(1024);
     json["pm2_5"] = this->pm2_5;
     json["pm1_0"] = this->pm1_0;
     json["pm10"] = this->pm10;
-    json["deviceid"] = DEVICE_ID;
+    json["deviceid"] = deviceId;
 
     json["temperature"] = this->temperature;
     json["humidity"] = this->humidity;
@@ -70,27 +71,12 @@ bool REMController::publishData() {
     //     this->terminal->debugln("Data to be serialized:");
     //     serializeJson(json, Serial);        
     // }
-
-    return this->publish(DATA_TOPIC, json.as<String>().c_str());\
+    const char * dataTopic = this->settingsManager->getSetting(DATA_TOPIC_ID);
+    return this->publish(dataTopic, json.as<String>().c_str());\
 }
 
 bool REMController::publish(const char * topic, const char * payload) {
     return this->pubsubClient->publish(topic, payload);
-}
-
-String REMController::wifiConfig() {
-    if (this->wifi->status() != WL_CONNECTED) {
-        return "No Connected";
-    }
-
-    IPAddress ip = this->wifi->localIP();
-    String ipString = ip.toString();
-
-    String res = "IP: ";
-
-    res.concat(ipString);
-
-    return res;
 }
 
 bool REMController::refreshPM25() {
@@ -110,68 +96,6 @@ bool REMController::refreshBME280() {
     this->temperature = this->bme280->readTemperature();
     this->humidity = this->bme280->readHumidity();
     this->pressure = this->bme280->readPressure();
-
-    return true;
-}
-
-bool REMController::setupSNTP() {
-    const char* time_zone = "CET-1CEST,M3.5.0,M10.5.0/3";  // TimeZone rule for Europe/Rome including daylight adjustment rules (optional)
-
-    const char* ntpServer1 = "pool.ntp.org";
-    const char* ntpServer2 = "time.nist.gov";
-    const long  gmtOffset_sec = 3600;
-    const int   daylightOffset_sec = 3600;
-
-    // Setup timing config for NTP. This needs to be done before
-    // DHCP address is given to the ESP32C3.
-    sntp_servermode_dhcp(1);    // (optional)
-    configTime(gmtOffset_sec, daylightOffset_sec, ntpServer1, ntpServer2);
-}
-
-bool REMController::verifyClockSync() {
-    // Verify that we have synced the internal clock with an NTP server
-    // Short circuit if alter 10 tries we are not synced.
-    sntp_sync_status_t sntp_status = sntp_get_sync_status();
-    int count = 0;
-    while (sntp_status != SNTP_SYNC_STATUS_COMPLETED) {
-        delay(500);
-        sntp_status = sntp_get_sync_status();
-        if (count > 10) {
-            return false;
-        }
-    }
-
-    return true; 
-}
-
-bool REMController::setupWiFi() {
-    this->wifi->useStaticBuffers(true);
-    bool success = this->wifi->mode(WIFI_STA);
-    if (!success) {
-        this->terminal->debugln("Failed to set wifi mode to WIFI_STA");
-        return false;
-    }
-
-    const char * wifissid = this->settingsManager->getSetting(PASSWORD_ID);
-    const char * wifipass = this->settingsManager->getSetting(SSID_ID);
-
-    wl_status_t wifi_status = this->wifi->begin(wifissid, wifipass);
-
-    // Verfiy that we are connected to the WiFi
-    int count = 0;
-    while (wifi_status != WL_CONNECTED) {
-        // Try 10 times and then restart the ESP32C3
-        if (count > 10) {
-            this->terminal->debugln("Reached retry count and still didn't setup wifi successfully");
-            return false;
-        }
-
-        delay(500);
-        wifi_status = this->wifi->status();
-        count ++;
-    }
-
-    this->terminal->debugln("Connected to WiFi");
 
     return true;
 }

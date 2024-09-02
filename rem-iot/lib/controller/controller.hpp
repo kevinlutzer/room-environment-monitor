@@ -14,9 +14,6 @@
 class REMController {
     public:
         REMController(WiFiClass *wifi, PM1006K *pm1006k, Adafruit_BME280 *bme280, PubSubClient *pubsubClient, Terminal * terminal, SettingsManager * settingsManager);
-        bool setupWiFi();
-        bool setupSNTP();
-        bool verifyClockSync();
 
         bool refreshPM25();
         bool refreshBME280();
@@ -25,7 +22,7 @@ class REMController {
         bool publishData();
         bool publishStatus();
 
-        String wifiConfig();
+
 
     private:
         // Drivers
