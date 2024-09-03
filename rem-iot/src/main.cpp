@@ -13,6 +13,7 @@
 #include "settings_manager.hpp"
 #include "wifi_controller.hpp"
 #include "terminal.hpp"
+#include "tasks.hpp"
 
 #define INIT_DEBUG true
 
@@ -31,12 +32,9 @@ Adafruit_BME280 *bme280;
 WiFiClient espClient;
 Terminal *terminal;
 PubSubClient * pubSubClient;
-QueueHandle_t msgQueue;
+REMTaskProviders *providers;
 
-// Task Defs
-void PublishDataTask(void *paramater);
-void PublishMQTTMsg(void *paramater);
-void TerminalTask(void *paramater);
+QueueHandle_t msgQueue;
 
 static BaseType_t prvRebootCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
                                    const char *pcCommandString);
@@ -90,17 +88,6 @@ void setup() {
   Serial.begin(115200);
   terminal = new Terminal(INIT_DEBUG, &Serial);
 
-  // Setup the terminal task that handles the input and output of the terminal
-  xTaskCreate(TerminalTask, "Terminal Task", PUBLISH_TERMINAL_STACK, NULL, 1,
-            NULL);
-
-  // Setup CLI Commands
-  FreeRTOS_CLIRegisterCommand(&xRebootCommand);
-  FreeRTOS_CLIRegisterCommand(&xUpdateSettingCommand);
-  FreeRTOS_CLIRegisterCommand(&xPrintSettingsCommand);
-  FreeRTOS_CLIRegisterCommand(&xDebugCommand);
-  FreeRTOS_CLIRegisterCommand(&xWiFIStatusCommand);
-
   // Setup EEPROM
   int count = 0;
   while (count < 5 && !EEPROM.begin(EEPROM_SIZE)) {
@@ -150,12 +137,25 @@ void setup() {
   // Setup Controller
   controller = new REMController(pm1006k, bme280, terminal, settingsManager, &msgQueue);
 
+  providers = new REMTaskProviders(controller, settingsManager, terminal, pubSubClient, msgQueue);
+
   // Setup the remaining tasks to publish data and the status of the device
-  xTaskCreate(PublishDataTask, "Publish Data", PUBLISH_DATA_STACK, NULL, 1,
+  xTaskCreate(PublishDataTask, "Publish Data", PUBLISH_DATA_STACK, providers, 1,
   NULL); 
   
   xTaskCreate(PublishMQTTMsg, "Publish Status",
-  PUBLISH_STATUS_STACK, NULL, 1, NULL);  
+  PUBLISH_STATUS_STACK, providers, 1, NULL);  
+
+    // Setup the terminal task that handles the input and output of the terminal
+  xTaskCreate(TerminalTask, "Terminal Task", PUBLISH_TERMINAL_STACK, providers, 1,
+            NULL);
+
+  // Setup CLI Commands
+  FreeRTOS_CLIRegisterCommand(&xRebootCommand);
+  FreeRTOS_CLIRegisterCommand(&xUpdateSettingCommand);
+  FreeRTOS_CLIRegisterCommand(&xPrintSettingsCommand);
+  FreeRTOS_CLIRegisterCommand(&xDebugCommand);
+  FreeRTOS_CLIRegisterCommand(&xWiFIStatusCommand);
 
   terminal->debugln("Setup Room Environment Monitor");
 }
@@ -163,50 +163,6 @@ void setup() {
 // Main loop is uneeded because we are using freertos tasks to persist the
 // application
 void loop() { return; }
-
-//
-// Begin the FreeRTOS task definitions
-//
-void PublishDataTask(void *paramater) {
-  while (true) {
-    delay(SAMPLE_RATE);
-    controller->queueLatestSensorData();
-  }
-}
-
-void PublishMQTTMsg(void * parameter) {
-  MQTTMsg * msg;
-
-  while (true) {
-    
-    Serial.println("Check Queue");
-
-    // Wait for a message to be received from the queue indefinitely
-    // note that this doesn't actually block. 
-    if (xQueueReceive(msgQueue, &msg, portMAX_DELAY) == pdTRUE) {
-      Serial.println("Handling Message");
-
-      if (!pubSubClient->publish("rem/data", msg->getDocStr())) {
-        terminal->debugln("Failed to publish message");
-      }
-
-      terminal->debugln("Published Message");
-
-      // Assume that all messages passed to the queue must be deleted after
-      // they are published to the MQTT server here. 
-      delete msg;
-    }
-
-    // Yield to the core to allow other tasks to run
-    // This task should be queued with a lower priority than the other tasks
-    delay(10);
-  }
-}
-
-void TerminalTask(void *paramater) {
-  // Just handle input characters and the yield back to the core
-  terminal->handleCharacter();
-}
 
 //
 // Begin the CLI Command Definitions
