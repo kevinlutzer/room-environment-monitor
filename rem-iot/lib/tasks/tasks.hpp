@@ -7,12 +7,13 @@
 #include "settings_manager.hpp"
 #include "terminal.hpp"
 
-#define SAMPLE_RATE 5000
+#define DATA_SAMPLE_RATE 5000
+#define STATUS_SAMPLE_RATE 1000
 
 class REMTaskProviders {
 
 public:
-    REMTaskProviders(REMController *controller, SettingsManager *settingsManager, Terminal *terminal, PubSubClient * pubSubClient, QueueHandle_t msgQueue) {
+    REMTaskProviders(REMController *controller, SettingsManager *settingsManager, Terminal *terminal, PubSubClient * pubSubClient, QueueHandle_t * msgQueue) {
         this->controller = controller;
         this->settingsManager = settingsManager;
         this->terminal = terminal;
@@ -24,12 +25,15 @@ public:
     SettingsManager *settingsManager;
     Terminal *terminal;
     PubSubClient * pubSubClient;
-    QueueHandle_t msgQueue;
+    QueueHandle_t * msgQueue;
 };
 
 
+
+
 // Task Defs
-void PublishDataTask(void *paramater);
+void QueueDataTask(void *paramater);
+void QueueStatusTask(void *paramater);
 void PublishMQTTMsg(void *paramater);
 void TerminalTask(void *paramater);
 

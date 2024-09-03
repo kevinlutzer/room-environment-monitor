@@ -17,6 +17,7 @@ class REMController {
     public:
         REMController(PM1006K *pm1006k, Adafruit_BME280 *bme280, Terminal * terminal, SettingsManager * settingsManager, QueueHandle_t * msgQueue);
         void queueLatestSensorData();
+        void queueStatus();
 
     private:
         // Drivers

@@ -13,6 +13,11 @@ MQTTMsg::MQTTMsg(const char * topic, const char * deviceId, const char * id) {
     // Note that internally within JsonDocument, memory is allocated. We don't need
     // ie to preallocate memory
     this->doc = JsonDocument();
+
+    // Append the id and device id to doc. These pieces of data are shared between status and
+    // data messages
+    this->doc["id"] = this->id;
+    this->doc["deviceId"] = this->deviceId;
 }
 
 const char * MQTTMsg::getTopic() {

@@ -10,7 +10,6 @@ Terminal::Terminal(bool init, Stream * stream) {
     this->txMutex = xSemaphoreCreateMutex();
 }
 
-
 bool Terminal::isDebug() {
     return this->_debug;
 }
@@ -136,6 +135,6 @@ void Terminal::handleCharacter() {
             xSemaphoreGive( this->txMutex);
         }
 
-        delay(10);
+        yield();
     }
 }

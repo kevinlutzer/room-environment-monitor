@@ -34,7 +34,8 @@ Terminal *terminal;
 PubSubClient * pubSubClient;
 REMTaskProviders *providers;
 
-QueueHandle_t msgQueue;
+// Create a queue to handle the messages that are sent to the MQTT server
+static QueueHandle_t msgQueue = xQueueCreate(10, sizeof(MQTTMsg *));
 
 static BaseType_t prvRebootCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
                                    const char *pcCommandString);
@@ -79,14 +80,67 @@ static const CLI_Command_Definition_t xWiFIStatusCommand = {
     "\r\nwifi-status: \r\n Returns the wifi connected status\r\n",
     prvWiFiStatusCommand, 0 };
 
+
+/**
+ * Setup the wifi connection and the NTP server. If the clock is not synced
+ * with the NTP server, the function will return false
+ */
+void setupWiFi() {
+  WiFiController *wifiController = new WiFiController(&WiFi, terminal, settingsManager);
+  if (!wifiController->setupWiFi()) {
+    terminal->debugln("Wifi Setup Failed"); 
+  }
+
+  wifiController->setupSNTP();
+  if (!wifiController->verifyClockSync()) {
+    terminal->debugln("Failed to sync the clock with the NTP server");
+  }
+
+  // Controller isn't needed again execpt for initial networking config
+  delete wifiController;
+}
+
+/**
+ * Setup the terminal and the terminal task that will handle the input and output
+ */
+void setupTerminal() {
+
+  Serial.begin(115200);
+  terminal = new Terminal(INIT_DEBUG, &Serial);
+  
+  // Setup the terminal task that handles the input and output of the terminal
+  xTaskCreate(TerminalTask, "Terminal Task", PUBLISH_TERMINAL_STACK, terminal, 1,
+            NULL);
+
+  // Setup CLI Commands
+  FreeRTOS_CLIRegisterCommand(&xRebootCommand);
+  FreeRTOS_CLIRegisterCommand(&xUpdateSettingCommand);
+  FreeRTOS_CLIRegisterCommand(&xPrintSettingsCommand);
+  FreeRTOS_CLIRegisterCommand(&xDebugCommand);
+  FreeRTOS_CLIRegisterCommand(&xWiFIStatusCommand);
+}
+
+/**
+ * Initializes the pubsub client which internally creates a MQTT connection to the
+ * server. The server connected too is determeind by the mqtt server setting.
+ */
+void setupPubSubClient() {
+  pubSubClient = new PubSubClient(espClient);
+  pubSubClient->setServer(settingsManager->getSetting(MQTT_SERVER_ID), 1883);
+  pubSubClient->connect("arduinoClient");
+
+  while(!pubSubClient->connected()) {
+    terminal->debugln("Failed to connect to MQTT server, retrying...");
+    delay(1000);
+  }
+}
+
 void setup() {
   // Turn on Fan
   pinMode(FAN, OUTPUT);
   digitalWrite(FAN, HIGH);
 
-  // Setup terminal that will be used for the cli tool and debug logging
-  Serial.begin(115200);
-  terminal = new Terminal(INIT_DEBUG, &Serial);
+  setupTerminal();
 
   // Setup EEPROM
   int count = 0;
@@ -102,60 +156,34 @@ void setup() {
     terminal->debugln("Failed to load settings");
   }
 
-  // Setup the Wifi connection as well as NTP. Once that is completed
-  // verify that the internal clock is synced with the NTP server
-  WiFiController *wifiController = new WiFiController(&WiFi, terminal, settingsManager);
-  if (!wifiController->setupWiFi()) {
-    terminal->debugln("Wifi Setup Failed"); 
-  }
-
-  wifiController->setupSNTP();
-  if (!wifiController->verifyClockSync()) {
-    terminal->debugln("Failed to sync the clock with the NTP server");
-  }
-
-  // Controller isn't needed again execpt for initial networking config
-  delete wifiController;
+  // Setup network utilities including the network connection, 
+  // sntp, and the mqtt client
+  setupWiFi();
+  setupPubSubClient();
 
   // Setup Controller and Controller Depedencies
   Serial1.begin(PM1006K::BAUD_RATE, SERIAL_8N1, PM1006K_RX_PIN,
-  PM1006K_TX_PIN); pm1006k = new PM1006K(&Serial1);
+  PM1006K_TX_PIN); 
+  pm1006k = new PM1006K(&Serial1);
 
   // Setup I2C and BME280 Driver
   Wire.begin(I2C_SDA, I2C_SCL);
   bme280 = new Adafruit_BME280();
   bme280->begin(BME280_ADDRESS, &Wire);
 
-  // Create the PubSubClient
-  PubSubClient * pubSubClient = new PubSubClient(espClient);
-  pubSubClient->setServer(settingsManager->getSetting(MQTT_SERVER_ID), 1883);
-  pubSubClient->connect("arduinoClient");
-
-  // Create the message queue
-  msgQueue = xQueueCreate(10, sizeof(MQTTMsg *));
-
   // Setup Controller
   controller = new REMController(pm1006k, bme280, terminal, settingsManager, &msgQueue);
 
-  providers = new REMTaskProviders(controller, settingsManager, terminal, pubSubClient, msgQueue);
-
-  // Setup the remaining tasks to publish data and the status of the device
-  xTaskCreate(PublishDataTask, "Publish Data", PUBLISH_DATA_STACK, providers, 1,
+  // Setup the remaining tasks to queue data and the status of the device
+  xTaskCreate(QueueDataTask, "Queue Data", PUBLISH_DATA_STACK, controller, 1,
   NULL); 
-  
+
+  xTaskCreate(QueueStatusTask, "Status Data", PUBLISH_DATA_STACK, controller, 1,
+  NULL); 
+
+  providers = new REMTaskProviders(controller, settingsManager, terminal, pubSubClient, &msgQueue);
   xTaskCreate(PublishMQTTMsg, "Publish Status",
   PUBLISH_STATUS_STACK, providers, 1, NULL);  
-
-    // Setup the terminal task that handles the input and output of the terminal
-  xTaskCreate(TerminalTask, "Terminal Task", PUBLISH_TERMINAL_STACK, providers, 1,
-            NULL);
-
-  // Setup CLI Commands
-  FreeRTOS_CLIRegisterCommand(&xRebootCommand);
-  FreeRTOS_CLIRegisterCommand(&xUpdateSettingCommand);
-  FreeRTOS_CLIRegisterCommand(&xPrintSettingsCommand);
-  FreeRTOS_CLIRegisterCommand(&xDebugCommand);
-  FreeRTOS_CLIRegisterCommand(&xWiFIStatusCommand);
 
   terminal->debugln("Setup Room Environment Monitor");
 }

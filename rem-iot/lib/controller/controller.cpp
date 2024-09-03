@@ -25,34 +25,42 @@ REMController::REMController(PM1006K *pm1006k, Adafruit_BME280 *bme280, Terminal
     this->uuidGenerator->seed(rn);
 }
 
-// bool REMController::publishStatus() {
-//     // DynamicJsonDocument json(156);
-    
-//     // this->uuidGenerator->generate();
-//     // json["id"] = this->uuidGenerator->toCharArray();
-//     // json["deviceId"] = this->settingsManager->getSetting(DEVICE_ID_ID);    
-    
-//     // if (this->terminal->isDebug()) {
-//     //     this->terminal->debugln("Status to be serialized:");
-//     //     serializeJson(json, Serial);
-//     // }
+void REMController::queueStatus() {
 
-//     // const char * statusTopic = this->settingsManager->getSetting(STATUS_TOPIC_ID);
-//     // return this->publish(statusTopic, json.as<String>().c_str());
-//     return false;
-// }
+    this->uuidGenerator->generate();
+
+    const char * deviceId  = this->settingsManager->getSetting(DEVICE_ID_ID);
+    const char * statusTopic = this->settingsManager->getSetting(STATUS_TOPIC_ID);
+    MQTTMsg * msg = new MQTTMsg(statusTopic, deviceId, this->uuidGenerator->toCharArray());
+    if (msg == NULL) {
+        this->terminal->debugln("Failed to create msg, there is not enough memory");
+        return;
+    }
+    
+    if ( xQueueSend( *this->msgQueue, ( void * ) &msg, MSG_QUEUE_TIMEOUT ) == errQUEUE_FULL) {
+        this->terminal->debugln("Msg queue is full");
+        return;
+    }
+
+    this->terminal->debugln("Queued status");
+}
 
 void REMController::queueLatestSensorData() {
+
+    this->uuidGenerator->generate();
+
     const char * deviceId  = this->settingsManager->getSetting(DEVICE_ID_ID);
     const char * dataTopic = this->settingsManager->getSetting(DATA_TOPIC_ID);
-
-    // Generate a UUID and append it to the data struct
-    this->uuidGenerator->generate();
-    MQTTMsg * msg = new MQTTMsg(dataTopic, deviceId, this->uuidGenerator->toCharArray());
+    MQTTMsg * msg = new MQTTMsg(dataTopic, deviceId, this->uuidGenerator->toCharArray());   
+    if (msg == NULL) {
+        this->terminal->debugln("Failed to create msg, there is not enough memory");
+        return;
+    }
 
     // If we can get pm1006 data, add it to the msg
     if (!this->pm1006k->takeMeasurement()) {
         this->terminal->debugln("Failed to take measurement");
+        // return;
     }
 
     // Apply PM1006K data to the msg
@@ -65,7 +73,10 @@ void REMController::queueLatestSensorData() {
     msg->setField("humidity", this->bme280->readHumidity());
     msg->setField("pressure", this->bme280->readPressure());
 
-    if ( xQueueSend( *this->msgQueue, ( void * ) &msg, MSG_QUEUE_TIMEOUT ) != pdPASS) {
-        this->terminal->debugln("Failed to send message to the queue");
+    if ( xQueueSend( *this->msgQueue, ( void * ) &msg, MSG_QUEUE_TIMEOUT ) == errQUEUE_FULL) {
+        this->terminal->debugln("Msg queue is full");
+        return;
     }
+
+    this->terminal->debugln("Queued latest sensor data");
 }
