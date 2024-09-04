@@ -27,7 +27,7 @@ class Terminal {
         bool isDebug();
 
         // Task handler for the terminal
-        void handleCharacter();
+        void terminalProc(void * userData);
 
     private:
 

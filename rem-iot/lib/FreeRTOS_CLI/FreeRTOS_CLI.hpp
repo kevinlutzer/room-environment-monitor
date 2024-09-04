@@ -38,7 +38,7 @@ commands must comply.  pcWriteBuffer is a buffer into which the output from
 executing the command can be written, xWriteBufferLen is the length, in bytes of
 the pcWriteBuffer buffer, and pcCommandString is the entire string as input by
 the user (from which parameters can be extracted).*/
-typedef BaseType_t (*pdCOMMAND_LINE_CALLBACK)( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString );
+typedef BaseType_t (*pdCOMMAND_LINE_CALLBACK)( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString, void * userData );
 
 /* The structure that defines command line commands.  A command line command
 should be defined by declaring a const structure of this type. */
@@ -72,7 +72,7 @@ BaseType_t FreeRTOS_CLIRegisterCommand( const CLI_Command_Definition_t * const p
  * pcCmdIntProcessCommand is not reentrant.  It must not be called from more
  * than one task - or at least - by more than one task at a time.
  */
-BaseType_t FreeRTOS_CLIProcessCommand(char * pcCommandInput, char * pcWriteBuffer, size_t xWriteBufferLen  );
+BaseType_t FreeRTOS_CLIProcessCommand(char * pcCommandInput, char * pcWriteBuffer, size_t xWriteBufferLen, void * userData );
 
 /*-----------------------------------------------------------*/
 

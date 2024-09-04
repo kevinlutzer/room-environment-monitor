@@ -38,7 +38,7 @@ REMTaskProviders *providers;
 static QueueHandle_t msgQueue = xQueueCreate(10, sizeof(MQTTMsg *));
 
 static BaseType_t prvRebootCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
-                                   const char *pcCommandString);
+                                   const char *pcCommandString, void * userData);
 
 static const CLI_Command_Definition_t xRebootCommand = {
     "reboot", "\r\nreboot:\r\n this command reboots the esp32\r\n",
@@ -46,7 +46,7 @@ static const CLI_Command_Definition_t xRebootCommand = {
 
 static BaseType_t prvUpdateSettingCommand(char *pcWriteBuffer,
                                        size_t xWriteBufferLen,
-                                       const char *pcCommandString);
+                                       const char *pcCommandString, void * userData);
 
 static const CLI_Command_Definition_t xUpdateSettingCommand = {
     "update-setting",
@@ -55,7 +55,7 @@ static const CLI_Command_Definition_t xUpdateSettingCommand = {
 
 static BaseType_t prvPrintSettingsCommand(char *pcWriteBuffer,
                                        size_t xWriteBufferLen,
-                                       const char *pcCommandString);
+                                       const char *pcCommandString, void * userData);
 
 static const CLI_Command_Definition_t xPrintSettingsCommand = {
     "print-settings",
@@ -64,7 +64,7 @@ static const CLI_Command_Definition_t xPrintSettingsCommand = {
 
 static BaseType_t prvDebugCommand(char *pcWriteBuffer,
                                        size_t xWriteBufferLen,
-                                       const char *pcCommandString);
+                                       const char *pcCommandString, void * userData);
 
 static const CLI_Command_Definition_t xDebugCommand = {
     "debug",
@@ -73,7 +73,7 @@ static const CLI_Command_Definition_t xDebugCommand = {
 
 static BaseType_t prvWiFiStatusCommand(char *pcWriteBuffer,
                                        size_t xWriteBufferLen,
-                                       const char *pcCommandString);
+                                       const char *pcCommandString, void * userData);
 
 static const CLI_Command_Definition_t xWiFIStatusCommand = {
     "wifi-status",
@@ -104,9 +104,6 @@ void setupWiFi() {
  * Setup the terminal and the terminal task that will handle the input and output
  */
 void setupTerminal() {
-
-  Serial.begin(115200);
-  terminal = new Terminal(INIT_DEBUG, &Serial);
   
   // Setup the terminal task that handles the input and output of the terminal
   xTaskCreate(TerminalTask, "Terminal Task", PUBLISH_TERMINAL_STACK, terminal, 1,
@@ -140,7 +137,8 @@ void setup() {
   pinMode(FAN, OUTPUT);
   digitalWrite(FAN, HIGH);
 
-  setupTerminal();
+  Serial.begin(115200);
+  terminal = new Terminal(INIT_DEBUG, &Serial);
 
   // Setup EEPROM
   int count = 0;
@@ -182,22 +180,28 @@ void setup() {
   NULL); 
 
   providers = new REMTaskProviders(controller, settingsManager, terminal, pubSubClient, &msgQueue);
+  
   xTaskCreate(PublishMQTTMsg, "Publish Status",
-  PUBLISH_STATUS_STACK, providers, 1, NULL);  
+    PUBLISH_STATUS_STACK, providers, 1, NULL); 
+
+  setupTerminal(); 
 
   terminal->debugln("Setup Room Environment Monitor");
+
 }
 
 // Main loop is uneeded because we are using freertos tasks to persist the
 // application
-void loop() { return; }
+void loop() {
+  return;
+}
 
 //
 // Begin the CLI Command Definitions
 //
 
 BaseType_t prvRebootCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
-                            const char *pcCommandString) {
+                            const char *pcCommandString, void * userData) {
   ESP.restart();
 
   // Never reached because the esp32 reboots fully
@@ -205,7 +209,7 @@ BaseType_t prvRebootCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
 }
 
 BaseType_t prvUpdateSettingCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
-                                const char *pcCommandString) {
+                                const char *pcCommandString, void * userData) {
 
   BaseType_t nameParamToStringLength, valueParamToStringLength; 
   const char * nameParam = FreeRTOS_CLIGetParameter( pcCommandString,
@@ -227,7 +231,7 @@ BaseType_t prvUpdateSettingCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
 }
 
 BaseType_t prvDebugCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
-                                const char *pcCommandString) {
+                                const char *pcCommandString, void * userData) {
 
   bool debug_val = terminal->toggleDebug();
   snprintf(pcWriteBuffer, xWriteBufferLen, "Debug logging is now is now %s\r\n", debug_val ? "enabled" : "disabled");
@@ -236,7 +240,7 @@ BaseType_t prvDebugCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
 }
 
 BaseType_t prvPrintSettingsCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
-                                const char *pcCommandString) {
+                                const char *pcCommandString, void * userData) {
 
   BaseType_t nameParamToStringLength, valueParamToStringLength; 
 
@@ -250,7 +254,7 @@ BaseType_t prvPrintSettingsCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
 }
 
 BaseType_t prvWiFiStatusCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
-                                const char *pcCommandString) {
+                                const char *pcCommandString, void * userData) {
 
   wl_status_t status = WiFi.status();
   snprintf(pcWriteBuffer, xWriteBufferLen, "WiFi status: %d \r\n", status);

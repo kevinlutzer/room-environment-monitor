@@ -64,7 +64,7 @@ void Terminal::debug(String str) {
     }
 }
 
-void Terminal::handleCharacter() {
+void Terminal::terminalProc(void * userData) {
 
     // Create a buffer to store the input string and the last input string
     static char cInputString[ cmdMAX_INPUT_SIZE ];
@@ -104,7 +104,7 @@ void Terminal::handleCharacter() {
                     for(;;)
                     {
                         // Get the command output from the processing function, this goes to std out
-                        xReturned = FreeRTOS_CLIProcessCommand( cInputString, pcOutputString, (size_t)configCOMMAND_INT_MAX_OUTPUT_SIZE );
+                        xReturned = FreeRTOS_CLIProcessCommand( cInputString, pcOutputString, (size_t)configCOMMAND_INT_MAX_OUTPUT_SIZE, userData );
                         
                         this->stream->println(pcOutputString);
 

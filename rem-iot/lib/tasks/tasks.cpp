@@ -46,8 +46,8 @@ void PublishMQTTMsg(void * parameter) {
 }
 
 void TerminalTask(void *parameter) {
-  Terminal *terminal = (Terminal *)parameter;
-    
+  REMTaskProviders *providers = (REMTaskProviders *)parameter;
+
   // Just handle input characters and the yield back to the core
-  terminal->handleCharacter();
+  providers->terminal->terminalProc(providers);
 }

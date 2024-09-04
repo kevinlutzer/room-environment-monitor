@@ -67,7 +67,9 @@ bool WiFiController::setupWiFi() {
     wl_status_t wifi_status = this->wifi->begin("lz-guest", "ZkwTITOt5EWOUPvr6d2jOdvR742ZDYYo");
     do {
         wifi_status = this->wifi->status();
-        delay(500);
+        delay(2000);
+        this->terminal->debug("WiFi Status is: ");
+        this->terminal->debugln(wifi_status == WL_CONNECTED ? "Connected" : "Not Connected");
     } while (wifi_status != WL_CONNECTED);
 
     this->terminal->debugln("Connected to WiFi");
