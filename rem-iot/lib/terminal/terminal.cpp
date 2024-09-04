@@ -19,49 +19,84 @@ bool Terminal::toggleDebug() {
     return this->_debug;
 }
 
-void Terminal::debug(const char * str) {
+size_t Terminal::getTime(char * buf) {
+  struct tm timeinfo;
+  if(!getLocalTime(&timeinfo)){
+    return false;
+  }
+
+  return strftime(buf, 128, "%A, %B %d %Y %H:%M:%S", &timeinfo);
+}
+
+size_t Terminal::debugf(const char *format, ...) {
+    int len = 0;
+    
     if(!this->_debug) {
-        return;
+        return len;
     }
 
+    // Lock on writting to the serial interface so we don't have contention with multiple commands/tasks
+    // logging at the same time
     if( xSemaphoreTake( this->txMutex, TERMINAL_TIMEOUT_TICK ) == pdTRUE ) {
-        this->stream->print(str);
-        xSemaphoreGive( this->txMutex );
+        return len;
     }
+
+    char loc_buf[64];
+    char * temp = loc_buf;
     
+    va_list arg;
+    va_list copy;
+    
+    // Effectively copy the implementation of printf from Print.cpp so we can wrap it with our own specific
+    // debugging information
+
+    va_start(arg, format);
+    va_copy(copy, arg);
+    
+    len = vsnprintf(temp, sizeof(loc_buf), format, copy);
+    
+    va_end(copy);
+    if(len < 0) {
+        va_end(arg);
+        len = 0;
+        goto memcleanup;
+    }
+
+    if(len >= (int)sizeof(loc_buf)){  // comparation of same sign type for the compiler
+        temp = (char*) malloc(len+1);
+        if(temp == NULL) {
+            va_end(arg);
+            len = 0;
+            goto memcleanup;
+        }
+        len = vsnprintf(temp, len+1, format, arg);
+    }
+
+    va_end(arg);
+    len = this->stream->write((uint8_t*)temp, len);
+    
+memcleanup:
+    if(temp != loc_buf){
+        free(temp);
+    }
+    xSemaphoreGive( this->txMutex );
+    return len;
+}   
+
+void Terminal::debug(const char * str) {
+    this->debugf("%s", str);    
 }
 
 void Terminal::debugln(const char * str) {
-    if(!this->_debug) {
-        return;
-    }
-
-    if( xSemaphoreTake( this->txMutex, TERMINAL_TIMEOUT_TICK ) == pdTRUE ) {
-        this->stream->println(str);
-        xSemaphoreGive( this->txMutex );
-    }
+    this->debugf("%s\n", str);
 }
 
 void Terminal::debugln(String str) {
-    if(!this->_debug) {
-        return;
-    }
-    
-    if( xSemaphoreTake( this->txMutex, TERMINAL_TIMEOUT_TICK ) == pdTRUE ) {
-        this->stream->println(str);
-        xSemaphoreGive( this->txMutex );
-    }
+    this->debugf("%s\n", str.c_str());
 }
 
 void Terminal::debug(String str) {
-    if(!this->_debug) {
-        return;
-    }
-    
-    if( xSemaphoreTake( this->txMutex, TERMINAL_TIMEOUT_TICK ) == pdTRUE ) {
-        this->stream->print(str);
-        xSemaphoreGive( this->txMutex );
-    }
+    this->debugf("%s", str.c_str());
 }
 
 void Terminal::handleCharacter() {

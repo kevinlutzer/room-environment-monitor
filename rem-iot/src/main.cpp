@@ -133,6 +133,8 @@ void setupPubSubClient() {
     terminal->debugln("Failed to connect to MQTT server, retrying...");
     delay(1000);
   }
+
+  Serial.println("Connected to MQTT server");
 }
 
 void setup() {
