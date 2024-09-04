@@ -1,7 +1,5 @@
-#ifndef _REM_CONTROLLER_CONFIG_H
-#define _REM_CONTROLLER_CONFIG_H
-
-    #define STATUS_RATE 5000 // ms
+#ifndef _REM_PIN_CONFIG_HPP
+#define _REM_PIN_CONFIG_HPP
 
     #define PM1006K_RX_PIN 4
     #define PM1006K_TX_PIN 5

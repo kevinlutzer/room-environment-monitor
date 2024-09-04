@@ -13,21 +13,34 @@
 
 #define MSG_QUEUE_TIMEOUT pdMS_TO_TICKS(10) // 10ms 
 
+/**
+ * @brief REMController is responsible for creating and queuing telemetry data and status messages in the form of a MQTTMsg. The queued data will 
+ * be consumed by a queue worker that will publish each message 
+ *  */ 
 class REMController {
     public:
         REMController(PM1006K *pm1006k, Adafruit_BME280 *bme280, Terminal * terminal, SettingsManager * settingsManager, QueueHandle_t * msgQueue);
+        
+        /**
+         * @brief Send the latest sensor data to the `msgQueue`.
+         */
         void queueLatestSensorData();
+
+        /**
+         * @brief Send the status of the device to the `msgQueue`.
+         */
         void queueStatus();
 
     private:
-        // Drivers
+
+        // Different service providers
         PM1006K *pm1006k;
         Adafruit_BME280 *bme280;
         Terminal * terminal;
         SettingsManager * settingsManager;
         QueueHandle_t * msgQueue;
         
-        // Utilities
+        // UUID generator is used for generating unique ids for each message
         UUID *uuidGenerator;
 };
 

@@ -3,12 +3,6 @@
 Settings::Settings() {
     memset(this->ssid, 0x00, SETTING_LEN);
     memset(this->password, 0x00, SETTING_LEN);
-
-    // Set the initial values for the mqtt server
-    strcpy(this->mqtt_server, "192.168.1.100");
-    strcpy(this->device_id, "REM-1");
-    strcpy(this->data_topic, "rem/data");
-    strcpy(this->status_topic, "rem/status");
 }
 
 /**

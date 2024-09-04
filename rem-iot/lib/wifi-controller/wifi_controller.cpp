@@ -64,10 +64,13 @@ bool WiFiController::setupWiFi() {
 
     // Try and connect to the WiFi, to verify a connection happend we have to 
     // poll the WiFi::status().
-    wl_status_t wifi_status = this->wifi->begin("lz-guest", "ZkwTITOt5EWOUPvr6d2jOdvR742ZDYYo");
+    wl_status_t wifi_status = this->wifi->begin(wifissid, wifissid);
     do {
         wifi_status = this->wifi->status();
-        delay(500);
+        this->terminal->debug("WiFi Connection String: ");
+        this->terminal->debugln(wifi_status == WL_CONNECTED ? "Connected" : "Not Connected");
+        delay(1000);
+
     } while (wifi_status != WL_CONNECTED);
 
     this->terminal->debugln("Connected to WiFi");
