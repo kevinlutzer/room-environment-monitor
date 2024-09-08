@@ -3,8 +3,6 @@
 #include "EEPROM.h"
 #include "Arduino.h"
 
-#define SETTING_MUTEX_TIMEOUT pdMS_TO_TICKS(10) // 10ms 
-
 SettingsManager::SettingsManager(Terminal * terminal, EEPROMClass * eeprom) {
     this->terminal = terminal;
     this->eeprom = eeprom;
@@ -49,10 +47,9 @@ const char * SettingsManager::getSetting(const char * name) {
 bool SettingsManager::printSettings(char * buf, size_t len) {
     // Calculate the amount of characters needed for each of the settings, their names, and some formating character (4)
     // Like :, ' ', and \r\n for each character as well as before the first string.
-    size_t minLen = SETTING_LEN * (SETTING_QUANTITY + 4) + 2 + strlen(SSID_ID) + strlen(PASSWORD_ID) + strlen(MQTT_SERVER_ID) + strlen(DEVICE_ID_ID) + strlen(DATA_TOPIC_ID) + strlen(STATUS_TOPIC_ID);
-
-    if (len < minLen) {
-        Serial.printf("Minlen %d, len %d\n", minLen, len);
+    
+    if (len < SETTINGS_PRINT_LEN) {
+        Serial.printf("Minlen %d, len %d\n", SETTINGS_PRINT_LEN, len);
         return false;
     }
 

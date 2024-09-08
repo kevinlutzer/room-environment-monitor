@@ -50,13 +50,13 @@ bool WiFiController::setupWiFi() {
 
     // Grab the ssid and password from the settings manager, if they aren't there 
     // that means they haven't been stored yet.  
-    const char * wifissid = this->settingsManager->getSetting(PASSWORD_ID);
+    const char * wifissid = this->settingsManager->getSetting(SSID_ID);
     if (wifissid == NULL) {
         this->terminal->debugln("Failed to get the SSID from the settings manager");
         return false;
     }
 
-    const char * wifipass = this->settingsManager->getSetting(SSID_ID);
+    const char * wifipass = this->settingsManager->getSetting(PASSWORD_ID);
     if (wifipass == NULL) {
         this->terminal->debugln("Failed to get the password from the settings manager");
         return false;
