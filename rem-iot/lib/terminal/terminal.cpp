@@ -19,49 +19,105 @@ bool Terminal::toggleDebug() {
     return this->_debug;
 }
 
-void Terminal::debug(const char * str) {
+size_t Terminal::getTime(char * buf) {
+  struct tm timeinfo;
+  if(!getLocalTime(&timeinfo)){
+    strcpy(buf, "[N/A] ");
+    return 6;
+  }
+
+  return strftime(buf, 128, "[%m/%d/%Y %H:%M:%S] ", &timeinfo);
+}
+
+size_t Terminal::debugf(const char *format, ...) {
+    int len = 0;
+    
     if(!this->_debug) {
-        return;
+        return len;
     }
 
-    if( xSemaphoreTake( this->txMutex, TERMINAL_TIMEOUT_TICK ) == pdTRUE ) {
-        this->stream->print(str);
-        xSemaphoreGive( this->txMutex );
-    }
+    // Lock on writting to the serial interface so we don't have contention with multiple commands/tasks
+    // logging at the same time
+    // if( xSemaphoreTake( this->txMutex, TERMINAL_TIMEOUT_TICK ) == pdTRUE ) {
+    //     return len;
+    // }
+
+    char loc_buf[64];
+    char * temp = loc_buf;
     
+    va_list arg;
+    va_list copy;
+
+    char time_buf[TIME_BUFFER_SIZE_MAX];
+    size_t time_len;
+
+    char * write_buf;
+ 
+    // Effectively copy the implementation of printf from Print.cpp so we can wrap it with our own specific
+    // debugging information
+
+    va_start(arg, format);
+    va_copy(copy, arg);
+    
+    len = vsnprintf(temp, sizeof(loc_buf), format, copy);
+    
+    va_end(copy);
+    if(len < 0) {
+        va_end(arg);
+        len = 0;
+        goto memcleanup;
+    }
+
+    if(len >= (int)sizeof(loc_buf)){  // comparation of same sign type for the compiler
+        temp = (char*) malloc(len+1);
+        if(temp == NULL) {
+            va_end(arg);
+            len = 0;
+            goto memcleanup;
+        }
+        len = vsnprintf(temp, len+1, format, arg);
+    }
+
+    va_end(arg);
+
+    time_len = this->getTime(time_buf);
+    write_buf = (char*) malloc(len + time_len);
+    if(write_buf == NULL) {
+        len = 0;
+        goto memcleanup;
+    }
+
+    memcpy(write_buf, time_buf, time_len);
+    memcpy(write_buf + time_len, temp, len);
+
+    len = this->stream->write((uint8_t*)write_buf, len + time_len);
+    
+memcleanup:
+
+    // if the buf addr is no longer the same as it was, 
+    // assume that the memory was therefore allocated from the heap and we need to free it
+    if(temp != loc_buf){
+        free(temp);
+    }
+
+    // xSemaphoreGive( this->txMutex );
+    return len;
+}   
+
+void Terminal::debug(const char * str) {
+    this->debugf("%s", str);    
 }
 
 void Terminal::debugln(const char * str) {
-    if(!this->_debug) {
-        return;
-    }
-
-    if( xSemaphoreTake( this->txMutex, TERMINAL_TIMEOUT_TICK ) == pdTRUE ) {
-        this->stream->println(str);
-        xSemaphoreGive( this->txMutex );
-    }
+    this->debugf("%s\n", str);
 }
 
 void Terminal::debugln(String str) {
-    if(!this->_debug) {
-        return;
-    }
-    
-    if( xSemaphoreTake( this->txMutex, TERMINAL_TIMEOUT_TICK ) == pdTRUE ) {
-        this->stream->println(str);
-        xSemaphoreGive( this->txMutex );
-    }
+    this->debugf("%s\n", str.c_str());
 }
 
 void Terminal::debug(String str) {
-    if(!this->_debug) {
-        return;
-    }
-    
-    if( xSemaphoreTake( this->txMutex, TERMINAL_TIMEOUT_TICK ) == pdTRUE ) {
-        this->stream->print(str);
-        xSemaphoreGive( this->txMutex );
-    }
+    this->debugf("%s", str.c_str());
 }
 
 void Terminal::handleCharacter() {

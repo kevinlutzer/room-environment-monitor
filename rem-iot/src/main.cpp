@@ -80,7 +80,6 @@ static const CLI_Command_Definition_t xWiFIStatusCommand = {
     "\r\nwifi-status: \r\n Returns the wifi connected status\r\n",
     prvWiFiStatusCommand, 0 };
 
-
 /**
  * Setup the wifi connection and the NTP server. If the clock is not synced
  * with the NTP server, the function will return false
@@ -133,6 +132,8 @@ void setupPubSubClient() {
     terminal->debugln("Failed to connect to MQTT server, retrying...");
     delay(1000);
   }
+
+  Serial.println("Connected to MQTT server");
 }
 
 void setup() {

@@ -50,13 +50,13 @@ bool WiFiController::setupWiFi() {
 
     // Grab the ssid and password from the settings manager, if they aren't there 
     // that means they haven't been stored yet.  
-    const char * wifissid = this->settingsManager->getSetting(PASSWORD_ID);
+    const char * wifissid = this->settingsManager->getSetting(SSID_ID);
     if (wifissid == NULL) {
         this->terminal->debugln("Failed to get the SSID from the settings manager");
         return false;
     }
 
-    const char * wifipass = this->settingsManager->getSetting(SSID_ID);
+    const char * wifipass = this->settingsManager->getSetting(PASSWORD_ID);
     if (wifipass == NULL) {
         this->terminal->debugln("Failed to get the password from the settings manager");
         return false;
@@ -64,11 +64,10 @@ bool WiFiController::setupWiFi() {
 
     // Try and connect to the WiFi, to verify a connection happend we have to 
     // poll the WiFi::status().
-    wl_status_t wifi_status = this->wifi->begin(wifissid, wifissid);
+    wl_status_t wifi_status = this->wifi->begin(wifissid, wifipass);
     do {
         wifi_status = this->wifi->status();
-        this->terminal->debug("WiFi Connection String: ");
-        this->terminal->debugln(wifi_status == WL_CONNECTED ? "Connected" : "Not Connected");
+        this->terminal->debugf("WiFi Connection String: %s\r\n", wifi_status == WL_CONNECTED ? "Connected" : "Not Connected");
         delay(1000);
 
     } while (wifi_status != WL_CONNECTED);

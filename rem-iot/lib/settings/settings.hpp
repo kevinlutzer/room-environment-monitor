@@ -21,6 +21,12 @@
 // This is the length of a single setting in characters. 
 #define SETTING_LEN 40
 
+// The amount of time to wait for the mutex to be available before returning
+#define SETTING_MUTEX_TIMEOUT pdMS_TO_TICKS(10) // 10ms 
+
+// The amount of characters needed for each of the settings, their names, and some formating character (4)
+#define SETTINGS_PRINT_LEN SETTING_LEN * (SETTING_QUANTITY + 4) + 2 + strlen(SSID_ID) + strlen(PASSWORD_ID) + strlen(MQTT_SERVER_ID) + strlen(DEVICE_ID_ID) + strlen(DATA_TOPIC_ID) + strlen(STATUS_TOPIC_ID)
+
 // The total amount of settings that are stored in the EEPROM. This is used for
 // verifying the amount of memory needed for concatenating all of the settings objects
 // into a single buffer.

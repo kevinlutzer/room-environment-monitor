@@ -40,7 +40,7 @@ class SettingsManager {
 
         /**
          * @brief Format the setting data into a printable format and place the data 
-         * into the passed buffer
+         * into the passed buffer, the length of the buffer must be at least SETTINGS_PRINT_LEN
          * 
          * @param buf the buffer to write the settings to
          * @param len the length of the buffer
