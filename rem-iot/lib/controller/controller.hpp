@@ -46,7 +46,6 @@ class REMController {
 
         // Start time to track uptime of the device
         struct tm * startTime;
-        emperature_sensor_handle_t * tempHandle;
 };
 
 #endif

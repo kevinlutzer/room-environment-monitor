@@ -4,7 +4,6 @@
 #include "PubSubClient.h"
 #include "UUID.h"
 #include "Arduino.h"
-#include "time.h"
 
 #include "mqtt_msg.hpp"
 #include "settings_manager.hpp"
@@ -30,11 +29,6 @@ REMController::REMController(PM1006K *pm1006k, Adafruit_BME280 *bme280, Terminal
     this->startTime = (struct tm *)malloc(sizeof(struct tm));
     if (this->startTime == NULL) {
         this->terminal->debugln("Failed to allocate memory for start time");
-    }
-
-    this->tempHandle = (temperature_sensor_handle_t *)malloc(sizeof(emperature_sensor_handle_t));
-    if (this->tempHandle == NULL) {
-        this->terminal->debugln("Failed to allocate memory for temperature sensor handle");
     }
 
     // Make sure we get a proper start time, if we don't we won't be able to sent that info 
