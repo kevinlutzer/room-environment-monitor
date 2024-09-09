@@ -133,7 +133,6 @@ void setupPubSubClient() {
     delay(1000);
   }
 
-  Serial.println("Connected to MQTT server");
 }
 
 void setup() {

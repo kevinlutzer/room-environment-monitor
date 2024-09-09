@@ -4,6 +4,7 @@
 #include "PubSubClient.h"
 #include "UUID.h"
 #include "Arduino.h"
+#include "time.h"
 
 #include "mqtt_msg.hpp"
 #include "settings_manager.hpp"
@@ -23,12 +24,47 @@ REMController::REMController(PM1006K *pm1006k, Adafruit_BME280 *bme280, Terminal
 
     this->uuidGenerator = new UUID();
     this->uuidGenerator->seed(rn);
+
+    // We can't do very much here if malloc fails, which is shouldn't since this 
+    // is done during system initialization.
+    this->startTime = (struct tm *)malloc(sizeof(struct tm));
+    if (this->startTime == NULL) {
+        this->terminal->debugln("Failed to allocate memory for start time");
+    }
+
+    this->tempHandle = (temperature_sensor_handle_t *)malloc(sizeof(emperature_sensor_handle_t));
+    if (this->tempHandle == NULL) {
+        this->terminal->debugln("Failed to allocate memory for temperature sensor handle");
+    }
+
+    // Make sure we get a proper start time, if we don't we won't be able to sent that info 
+    // via the status topic
+    while(!getLocalTime(this->startTime)) {
+        this->terminal->debugln("Failed to get start time, retrying...");
+        delay(1000);
+    }
+}
+
+REMController::~REMController() {
+    free(this->startTime);
+    delete this->uuidGenerator;
 }
 
 void REMController::queueStatus() {
 
     this->uuidGenerator->generate();
 
+    double uptime = 0;
+
+    // If we haven't set the start time start time yet, set it.
+    struct tm currentTime;
+    if (!getLocalTime(&currentTime)) {
+        this->terminal->debugln("Failed to get current time");
+    } else {
+        // Calculate the uptime
+        uptime = mktime(&currentTime) - mktime(this->startTime);
+    }
+    
     const char * deviceId  = this->settingsManager->getSetting(DEVICE_ID_ID);
     const char * statusTopic = this->settingsManager->getSetting(STATUS_TOPIC_ID);
     MQTTMsg * msg = new MQTTMsg(statusTopic, deviceId, this->uuidGenerator->toCharArray());
@@ -36,6 +72,9 @@ void REMController::queueStatus() {
         this->terminal->debugln("Failed to create msg, there is not enough memory");
         return;
     }
+
+    msg->setField("uptime", uptime);
+    msg->setField("rssi", WiFi.RSSI());
     
     if ( xQueueSend( *this->msgQueue, ( void * ) &msg, MSG_QUEUE_TIMEOUT ) == errQUEUE_FULL) {
         this->terminal->debugln("Msg queue is full");

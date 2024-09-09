@@ -20,7 +20,8 @@
 class REMController {
     public:
         REMController(PM1006K *pm1006k, Adafruit_BME280 *bme280, Terminal * terminal, SettingsManager * settingsManager, QueueHandle_t * msgQueue);
-        
+        ~REMController();
+
         /**
          * @brief Send the latest sensor data to the `msgQueue`.
          */
@@ -42,6 +43,10 @@ class REMController {
         
         // UUID generator is used for generating unique ids for each message
         UUID *uuidGenerator;
+
+        // Start time to track uptime of the device
+        struct tm * startTime;
+        emperature_sensor_handle_t * tempHandle;
 };
 
 #endif
