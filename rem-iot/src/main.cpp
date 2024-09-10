@@ -1,6 +1,7 @@
 #include "stdlib.h"
 
 #include "Adafruit_BME280.h"
+#include "Adafruit_NeoPixel.h"
 #include "EEPROM.h"
 #include "PM1006K.h"
 #include "PubSubClient.h"
@@ -29,6 +30,7 @@ REMController *controller;
 SettingsManager *settingsManager;
 PM1006K *pm1006k;
 Adafruit_BME280 *bme280;
+Adafruit_NeoPixel *neoPixel;
 WiFiClient espClient;
 Terminal *terminal;
 PubSubClient * pubSubClient;
@@ -136,6 +138,19 @@ void setupPubSubClient() {
 }
 
 void setup() {
+
+
+  Adafruit_NeoPixel NeoPixel(3, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
+  NeoPixel.clear();  // set all pixel colors to 'off'. It only takes effect if pixels.show() is called
+
+  // turn pixels to green one-by-one with delay between each pixel
+  for (int pixel = 0; pixel < 3; pixel++) {           // for each pixel
+    NeoPixel.setPixelColor(pixel, NeoPixel.Color(0, 255, 0));  // it only takes effect if pixels.show() is called
+    NeoPixel.show();                                           // update to the NeoPixel Led Strip
+
+    delay(500);  // 500ms pause between each pixel
+  }
+
   // Turn on Fan
   pinMode(FAN, OUTPUT);
   digitalWrite(FAN, HIGH);

@@ -9,4 +9,6 @@
     #define I2C_SDA 7
     #define I2C_SCL 6
 
+    #define NEOPIXEL_PIN 8
+
 #endif
