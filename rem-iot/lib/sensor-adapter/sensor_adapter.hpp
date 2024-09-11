@@ -14,38 +14,44 @@
 #define MSG_QUEUE_TIMEOUT pdMS_TO_TICKS(10) // 10ms 
 
 /**
- * @brief REMController is responsible for creating and queuing telemetry data and status messages in the form of a MQTTMsg. The queued data will 
- * be consumed by a queue worker that will publish each message 
+ * @brief SensorAdapter is responsible for fetching the latest sensor data from each of the peripheral devices.
+ * The data is then accessible within the class instance via getter methods.
  *  */ 
-class REMController {
+class SensorAdapter {
     public:
-        REMController(PM1006K *pm1006k, Adafruit_BME280 *bme280, Terminal * terminal, SettingsManager * settingsManager, QueueHandle_t * msgQueue);
-        ~REMController();
+        SensorAdapter(PM1006K *pm1006k, Adafruit_BME280 *bme280, Terminal * terminal);
 
         /**
-         * @brief Send the latest sensor data to the `msgQueue`.
+         * @brief Calls each of the sensor libraries to grab the latest data. The data then becomes available on the class instance.
+         * @return bool True if the pm1006k specific data was loaded, false otherwise. Note that we don't have a failure case to worry about
+         * for the bme280.
          */
-        void queueLatestSensorData();
+        bool loadData();
 
-        /**
-         * @brief Send the status of the device to the `msgQueue`.
-         */
-        void queueStatus();
+        // Getters for the instances local data
+        int getPM2_5() { return this->pm2_5; }
+        int getPM1_0() { return this->pm1_0; }
+        int getPM10() { return this->pm10; }
 
+        float getTemperature() { return this->temperature; }
+        float getPressure() { return this->pressure; }
+        float getHumidity() { return this->humidity; }
+        
     private:
 
         // Different service providers
         PM1006K *pm1006k;
         Adafruit_BME280 *bme280;
         Terminal * terminal;
-        SettingsManager * settingsManager;
-        QueueHandle_t * msgQueue;
         
-        // UUID generator is used for generating unique ids for each message
-        UUID *uuidGenerator;
+        // Latest data values
+        int pm2_5 = -1;
+        int pm1_0 = -1;
+        int pm10 = -1;
 
-        // Start time to track uptime of the device
-        struct tm * startTime;
+        float temperature = 0;
+        float pressure = 0;
+        float humidity = 0;
 };
 
 #endif

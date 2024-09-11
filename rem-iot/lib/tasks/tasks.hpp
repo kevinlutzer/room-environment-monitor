@@ -3,7 +3,7 @@
 
 #include "PubSubClient.h"
 #include "Arduino.h"
-#include "controller.hpp"
+#include "sensor_adapter.hpp"
 #include "settings_manager.hpp"
 #include "terminal.hpp"
 
@@ -17,18 +17,20 @@
 class REMTaskProviders {
 
 public:
-    REMTaskProviders(REMController *controller, SettingsManager *settingsManager, Terminal *terminal, PubSubClient * pubSubClient, QueueHandle_t * msgQueue) {
-        this->controller = controller;
+    REMTaskProviders(SensorAdapter *sensorAdapter, SettingsManager *settingsManager, Terminal *terminal, PubSubClient * pubSubClient, UUID * uuidGenerator) {
+        this->sensorAdapter = sensorAdapter;
         this->settingsManager = settingsManager;
         this->terminal = terminal;
         this->pubSubClient = pubSubClient;
         this->msgQueue = msgQueue;
+        this->uuidGenerator = uuidGenerator;
     }
 
-    REMController *controller;
+    SensorAdapter *sensorAdapter;
     SettingsManager *settingsManager;
     Terminal *terminal;
     PubSubClient * pubSubClient;
+    UUID * uuidGenerator;
     QueueHandle_t * msgQueue;
 };
 

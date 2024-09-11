@@ -7,12 +7,13 @@
 #include "PubSubClient.h"
 #include "WiFi.h"
 #include "Wire.h"
+#include "UUID.h"
 
-#include "controller.hpp"
 #include "mqtt_msg.hpp"
 #include "pin_config.hpp"
 #include "settings_manager.hpp"
 #include "wifi_controller.hpp"
+#include "sensor_adapter.hpp"
 #include "terminal.hpp"
 #include "tasks.hpp"
 
@@ -26,7 +27,7 @@
 
 // Statically create pointers to all of the providers.
 // These instances should last the lifetime of the program
-REMController *controller;
+SensorAdapter *controller;
 SettingsManager *settingsManager;
 PM1006K *pm1006k;
 Adafruit_BME280 *bme280;
@@ -35,9 +36,7 @@ WiFiClient espClient;
 Terminal *terminal;
 PubSubClient * pubSubClient;
 REMTaskProviders *providers;
-
-// Create a queue to handle the messages that are sent to the MQTT server
-static QueueHandle_t msgQueue = xQueueCreate(10, sizeof(MQTTMsg *));
+UUID *uuidGenerator;
 
 static BaseType_t prvRebootCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
                                    const char *pcCommandString);
@@ -187,20 +186,28 @@ void setup() {
   bme280->begin(BME280_ADDRESS, &Wire);
 
   // Setup Controller
-  controller = new REMController(pm1006k, bme280, terminal, settingsManager, &msgQueue);
+  controller = new SensorAdapter(pm1006k, bme280, terminal);
 
-  // Setup the remaining tasks to queue data and the status of the device
-  xTaskCreate(QueueDataTask, "Queue Data", PUBLISH_DATA_STACK, controller, 1,
-  NULL); 
+  // Create UUID Generator used for generating unique ids
+  randomSeed(analogRead(A0) || analogRead(A1) || analogRead(A2));
+  uint32_t rn = random();
 
-  xTaskCreate(QueueStatusTask, "Status Data", PUBLISH_DATA_STACK, controller, 1,
-  NULL); 
+  uuidGenerator = new UUID();
+  uuidGenerator->seed(rn);
 
-  providers = new REMTaskProviders(controller, settingsManager, terminal, pubSubClient, &msgQueue);
-  xTaskCreate(PublishMQTTMsg, "Publish Status",
-  PUBLISH_STATUS_STACK, providers, 1, NULL);  
+  // Setup the task providers and the task that publishes the messages
+  // providers = new REMTaskProviders(controller, settingsManager, terminal, pubSubClient, uuidGenerator);
 
-  terminal->debugln("Setup Room Environment Monitor");
+  // xTaskCreate(PublishMQTTMsg, "Publish MQTT",
+  // PUBLISH_STATUS_STACK, providers, 1, NULL);  
+
+  // xTaskCreate(QueueDataTask, "Queue Data", PUBLISH_DATA_STACK, controller, 1,
+  // NULL); 
+
+  // xTaskCreate(QueueStatusTask, "Status Data", PUBLISH_DATA_STACK, controller, 1,
+  // NULL);
+
+  terminal->debugln("Started tasks...");
 }
 
 // Main loop is uneeded because we are using freertos tasks to persist the
