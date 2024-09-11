@@ -27,7 +27,7 @@
 
 // Statically create pointers to all of the providers.
 // These instances should last the lifetime of the program
-SensorAdapter *controller;
+SensorAdapter *sensorAdapter;
 SettingsManager *settingsManager;
 PM1006K *pm1006k;
 Adafruit_BME280 *bme280;
@@ -36,6 +36,7 @@ WiFiClient espClient;
 Terminal *terminal;
 PubSubClient * pubSubClient;
 REMTaskProviders *providers;
+LEDController * ledController;
 UUID *uuidGenerator;
 
 static BaseType_t prvRebootCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
@@ -185,8 +186,14 @@ void setup() {
   bme280 = new Adafruit_BME280();
   bme280->begin(BME280_ADDRESS, &Wire);
 
+  // Setup the neopixel controller and clear the pixels
+  neoPixel = new Adafruit_NeoPixel(NUM_NEOPIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
+  neoPixel->begin();
+  neoPixel->clear();
+  ledController = new LEDController(neoPixel);
+
   // Setup Controller
-  controller = new SensorAdapter(pm1006k, bme280, terminal);
+  sensorAdapter = new SensorAdapter(pm1006k, bme280, terminal);
 
   // Create UUID Generator used for generating unique ids
   randomSeed(analogRead(A0) || analogRead(A1) || analogRead(A2));
@@ -196,7 +203,7 @@ void setup() {
   uuidGenerator->seed(rn);
 
   // Setup the task providers and the task that publishes the messages
-  providers = new REMTaskProviders(controller, settingsManager, terminal, pubSubClient, uuidGenerator);
+  providers = new REMTaskProviders(sensorAdapter, settingsManager, terminal, pubSubClient, uuidGenerator, ledController);
 
   xTaskCreate(PublishMQTTMsg, "Publish MQTT",
   PUBLISH_STATUS_STACK, providers, 1, NULL);  
@@ -205,6 +212,9 @@ void setup() {
   NULL); 
 
   xTaskCreate(QueueStatusTask, "Status Data", PUBLISH_DATA_STACK, providers, 1,
+  NULL);
+
+  xTaskCreate(LEDUpdateTask, "LED Update Task", PUBLISH_DATA_STACK, providers, 1,
   NULL);
 
   terminal->debugln("Started tasks...");

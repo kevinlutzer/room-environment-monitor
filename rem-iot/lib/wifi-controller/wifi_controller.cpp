@@ -68,7 +68,7 @@ bool WiFiController::setupWiFi() {
     int count = 1; 
     do {
         wifi_status = this->wifi->status();
-        if (count % 10 == 0) {
+        if (count % 5 == 0) {
             this->terminal->debugf("WiFi connection status: %s\r\n", wifi_status == WL_CONNECTED ? "connected" : "not connected");
         }
         count++;

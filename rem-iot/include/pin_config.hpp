@@ -10,5 +10,6 @@
     #define I2C_SCL 6
 
     #define NEOPIXEL_PIN 8
+    #define NUM_NEOPIXELS 3
 
 #endif

@@ -123,7 +123,7 @@ void PublishMQTTMsg(void * parameter) {
 
     // Yield to the core to allow other tasks to run
     // This task should be queued with a lower priority than the other tasks
-    delay(10);
+    delay(TERMINAL_SAMPLE_RATE);
   }
 }
 
@@ -133,3 +133,25 @@ void TerminalTask(void *parameter) {
   // Just handle input characters and the yield back to the core
   terminal->handleCharacter();
 }
+
+void LEDUpdateTask(void *parameter) {
+  REMTaskProviders *providers = (REMTaskProviders *)parameter;
+
+  while (true) {
+    // Get the latest sensor data
+    if (!providers->sensorAdapter->loadData()) {
+      providers->terminal->debugln("Failed to take measurement");
+    }
+
+    // Get the PM values, if anyone of these values is bad 
+    double pm2_5 = providers->sensorAdapter->getPM2_5();
+    double pm1_0 = providers->sensorAdapter->getPM1_0();
+    double pm10 = providers->sensorAdapter->getPM10();
+
+    providers->ledController->update(pm2_5, pm1_0, pm10);
+
+    // Update the LED panel based on the latest sensor data
+    providers->terminal->debugln("Updating LED panel");
+    delay(LED_UPDATE_RATE);
+  }
+} 
