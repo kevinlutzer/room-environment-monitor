@@ -22,7 +22,6 @@ public:
         this->settingsManager = settingsManager;
         this->terminal = terminal;
         this->pubSubClient = pubSubClient;
-        this->msgQueue = msgQueue;
         this->uuidGenerator = uuidGenerator;
     }
 
@@ -31,7 +30,6 @@ public:
     Terminal *terminal;
     PubSubClient * pubSubClient;
     UUID * uuidGenerator;
-    QueueHandle_t * msgQueue;
 };
 
 /**

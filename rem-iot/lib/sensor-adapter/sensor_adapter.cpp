@@ -1,83 +1,42 @@
-#include "WiFi.h"
 #include "Adafruit_BME280.h"
+#include "Arduino.h"
 #include "ArduinoJson.h"
 #include "PubSubClient.h"
 #include "UUID.h"
-#include "Arduino.h"
+#include "WiFi.h"
 
 #include "mqtt_msg.hpp"
+#include "pin_config.hpp"
+#include "sensor_adapter.hpp"
 #include "settings_manager.hpp"
 #include "terminal.hpp"
-#include "pin_config.hpp"
-#include "sensor_adapter.hpp" 
 
-SensorAdapter::SensorAdapter(PM1006K *pm1006k, Adafruit_BME280 *bme280, Terminal * terminal) {
-    this->pm1006k = pm1006k;
-    this->bme280 = bme280;
-    this->terminal = terminal;
-
+SensorAdapter::SensorAdapter(PM1006K *pm1006k, Adafruit_BME280 *bme280,
+                             Terminal *terminal) {
+  this->pm1006k = pm1006k;
+  this->bme280 = bme280;
+  this->terminal = terminal;
 }
 
 bool SensorAdapter::loadData() {
-    bool success = true;
+  bool success = true;
 
-    // Manually call the pm1006k to take a measurement
-    if (!this->pm1006k->takeMeasurement()) {
-        this->terminal->debugln("Failed to take measurement");
-        success = false;
-    }
+  // Manually call the pm1006k to take a measurement
+  if (!this->pm1006k->takeMeasurement()) {
+    this->terminal->debugln("Failed to take measurement");
+    success = false;
+  }
 
-    // Apply PM1006K data to the class instance, it may be invalid 
-    // if the takeMeasurement() failed
-    this->pm2_5 = this->pm1006k->getPM2_5();
-    this->pm1_0 = this->pm1006k->getPM1_0();
-    this->pm10 = this->pm1006k->getPM10();
+  // Apply PM1006K data to the class instance, it may be invalid
+  // if the takeMeasurement() failed
+  this->pm2_5 = this->pm1006k->getPM2_5();
+  this->pm1_0 = this->pm1006k->getPM1_0();
+  this->pm10 = this->pm1006k->getPM10();
 
-    // Apply BMP280 data to the class instance
-    this->temperature = this->bme280->readTemperature();
-    this->humidity = this->bme280->readHumidity();
-    this->pressure = this->bme280->readPressure();
+  // Apply BMP280 data to the class instance
+  this->temperature = this->bme280->readTemperature();
+  this->humidity = this->bme280->readHumidity();
+  this->pressure = this->bme280->readPressure();
 
-    return success;
+  return success;
 }
-
-// void SensorAdapter::queueStatus() {
-
-    
-// }
-
-// void SensorAdapter::queueLatestSensorData() {
-
-    // this->uuidGenerator->generate();
-
-    // const char * deviceId  = this->settingsManager->getSetting(DEVICE_ID_ID);
-    // const char * dataTopic = this->settingsManager->getSetting(DATA_TOPIC_ID);
-    // MQTTMsg * msg = new MQTTMsg(dataTopic, deviceId, this->uuidGenerator->toCharArray());   
-    // if (msg == NULL) {
-    //     this->terminal->debugln("Failed to create msg, there is not enough memory");
-    //     return;
-    // }
-
-    // // If we can get pm1006 data, add it to the msg
-    // if (!this->pm1006k->takeMeasurement()) {
-    //     this->terminal->debugln("Failed to take measurement");
-    //     // return;
-    // }
-
-    // // Apply PM1006K data to the msg
-    // msg->setField("pm2_5", this->pm1006k->getPM2_5());
-    // msg->setField("pm1_0", this->pm1006k->getPM1_0());
-    // msg->setField("pm10", this->pm1006k->getPM10());
-
-    // // Apply BMP280 data to the msg
-    // msg->setField("temperature", this->bme280->readTemperature());
-    // msg->setField("humidity", this->bme280->readHumidity());
-    // msg->setField("pressure", this->bme280->readPressure());
-
-    // if ( xQueueSend( *this->msgQueue, ( void * ) &msg, MSG_QUEUE_TIMEOUT ) == errQUEUE_FULL) {
-    //     this->terminal->debugln("Msg queue is full");
-    //     return;
-    // }
-
-    // this->terminal->debugln("Queued latest sensor data");
-// }

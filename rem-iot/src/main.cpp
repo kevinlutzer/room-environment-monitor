@@ -196,16 +196,16 @@ void setup() {
   uuidGenerator->seed(rn);
 
   // Setup the task providers and the task that publishes the messages
-  // providers = new REMTaskProviders(controller, settingsManager, terminal, pubSubClient, uuidGenerator);
+  providers = new REMTaskProviders(controller, settingsManager, terminal, pubSubClient, uuidGenerator);
 
-  // xTaskCreate(PublishMQTTMsg, "Publish MQTT",
-  // PUBLISH_STATUS_STACK, providers, 1, NULL);  
+  xTaskCreate(PublishMQTTMsg, "Publish MQTT",
+  PUBLISH_STATUS_STACK, providers, 1, NULL);  
 
-  // xTaskCreate(QueueDataTask, "Queue Data", PUBLISH_DATA_STACK, controller, 1,
-  // NULL); 
+  xTaskCreate(QueueDataTask, "Queue Data", PUBLISH_DATA_STACK, providers, 1,
+  NULL); 
 
-  // xTaskCreate(QueueStatusTask, "Status Data", PUBLISH_DATA_STACK, controller, 1,
-  // NULL);
+  xTaskCreate(QueueStatusTask, "Status Data", PUBLISH_DATA_STACK, providers, 1,
+  NULL);
 
   terminal->debugln("Started tasks...");
 }
@@ -274,8 +274,16 @@ BaseType_t prvPrintSettingsCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
 BaseType_t prvWiFiStatusCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
                                 const char *pcCommandString) {
 
+  // Grab the wifi information including the ip 
   wl_status_t status = WiFi.status();
-  snprintf(pcWriteBuffer, xWriteBufferLen, "WiFi status: %d \r\n", status);
+  String ip = WiFi.localIP().toString();
+
+  if (!ip.length()) {
+    snprintf(pcWriteBuffer, xWriteBufferLen, "WiFi status: %d \r\nIP: N/A \r\n", status);
+  } else {
+    const char * ipCStr = ip.c_str();
+    snprintf(pcWriteBuffer, xWriteBufferLen, "WiFi status: %d \r\nIP: %s\r\n", status, ipCStr);
+  }
 
   return pdFALSE;
 }

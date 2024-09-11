@@ -35,7 +35,7 @@ void QueueDataTask(void *parameter) {
     msg->setField("humidity", providers->sensorAdapter->getHumidity());
     msg->setField("pressure", providers->sensorAdapter->getPressure());
 
-    if ( xQueueSend( *providers->msgQueue, ( void * ) &msg, MSG_QUEUE_TIMEOUT ) == errQUEUE_FULL) {
+    if ( xQueueSend( msgQueue, ( void * ) &msg, MSG_QUEUE_TIMEOUT ) == errQUEUE_FULL) {
         providers->terminal->debugln("Msg queue is full");
         return;
     }
@@ -65,9 +65,7 @@ void QueueStatusTask(void *parameter) {
 
   // Start the status tasks loop
   while (true) {
-    // Delay for the status sample rate
-    delay(STATUS_SAMPLE_RATE);
-    
+
     providers->uuidGenerator->generate();
     double uptime = 0;
 
@@ -91,12 +89,15 @@ void QueueStatusTask(void *parameter) {
     msg->setField("uptime", uptime);
     msg->setField("rssi", WiFi.RSSI());
     
-    if ( xQueueSend( *providers->msgQueue, ( void * ) &msg, MSG_QUEUE_TIMEOUT ) == errQUEUE_FULL) {
+    if ( xQueueSend( msgQueue, ( void * ) &msg, MSG_QUEUE_TIMEOUT ) == errQUEUE_FULL) {
         providers->terminal->debugln("Msg queue is full");
         continue;
     }
 
     providers->terminal->debugln("Queued status");
+
+    // Delay for the status sample rate
+    delay(STATUS_SAMPLE_RATE);
   }
 }
 
@@ -108,11 +109,11 @@ void PublishMQTTMsg(void * parameter) {
     // Wait for a message to be received from the queue indefinitely
     // note that this doesn't actually block. 
 
-    if (xQueueReceive(*providers->msgQueue, (void *) &msg, portMAX_DELAY) == pdTRUE) {
+    if (xQueueReceive(msgQueue, (void *) &msg, portMAX_DELAY) == pdTRUE) {
       if (!providers->pubSubClient->publish(msg->getTopic(), msg->getDocStr())) {
         providers->terminal->debugln("Failed to publish message");
       } else {
-        providers->terminal->debugln("Published Message");
+        providers->terminal->debugln("Published message");
       }
 
       // Assume that all messages passed to the queue must be deleted after
