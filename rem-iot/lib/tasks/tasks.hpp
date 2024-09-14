@@ -7,6 +7,7 @@
 #include "sensor_adapter.hpp"
 #include "settings_manager.hpp"
 #include "terminal.hpp"
+#include "led_controller.hpp"
 
 #define DATA_SAMPLE_RATE 5000
 #define STATUS_SAMPLE_RATE 1000
@@ -20,7 +21,7 @@
 class REMTaskProviders {
 
 public:
-    REMTaskProviders(SensorAdapter *sensorAdapter, SettingsManager *settingsManager, Terminal *terminal, PubSubClient * pubSubClient, UUID * uuidGenerator, Adafruit_NeoPixel * neoPixel) {
+    REMTaskProviders(SensorAdapter *sensorAdapter, SettingsManager *settingsManager, Terminal *terminal, PubSubClient * pubSubClient, UUID * uuidGenerator, LEDController * ledController) {
         this->sensorAdapter = sensorAdapter;
         this->settingsManager = settingsManager;
         this->terminal = terminal;

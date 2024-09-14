@@ -6,6 +6,18 @@
 // Create a queue to handle the messages that are sent to the MQTT server
 static QueueHandle_t msgQueue = xQueueCreate(10, sizeof(MQTTMsg *));
 
+void applySensorData(MQTTMsg * mqttMsg, SensorAdapter * sensorAdapter) {
+  // Apply PM1006K data to the msg
+  mqttMsg->setField("pm2_5", sensorAdapter->getPM2_5());
+  mqttMsg->setField("pm1_0", sensorAdapter->getPM1_0());
+  mqttMsg->setField("pm10", sensorAdapter->getPM10());
+
+  // Apply BMP280 data to the msg
+  mqttMsg->setField("temperature", sensorAdapter->getTemperature());
+  mqttMsg->setField("humidity", sensorAdapter->getHumidity());
+  mqttMsg->setField("pressure", sensorAdapter->getPressure());
+}
+
 void QueueDataTask(void *parameter) {
   REMTaskProviders * providers = (REMTaskProviders *)parameter;
   while (true) {    
@@ -22,18 +34,9 @@ void QueueDataTask(void *parameter) {
     // If we can get pm1006 data, add it to the msg
     if (!providers->sensorAdapter->loadData()) {
         providers->terminal->debugln("Failed to take measurement");
-        // return;
     }
 
-    // Apply PM1006K data to the msg
-    msg->setField("pm2_5", providers->sensorAdapter->getPM2_5());
-    msg->setField("pm1_0", providers->sensorAdapter->getPM1_0());
-    msg->setField("pm10", providers->sensorAdapter->getPM10());
-
-    // Apply BMP280 data to the msg
-    msg->setField("temperature", providers->sensorAdapter->getTemperature());
-    msg->setField("humidity", providers->sensorAdapter->getHumidity());
-    msg->setField("pressure", providers->sensorAdapter->getPressure());
+    applySensorData(msg, providers->sensorAdapter);
 
     if ( xQueueSend( msgQueue, ( void * ) &msg, MSG_QUEUE_TIMEOUT ) == errQUEUE_FULL) {
         providers->terminal->debugln("Msg queue is full");
@@ -43,6 +46,20 @@ void QueueDataTask(void *parameter) {
     providers->terminal->debugln("Queued latest sensor data");
     delay(DATA_SAMPLE_RATE);
   }
+}
+
+void applyStatusInformation(MQTTMsg * mqttMsg, REMTaskProviders * providers, struct tm * startTime) {
+  struct tm currentTime;
+  double uptime = 0;
+
+  if (!getLocalTime(&currentTime)) {
+    providers->terminal->debugln("Failed to get current time");
+  } else {
+    uptime = mktime(&currentTime) - mktime(startTime);
+  }
+
+  mqttMsg->setField("uptime", uptime);
+  mqttMsg->setField("rssi", WiFi.RSSI());
 }
 
 void QueueStatusTask(void *parameter) {
@@ -67,16 +84,6 @@ void QueueStatusTask(void *parameter) {
   while (true) {
 
     providers->uuidGenerator->generate();
-    double uptime = 0;
-
-    // If we haven't set the start time start time yet, set it.
-    struct tm currentTime;
-    if (!getLocalTime(&currentTime)) {
-        providers->terminal->debugln("Failed to get current time");
-    } else {
-        // Calculate the uptime
-        uptime = mktime(&currentTime) - mktime(startTime);
-    }
     
     const char * deviceId  = providers->settingsManager->getSetting(DEVICE_ID_ID);
     const char * statusTopic = providers->settingsManager->getSetting(STATUS_TOPIC_ID);
@@ -85,14 +92,13 @@ void QueueStatusTask(void *parameter) {
         providers->terminal->debugln("Failed to create msg, there is not enough memory");
         continue;
     }
-
-    msg->setField("uptime", uptime);
-    msg->setField("rssi", WiFi.RSSI());
     
     if ( xQueueSend( msgQueue, ( void * ) &msg, MSG_QUEUE_TIMEOUT ) == errQUEUE_FULL) {
         providers->terminal->debugln("Msg queue is full");
         continue;
     }
+
+    applyStatusInformation(msg, providers, startTime);
 
     providers->terminal->debugln("Queued status");
 
@@ -138,6 +144,7 @@ void LEDUpdateTask(void *parameter) {
   REMTaskProviders *providers = (REMTaskProviders *)parameter;
 
   while (true) {
+
     // Get the latest sensor data
     if (!providers->sensorAdapter->loadData()) {
       providers->terminal->debugln("Failed to take measurement");
