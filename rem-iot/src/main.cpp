@@ -82,6 +82,26 @@ static const CLI_Command_Definition_t xWiFIStatusCommand = {
     "\r\nwifi-status: \r\n Returns the wifi connected status\r\n",
     prvWiFiStatusCommand, 0 };
 
+static BaseType_t prvPrintSensorDataCommand(char *pcWriteBuffer,
+                                       size_t xWriteBufferLen,
+                                       const char *pcCommandString);
+
+static const CLI_Command_Definition_t xPrintSensorDataCommand = {
+    "print-sensor-data",
+    "\r\nprint-sensor-data: \r\n Prints a snapshot of the sensor data.\r\n",
+    prvPrintSensorDataCommand, 0 };
+
+static BaseType_t prvLEDEnableCommand(char *pcWriteBuffer,
+                                       size_t xWriteBufferLen,
+                                       const char *pcCommandString);
+
+static const CLI_Command_Definition_t xLEDEnableCommand = {
+    "led-enable",
+    "\r\nled-enable: \r\n Toggles whether or not the LEDs are controllable and turned on.\r\n",
+    prvPrintSensorDataCommand, 0 };
+
+
+
 /**
  * Setup the wifi connection and the NTP server. If the clock is not synced
  * with the NTP server, the function will return false
@@ -113,12 +133,10 @@ void setupTerminal() {
   xTaskCreate(TerminalTask, "Terminal Task", PUBLISH_TERMINAL_STACK, terminal, 1,
             NULL);
 
-  // Setup CLI Commands
+  // Setup CLI Commands that can be run as soon as the terminal task is started
   FreeRTOS_CLIRegisterCommand(&xRebootCommand);
-  FreeRTOS_CLIRegisterCommand(&xUpdateSettingCommand);
-  FreeRTOS_CLIRegisterCommand(&xPrintSettingsCommand);
   FreeRTOS_CLIRegisterCommand(&xDebugCommand);
-  FreeRTOS_CLIRegisterCommand(&xWiFIStatusCommand);
+
 }
 
 /**
@@ -190,7 +208,7 @@ void setup() {
   neoPixel = new Adafruit_NeoPixel(NUM_NEOPIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
   neoPixel->begin();
   neoPixel->clear();
-  ledController = new LEDController(neoPixel);
+  ledController = new LEDController(neoPixel, terminal);
 
   // Setup Controller
   sensorAdapter = new SensorAdapter(pm1006k, bme280, terminal);
@@ -201,6 +219,13 @@ void setup() {
 
   uuidGenerator = new UUID();
   uuidGenerator->seed(rn);
+
+  // Remainder of the commands that depend on providers instantiated above
+  FreeRTOS_CLIRegisterCommand(&xUpdateSettingCommand);
+  FreeRTOS_CLIRegisterCommand(&xPrintSettingsCommand);
+  FreeRTOS_CLIRegisterCommand(&xWiFIStatusCommand);
+  FreeRTOS_CLIRegisterCommand(&xPrintSensorDataCommand);
+  FreeRTOS_CLIRegisterCommand(&xLEDEnableCommand);
 
   // Setup the task providers and the task that publishes the messages
   providers = new REMTaskProviders(sensorAdapter, settingsManager, terminal, pubSubClient, uuidGenerator, ledController);
@@ -262,7 +287,7 @@ BaseType_t prvDebugCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
                                 const char *pcCommandString) {
 
   bool debug_val = terminal->toggleDebug();
-  snprintf(pcWriteBuffer, xWriteBufferLen, "Debug logging is now is now %s\r\n", debug_val ? "enabled" : "disabled");
+  snprintf(pcWriteBuffer, xWriteBufferLen, "Debug logging is now %s\r\n", debug_val ? "enabled" : "disabled");
 
   return pdFALSE;
 }
@@ -297,4 +322,26 @@ BaseType_t prvWiFiStatusCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
 
   return pdFALSE;
 }
+
+BaseType_t prvPrintSensorDataCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
+                                const char *pcCommandString) {
+
+  // If we have a mismatched config for the output buffer length this will return false
+  if (!sensorAdapter->printData(pcWriteBuffer, xWriteBufferLen)) {
+    snprintf(pcWriteBuffer, xWriteBufferLen, "Failed to print the settings, write buffer passed is not long enough.\r\n");
+  }
+
+  return pdFALSE;
+}
+
+BaseType_t prvToggleLEDEnableCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
+                                const char *pcCommandString) {
+
+  bool debug_val = ledController->toggleEnable();
+  snprintf(pcWriteBuffer, xWriteBufferLen, "LED control is now %s\r\n", debug_val ? "enabled" : "disabled");
+
+  return pdFALSE;
+}
+
+
 

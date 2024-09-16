@@ -14,6 +14,9 @@
 #define TERMINAL_SAMPLE_RATE 10
 #define LED_UPDATE_RATE 2000
 
+// How long to wait for message in queue to be received before a timeout
+#define MSG_QUEUE_TIMEOUT pdMS_TO_TICKS(10) // 10ms
+
 /**
  * @brief REMTaskProviders is a class that holds all of the different services/instances that the different FreeRTOS tasks need to run.
  * Note that the instance of this class is passed to the tasks via a null pointer, and then the tasks just does an implicit cast to this class type.
