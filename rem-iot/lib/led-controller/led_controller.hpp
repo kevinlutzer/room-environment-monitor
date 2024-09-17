@@ -36,9 +36,11 @@ class LEDController {
         SemaphoreHandle_t mutex; 
 
         // RGB values for the different colours
-        const uint8_t red = 0;
-        const uint8_t green = 0; 
-        const uint8_t blue = 0; 
+        uint32_t colour = 0;
+
+        // Private functions for setting LED brightness and colour
+        void setBrightness(uint8_t brightness);
+        void setColour(uint32_t colour);
 };
 
 #endif
