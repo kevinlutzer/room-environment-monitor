@@ -18,30 +18,6 @@
 #define MSG_QUEUE_TIMEOUT pdMS_TO_TICKS(10) // 10ms
 
 /**
- * @brief REMTaskProviders is a class that holds all of the different services/instances that the different FreeRTOS tasks need to run.
- * Note that the instance of this class is passed to the tasks via a null pointer, and then the tasks just does an implicit cast to this class type.
- */
-class REMTaskProviders {
-
-public:
-    REMTaskProviders(SensorAdapter *sensorAdapter, SettingsManager *settingsManager, Terminal *terminal, PubSubClient * pubSubClient, UUID * uuidGenerator, LEDController * ledController) {
-        this->sensorAdapter = sensorAdapter;
-        this->settingsManager = settingsManager;
-        this->terminal = terminal;
-        this->pubSubClient = pubSubClient;
-        this->uuidGenerator = uuidGenerator;
-        this->ledController = ledController;
-    }
-
-    SensorAdapter *sensorAdapter;
-    SettingsManager *settingsManager;
-    Terminal *terminal;
-    PubSubClient * pubSubClient;
-    UUID * uuidGenerator;
-    LEDController * ledController;
-};
-
-/**
  * @brief QueueDataTask is a task that queues the latest sensor data to be sent to the MQTT server.
  * Note that it does not actually publish the data.
  */

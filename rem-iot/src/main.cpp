@@ -16,6 +16,7 @@
 #include "sensor_adapter.hpp"
 #include "terminal.hpp"
 #include "tasks.hpp"
+#include "providers.hpp"
 
 #define INIT_DEBUG true
 
@@ -35,12 +36,12 @@ Adafruit_NeoPixel *neoPixel;
 WiFiClient espClient;
 Terminal *terminal;
 PubSubClient * pubSubClient;
-REMTaskProviders *providers;
+REMProvider *providers;
 LEDController * ledController;
 UUID *uuidGenerator;
 
 static BaseType_t prvRebootCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
-                                   const char *pcCommandString);
+                                   const char *pcCommandString, REMProviders *providers);
 
 static const CLI_Command_Definition_t xRebootCommand = {
     "reboot", "\r\nreboot:\r\n this command reboots the esp32\r\n",
@@ -48,7 +49,7 @@ static const CLI_Command_Definition_t xRebootCommand = {
 
 static BaseType_t prvUpdateSettingCommand(char *pcWriteBuffer,
                                        size_t xWriteBufferLen,
-                                       const char *pcCommandString);
+                                       const char *pcCommandString, REMProviders *providers);
 
 static const CLI_Command_Definition_t xUpdateSettingCommand = {
     "update-setting",
@@ -57,7 +58,7 @@ static const CLI_Command_Definition_t xUpdateSettingCommand = {
 
 static BaseType_t prvPrintSettingsCommand(char *pcWriteBuffer,
                                        size_t xWriteBufferLen,
-                                       const char *pcCommandString);
+                                       const char *pcCommandString, REMProviders *providers);
 
 static const CLI_Command_Definition_t xPrintSettingsCommand = {
     "print-settings",
@@ -66,7 +67,7 @@ static const CLI_Command_Definition_t xPrintSettingsCommand = {
 
 static BaseType_t prvDebugCommand(char *pcWriteBuffer,
                                        size_t xWriteBufferLen,
-                                       const char *pcCommandString);
+                                       const char *pcCommandString, REMProviders *providers);
 
 static const CLI_Command_Definition_t xDebugCommand = {
     "debug",
@@ -75,7 +76,7 @@ static const CLI_Command_Definition_t xDebugCommand = {
 
 static BaseType_t prvWiFiStatusCommand(char *pcWriteBuffer,
                                        size_t xWriteBufferLen,
-                                       const char *pcCommandString);
+                                       const char *pcCommandString, REMProviders *providers);
 
 static const CLI_Command_Definition_t xWiFIStatusCommand = {
     "wifi-status",
@@ -84,7 +85,7 @@ static const CLI_Command_Definition_t xWiFIStatusCommand = {
 
 static BaseType_t prvPrintSensorDataCommand(char *pcWriteBuffer,
                                        size_t xWriteBufferLen,
-                                       const char *pcCommandString);
+                                       const char *pcCommandString, REMProviders *providers);
 
 static const CLI_Command_Definition_t xPrintSensorDataCommand = {
     "print-sensor-data",
@@ -93,7 +94,7 @@ static const CLI_Command_Definition_t xPrintSensorDataCommand = {
 
 static BaseType_t prvLEDEnableCommand(char *pcWriteBuffer,
                                        size_t xWriteBufferLen,
-                                       const char *pcCommandString);
+                                       const char *pcCommandString, REMProviders *providers);
 
 static const CLI_Command_Definition_t xLEDEnableCommand = {
     "led-enable",
@@ -130,7 +131,7 @@ void setupTerminal() {
   terminal = new Terminal(INIT_DEBUG, &Serial);
   
   // Setup the terminal task that handles the input and output of the terminal
-  xTaskCreate(TerminalTask, "Terminal Task", PUBLISH_TERMINAL_STACK, terminal, 1,
+  xTaskCreate(TerminalTask, "Terminal Task", PUBLISH_TERMINAL_STACK, providers, 1,
             NULL);
 
   // Setup CLI Commands that can be run as soon as the terminal task is started
@@ -228,7 +229,7 @@ void setup() {
   FreeRTOS_CLIRegisterCommand(&xLEDEnableCommand);
 
   // Setup the task providers and the task that publishes the messages
-  providers = new REMTaskProviders(sensorAdapter, settingsManager, terminal, pubSubClient, uuidGenerator, ledController);
+  providers = new REMProviders(sensorAdapter, settingsManager, terminal, pubSubClient, uuidGenerator, ledController);
 
   xTaskCreate(PublishMQTTMsg, "Publish MQTT",
   PUBLISH_STATUS_STACK, providers, 1, NULL);  
@@ -254,7 +255,7 @@ void loop() { return; }
 //
 
 BaseType_t prvRebootCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
-                            const char *pcCommandString) {
+                            const char *pcCommandString, REMProviders *providers) {
   ESP.restart();
 
   // Never reached because the esp32 reboots fully
@@ -262,7 +263,7 @@ BaseType_t prvRebootCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
 }
 
 BaseType_t prvUpdateSettingCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
-                                const char *pcCommandString) {
+                                const char *pcCommandString, REMProviders *providers) {
 
   BaseType_t nameParamToStringLength, valueParamToStringLength; 
   const char * nameParam = FreeRTOS_CLIGetParameter( pcCommandString,
@@ -284,7 +285,7 @@ BaseType_t prvUpdateSettingCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
 }
 
 BaseType_t prvDebugCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
-                                const char *pcCommandString) {
+                                const char *pcCommandString, REMProviders *providers) {
 
   bool debug_val = terminal->toggleDebug();
   snprintf(pcWriteBuffer, xWriteBufferLen, "Debug logging is now %s\r\n", debug_val ? "enabled" : "disabled");
@@ -293,7 +294,7 @@ BaseType_t prvDebugCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
 }
 
 BaseType_t prvPrintSettingsCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
-                                const char *pcCommandString) {
+                                const char *pcCommandString, REMProviders *providers) {
 
   BaseType_t nameParamToStringLength, valueParamToStringLength; 
 
@@ -307,7 +308,7 @@ BaseType_t prvPrintSettingsCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
 }
 
 BaseType_t prvWiFiStatusCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
-                                const char *pcCommandString) {
+                                const char *pcCommandString, REMProviders *providers) {
 
   // Grab the wifi information including the ip 
   wl_status_t status = WiFi.status();
@@ -324,7 +325,7 @@ BaseType_t prvWiFiStatusCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
 }
 
 BaseType_t prvPrintSensorDataCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
-                                const char *pcCommandString) {
+                                const char *pcCommandString, REMProviders *providers) {
 
   // If we have a mismatched config for the output buffer length this will return false
   if (!sensorAdapter->printData(pcWriteBuffer, xWriteBufferLen)) {
@@ -335,7 +336,7 @@ BaseType_t prvPrintSensorDataCommand(char *pcWriteBuffer, size_t xWriteBufferLen
 }
 
 BaseType_t prvToggleLEDEnableCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
-                                const char *pcCommandString) {
+                                const char *pcCommandString, REMProviders *providers) {
 
   bool debug_val = ledController->toggleEnable();
   snprintf(pcWriteBuffer, xWriteBufferLen, "LED control is now %s\r\n", debug_val ? "enabled" : "disabled");

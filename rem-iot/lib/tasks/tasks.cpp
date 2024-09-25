@@ -2,6 +2,7 @@
 
 #include "tasks.hpp"
 #include "mqtt_msg.hpp"
+#include "providers.hpp"
 
 // Create a queue to handle the messages that are sent to the MQTT server
 static QueueHandle_t msgQueue = xQueueCreate(10, sizeof(MQTTMsg *));
@@ -19,7 +20,7 @@ void applySensorData(MQTTMsg * mqttMsg, SensorAdapter * sensorAdapter) {
 }
 
 void QueueDataTask(void *parameter) {
-  REMTaskProviders * providers = (REMTaskProviders *)parameter;
+  REMProviders * providers = (REMProviders *)parameter;
   while (true) {    
     providers->uuidGenerator->generate();
 
@@ -48,7 +49,7 @@ void QueueDataTask(void *parameter) {
   }
 }
 
-void applyStatusInformation(MQTTMsg * mqttMsg, REMTaskProviders * providers, struct tm * startTime) {
+void applyStatusInformation(MQTTMsg * mqttMsg, REMProviders * providers, struct tm * startTime) {
   struct tm currentTime;
   double uptime = 0;
 
@@ -63,7 +64,7 @@ void applyStatusInformation(MQTTMsg * mqttMsg, REMTaskProviders * providers, str
 }
 
 void QueueStatusTask(void *parameter) {
-  REMTaskProviders * providers = (REMTaskProviders *)parameter;
+  REMProviders * providers = (REMProviders *)parameter;
   struct tm * startTime;
   
   // We can't do very much here if malloc fails, which is shouldn't since this 
@@ -108,7 +109,7 @@ void QueueStatusTask(void *parameter) {
 }
 
 void PublishMQTTMsg(void * parameter) {
-  REMTaskProviders *providers = (REMTaskProviders *)parameter;
+  REMProviders *providers = (REMProviders *)parameter;
   MQTTMsg * msg;
 
   while (true) {
@@ -134,14 +135,84 @@ void PublishMQTTMsg(void * parameter) {
 }
 
 void TerminalTask(void *parameter) {
-  Terminal *terminal = (Terminal *)parameter;
+  REMProviders *providers = (REMProviders *)parameter;
+  Terminal *terminal = providers->terminal;
     
-  // Just handle input characters and the yield back to the core
-  terminal->handleCharacter();
+  // Create a buffer to store the input string and the last input string
+  static char cInputString[ cmdMAX_INPUT_SIZE ];
+  
+  // Grab and store grab the ptr reference to where the output buf lives
+  char * pcOutputString = FreeRTOS_CLIGetOutputBuffer();
+  uint8_t rxCmdIndex = 0;
+  char rxChar = '\0';
+  int rx = 0;
+
+  // Print the prompt character
+  terminal->printf("\r\n> ");
+
+  while(true) {
+      // No data, so just yield and wait
+      if (!terminal->available()) {
+          yield();
+          continue;
+      }
+
+      rxChar = (char)terminal->read();
+
+      // Grab the mutex so we can echo and return command results
+      if( xSemaphoreTake( this->txMutex, TERMINAL_TIMEOUT_TICK ) == pdTRUE ) {
+
+          // Are we one character away from reaching buffer length or was the last char
+          // a '\r'?. If so execute commands
+          if (rxCmdIndex == cmdMAX_INPUT_SIZE - 2 || rxChar == '\r') {
+
+                  this->stream->println();
+
+                  /* Pass the received command to the command interpreter.  The
+                  command interpreter is called repeatedly until it returns
+                  pdFALSE	(indicating there is no more output) as it might
+                  generate more than one string. */
+                  BaseType_t xReturned = pdTRUE;
+                  for(;;)
+                  {
+                      // Get the command output from the processing function, this goes to std out
+                      xReturned = FreeRTOS_CLIProcessCommand( cInputString, pcOutputString, (size_t)configCOMMAND_INT_MAX_OUTPUT_SIZE, providers );
+                      
+                      this->stream->println(pcOutputString);
+
+                      // Short circuit when we finally don't have any more commands to execute
+                      if (xReturned == pdFALSE) {
+                          break;
+                      }
+
+                  }
+
+                  // Print the prompt character
+                  this->stream->print("> ");
+
+                  // Clean up the input string buffer and the output buffer
+                  memset(cInputString, 0x00, cmdMAX_INPUT_SIZE);
+                  memset((void *)pcOutputString, 0x00, configCOMMAND_INT_MAX_OUTPUT_SIZE);
+                  rxCmdIndex = 0;
+
+          // Check if the character is a printable ascii character between space and ~
+          } else if (rxChar >= 32 && rxChar <= 126) {
+  
+              // Echo the character back and copy it to the cmd buffer 
+              this->stream->print(rxChar);
+              cInputString[rxCmdIndex] = rxChar;
+              rxCmdIndex++;
+          }
+
+          xSemaphoreGive( this->txMutex);
+      }
+
+      yield();
+  }
 }
 
 void LEDUpdateTask(void *parameter) {
-  REMTaskProviders *providers = (REMTaskProviders *)parameter;
+  REMProviders *providers = (REMProviders *)parameter;
 
   while (true) {
 

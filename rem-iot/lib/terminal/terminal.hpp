@@ -3,6 +3,7 @@
 
 #include "Stream.h"
 #include "Arduino.h"
+#include "providers.hpp"
 #include "FreeRTOS_CLI.hpp"
 
 #define TERMINAL_TIMEOUT_TICK pdMS_TO_TICKS(10)

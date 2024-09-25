@@ -135,7 +135,7 @@ BaseType_t xReturn = pdFAIL;
 }
 /*-----------------------------------------------------------*/
 
-BaseType_t FreeRTOS_CLIProcessCommand( char * pcCommandInput, char * pcWriteBuffer, unsigned int xWriteBufferLen  )
+BaseType_t FreeRTOS_CLIProcessCommand( char * pcCommandInput, char * pcWriteBuffer, unsigned int xWriteBufferLen, REMProviders *providers )
 {
 static const CLI_Definition_List_Item_t *pxCommand = NULL;
 BaseType_t xReturn = pdTRUE;
@@ -190,7 +190,7 @@ size_t xCommandStringLength;
 	else if( pxCommand != NULL )
 	{
 		/* Call the callback function that is registered to this command. */
-		xReturn = pxCommand->pxCommandLineDefinition->pxCommandInterpreter( pcWriteBuffer, xWriteBufferLen, pcCommandInput );
+		xReturn = pxCommand->pxCommandLineDefinition->pxCommandInterpreter( pcWriteBuffer, xWriteBufferLen, pcCommandInput, providers );
 
 		/* If xReturn is pdFALSE, then no further strings will be returned
 		after this one, and	pxCommand can be reset to NULL ready to search
