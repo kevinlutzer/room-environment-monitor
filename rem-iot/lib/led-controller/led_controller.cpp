@@ -53,9 +53,11 @@ void LEDController::update(double pm1_0, double pm2_5, double pm10) {
     }
     
     // Set the colour based on the PM values
-    if (pm1_0 > 12.0 || pm2_5 > 12.0 || pm10 > 12.0) {
+    // Sources: https://www.iqair.com/ca/newsroom/pm1?srsltid=AfmBOorZkQSoCzsglrKuQnkkTrqbmkF2TmDP2nPcrvhnSA7MqYNAjqyA,
+    // https://www.epa.gov/sites/default/files/2016-04/documents/2012_aqi_factsheet.pdf
+    if (pm1_0 > 1000 || pm2_5 > 12.0 || pm10 > 200) {
         this->colour = Adafruit_NeoPixel::Color(255, 0, 0);
-    } else if (pm1_0 > 5 || pm2_5 > 6.0 || pm10 > 6.0) {
+    } else if (pm1_0 > 500 || pm2_5 > 6.0 || pm10 > 100) {
         this->colour = Adafruit_NeoPixel::Color(255, 255, 0);
     } else {
         this->colour = Adafruit_NeoPixel::Color(0, 255, 0);
