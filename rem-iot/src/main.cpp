@@ -1,17 +1,19 @@
 #include "stdlib.h"
 
 #include "Adafruit_BME280.h"
+#include "Adafruit_NeoPixel.h"
 #include "EEPROM.h"
 #include "PM1006K.h"
 #include "PubSubClient.h"
 #include "WiFi.h"
 #include "Wire.h"
+#include "UUID.h"
 
-#include "controller.hpp"
 #include "mqtt_msg.hpp"
 #include "pin_config.hpp"
 #include "settings_manager.hpp"
 #include "wifi_controller.hpp"
+#include "sensor_adapter.hpp"
 #include "terminal.hpp"
 #include "tasks.hpp"
 
@@ -25,17 +27,17 @@
 
 // Statically create pointers to all of the providers.
 // These instances should last the lifetime of the program
-REMController *controller;
+SensorAdapter *sensorAdapter;
 SettingsManager *settingsManager;
 PM1006K *pm1006k;
 Adafruit_BME280 *bme280;
+Adafruit_NeoPixel *neoPixel;
 WiFiClient espClient;
 Terminal *terminal;
 PubSubClient * pubSubClient;
 REMTaskProviders *providers;
-
-// Create a queue to handle the messages that are sent to the MQTT server
-static QueueHandle_t msgQueue = xQueueCreate(10, sizeof(MQTTMsg *));
+LEDController * ledController;
+UUID *uuidGenerator;
 
 static BaseType_t prvRebootCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
                                    const char *pcCommandString);
@@ -80,6 +82,16 @@ static const CLI_Command_Definition_t xWiFIStatusCommand = {
     "\r\nwifi-status: \r\n Returns the wifi connected status\r\n",
     prvWiFiStatusCommand, 0 };
 
+static BaseType_t prvPrintSensorDataCommand(char *pcWriteBuffer,
+                                       size_t xWriteBufferLen,
+                                       const char *pcCommandString);
+
+static const CLI_Command_Definition_t xPrintSensorDataCommand = {
+    "print-sensor-data",
+    "\r\nprint-sensor-data: \r\n Prints a snapshot of the sensor data.\r\n",
+    prvPrintSensorDataCommand, 0 };
+
+
 /**
  * Setup the wifi connection and the NTP server. If the clock is not synced
  * with the NTP server, the function will return false
@@ -111,12 +123,10 @@ void setupTerminal() {
   xTaskCreate(TerminalTask, "Terminal Task", PUBLISH_TERMINAL_STACK, terminal, 1,
             NULL);
 
-  // Setup CLI Commands
+  // Setup CLI Commands that can be run as soon as the terminal task is started
   FreeRTOS_CLIRegisterCommand(&xRebootCommand);
-  FreeRTOS_CLIRegisterCommand(&xUpdateSettingCommand);
-  FreeRTOS_CLIRegisterCommand(&xPrintSettingsCommand);
   FreeRTOS_CLIRegisterCommand(&xDebugCommand);
-  FreeRTOS_CLIRegisterCommand(&xWiFIStatusCommand);
+
 }
 
 /**
@@ -136,6 +146,19 @@ void setupPubSubClient() {
 }
 
 void setup() {
+
+
+  Adafruit_NeoPixel NeoPixel(3, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
+  NeoPixel.clear();  // set all pixel colors to 'off'. It only takes effect if pixels.show() is called
+
+  // turn pixels to green one-by-one with delay between each pixel
+  for (int pixel = 0; pixel < 3; pixel++) {           // for each pixel
+    NeoPixel.setPixelColor(pixel, NeoPixel.Color(0, 255, 0));  // it only takes effect if pixels.show() is called
+    NeoPixel.show();                                           // update to the NeoPixel Led Strip
+
+    delay(500);  // 500ms pause between each pixel
+  }
+
   // Turn on Fan
   pinMode(FAN, OUTPUT);
   digitalWrite(FAN, HIGH);
@@ -171,21 +194,44 @@ void setup() {
   bme280 = new Adafruit_BME280();
   bme280->begin(BME280_ADDRESS, &Wire);
 
+  // Setup the neopixel controller and clear the pixels
+  neoPixel = new Adafruit_NeoPixel(NUM_NEOPIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
+  neoPixel->begin();
+  neoPixel->clear();
+  ledController = new LEDController(neoPixel, terminal);
+
   // Setup Controller
-  controller = new REMController(pm1006k, bme280, terminal, settingsManager, &msgQueue);
+  sensorAdapter = new SensorAdapter(pm1006k, bme280, terminal);
 
-  // Setup the remaining tasks to queue data and the status of the device
-  xTaskCreate(QueueDataTask, "Queue Data", PUBLISH_DATA_STACK, controller, 1,
-  NULL); 
+  // Create UUID Generator used for generating unique ids
+  randomSeed(analogRead(A0) || analogRead(A1) || analogRead(A2));
+  uint32_t rn = random();
 
-  xTaskCreate(QueueStatusTask, "Status Data", PUBLISH_DATA_STACK, controller, 1,
-  NULL); 
+  uuidGenerator = new UUID();
+  uuidGenerator->seed(rn);
 
-  providers = new REMTaskProviders(controller, settingsManager, terminal, pubSubClient, &msgQueue);
-  xTaskCreate(PublishMQTTMsg, "Publish Status",
+  // Remainder of the commands that depend on providers instantiated above
+  FreeRTOS_CLIRegisterCommand(&xUpdateSettingCommand);
+  FreeRTOS_CLIRegisterCommand(&xPrintSettingsCommand);
+  FreeRTOS_CLIRegisterCommand(&xWiFIStatusCommand);
+  FreeRTOS_CLIRegisterCommand(&xPrintSensorDataCommand);
+
+  // Setup the task providers and the task that publishes the messages
+  providers = new REMTaskProviders(sensorAdapter, settingsManager, terminal, pubSubClient, uuidGenerator, ledController);
+
+  xTaskCreate(PublishMQTTMsg, "Publish MQTT",
   PUBLISH_STATUS_STACK, providers, 1, NULL);  
 
-  terminal->debugln("Setup Room Environment Monitor");
+  xTaskCreate(QueueDataTask, "Queue Data", PUBLISH_DATA_STACK, providers, 1,
+  NULL); 
+
+  xTaskCreate(QueueStatusTask, "Status Data", PUBLISH_DATA_STACK, providers, 1,
+  NULL);
+
+  xTaskCreate(LEDUpdateTask, "LED Update Task", PUBLISH_DATA_STACK, providers, 1,
+  NULL);
+
+  terminal->debugln("Started tasks...");
 }
 
 // Main loop is uneeded because we are using freertos tasks to persist the
@@ -230,7 +276,7 @@ BaseType_t prvDebugCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
                                 const char *pcCommandString) {
 
   bool debug_val = terminal->toggleDebug();
-  snprintf(pcWriteBuffer, xWriteBufferLen, "Debug logging is now is now %s\r\n", debug_val ? "enabled" : "disabled");
+  snprintf(pcWriteBuffer, xWriteBufferLen, "Debug logging is now %s\r\n", debug_val ? "enabled" : "disabled");
 
   return pdFALSE;
 }
@@ -252,9 +298,30 @@ BaseType_t prvPrintSettingsCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
 BaseType_t prvWiFiStatusCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
                                 const char *pcCommandString) {
 
+  // Grab the wifi information including the ip 
   wl_status_t status = WiFi.status();
-  snprintf(pcWriteBuffer, xWriteBufferLen, "WiFi status: %d \r\n", status);
+  String ip = WiFi.localIP().toString();
+
+  if (!ip.length()) {
+    snprintf(pcWriteBuffer, xWriteBufferLen, "WiFi status: %d \r\nIP: N/A \r\n", status);
+  } else {
+    const char * ipCStr = ip.c_str();
+    snprintf(pcWriteBuffer, xWriteBufferLen, "WiFi status: %d \r\nIP: %s\r\n", status, ipCStr);
+  }
 
   return pdFALSE;
 }
+
+BaseType_t prvPrintSensorDataCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
+                                const char *pcCommandString) {
+
+  // If we have a mismatched config for the output buffer length this will return false
+  if (!sensorAdapter->printData(pcWriteBuffer, xWriteBufferLen)) {
+    snprintf(pcWriteBuffer, xWriteBufferLen, "Failed to print the settings, write buffer passed is not long enough.\r\n");
+  }
+
+  return pdFALSE;
+}
+
+
 

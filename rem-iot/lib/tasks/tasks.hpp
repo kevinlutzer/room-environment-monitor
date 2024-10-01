@@ -3,12 +3,19 @@
 
 #include "PubSubClient.h"
 #include "Arduino.h"
-#include "controller.hpp"
+#include "led_controller.hpp"
+#include "sensor_adapter.hpp"
 #include "settings_manager.hpp"
 #include "terminal.hpp"
+#include "led_controller.hpp"
 
 #define DATA_SAMPLE_RATE 5000
 #define STATUS_SAMPLE_RATE 1000
+#define TERMINAL_SAMPLE_RATE 10
+#define LED_UPDATE_RATE 2000
+
+// How long to wait for message in queue to be received before a timeout
+#define MSG_QUEUE_TIMEOUT pdMS_TO_TICKS(10) // 10ms
 
 /**
  * @brief REMTaskProviders is a class that holds all of the different services/instances that the different FreeRTOS tasks need to run.
@@ -17,19 +24,21 @@
 class REMTaskProviders {
 
 public:
-    REMTaskProviders(REMController *controller, SettingsManager *settingsManager, Terminal *terminal, PubSubClient * pubSubClient, QueueHandle_t * msgQueue) {
-        this->controller = controller;
+    REMTaskProviders(SensorAdapter *sensorAdapter, SettingsManager *settingsManager, Terminal *terminal, PubSubClient * pubSubClient, UUID * uuidGenerator, LEDController * ledController) {
+        this->sensorAdapter = sensorAdapter;
         this->settingsManager = settingsManager;
         this->terminal = terminal;
         this->pubSubClient = pubSubClient;
-        this->msgQueue = msgQueue;
+        this->uuidGenerator = uuidGenerator;
+        this->ledController = ledController;
     }
 
-    REMController *controller;
+    SensorAdapter *sensorAdapter;
     SettingsManager *settingsManager;
     Terminal *terminal;
     PubSubClient * pubSubClient;
-    QueueHandle_t * msgQueue;
+    UUID * uuidGenerator;
+    LEDController * ledController;
 };
 
 /**
@@ -53,6 +62,12 @@ void PublishMQTTMsg(void *paramater);
  * @brief TerminalTask is a task that handles the terminal input and output.
  */
 void TerminalTask(void *paramater);
+
+/**
+ * @brief LEDUpdateTask updates the led pannel (3 neopixels) based on the latest sensor data. Green mains the
+ * air quality is good, yellow means the air quality is moderate, and red means the air quality is bad.
+ */
+void LEDUpdateTask(void *parameter);
 
 #endif
 
