@@ -39,13 +39,13 @@ public:
   bool printData(char *buf, size_t buf_len);
 
   // Getters for the instances local data
-  int getPM2_5() { return this->pm2_5; }
-  int getPM1_0() { return this->pm1_0; }
-  int getPM10() { return this->pm10; }
+  int getPM2_5();
+  int getPM1_0(); 
+  int getPM10(); 
 
-  float getTemperature() { return this->temperature; }
-  float getPressure() { return this->pressure; }
-  float getHumidity() { return this->humidity; }
+  float getTemperature(); 
+  float getPressure(); 
+  float getHumidity(); 
 
 private:
   // Different service providers

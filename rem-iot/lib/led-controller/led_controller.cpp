@@ -10,25 +10,11 @@ LEDController::LEDController(Adafruit_NeoPixel *neoPixel, Terminal * terminal) {
     // Used for protecting writes to the LEDs as well as the led enabled variable
     this->mutex = xSemaphoreCreateMutex();
 
-    // Intialize the leds by setting the colour to green and setting the brightness on medium
-    // Brightness will take effect on the next call to setColour
+    // Intialize the leds by setting the colour to green and setting the brightness on medium.
+    // Max brightness is 255. Brightness will take effect on the next call to setColour
     this->neoPixel->setBrightness(127);
     this->colour = Adafruit_NeoPixel::Color(0, 255, 0);
     this->setColour(this->colour);
-}
-
-bool LEDController::toggleEnable() {
-    // Take mutex and return if we get a timeout condition
-    if (xSemaphoreTake( this->mutex, LED_MUTEX_TIMEOUT ) != pdTRUE) {
-        this->terminal->debugln("Failed to take mutex in LEDController::update");
-        return false;
-    }
-
-    this->enabled = !this->enabled;
-
-    xSemaphoreGive( this->mutex );
-
-    return this->enabled;
 }
 
 void LEDController::setColour(uint32_t colour) {

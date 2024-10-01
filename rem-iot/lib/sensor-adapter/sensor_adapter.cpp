@@ -57,3 +57,27 @@ bool SensorAdapter::loadData() {
 
   return success;
 }
+
+int SensorAdapter::getPM2_5() {
+  return this->pm2_5;
+}
+
+int SensorAdapter::getPM1_0() {
+  return this->pm1_0;
+}
+
+int SensorAdapter::getPM10() {
+  return this->pm10;
+}
+
+float SensorAdapter::getTemperature() {
+  return this->temperature;
+}
+
+float SensorAdapter::getPressure() {
+  return this->pressure;
+}
+
+float SensorAdapter::getHumidity() {
+  return this->humidity;
+}

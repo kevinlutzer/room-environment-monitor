@@ -19,12 +19,6 @@ class LEDController {
          */
         void update(double pm1_0, double pm2_5, double pm10);
 
-        /** 
-         * @brief Toggles the enable state of the LEDs. If the LEDs are enabled they are controllable and turned on. If they are disabled
-         * they are not controllable and turned off.
-         */
-        bool toggleEnable();
-
     private:
         // Providers
         Terminal * terminal;
@@ -38,8 +32,10 @@ class LEDController {
         // RGB values for the different colours
         uint32_t colour = 0;
 
-        // Private functions for setting LED brightness and colour
-        void setBrightness(uint8_t brightness);
+        /**
+         * @brief Sets the colour of the LEDs to the passed colour. This function will set the colour of all of the LEDs
+         * @param colour the colour to set the LEDs to. This should be created by Adafruit_NeoPixel::Color.
+         */
         void setColour(uint32_t colour);
 };
 

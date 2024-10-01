@@ -91,16 +91,6 @@ static const CLI_Command_Definition_t xPrintSensorDataCommand = {
     "\r\nprint-sensor-data: \r\n Prints a snapshot of the sensor data.\r\n",
     prvPrintSensorDataCommand, 0 };
 
-static BaseType_t prvLEDEnableCommand(char *pcWriteBuffer,
-                                       size_t xWriteBufferLen,
-                                       const char *pcCommandString);
-
-static const CLI_Command_Definition_t xLEDEnableCommand = {
-    "led-enable",
-    "\r\nled-enable: \r\n Toggles whether or not the LEDs are controllable and turned on.\r\n",
-    prvPrintSensorDataCommand, 0 };
-
-
 
 /**
  * Setup the wifi connection and the NTP server. If the clock is not synced
@@ -225,7 +215,6 @@ void setup() {
   FreeRTOS_CLIRegisterCommand(&xPrintSettingsCommand);
   FreeRTOS_CLIRegisterCommand(&xWiFIStatusCommand);
   FreeRTOS_CLIRegisterCommand(&xPrintSensorDataCommand);
-  FreeRTOS_CLIRegisterCommand(&xLEDEnableCommand);
 
   // Setup the task providers and the task that publishes the messages
   providers = new REMTaskProviders(sensorAdapter, settingsManager, terminal, pubSubClient, uuidGenerator, ledController);
@@ -330,15 +319,6 @@ BaseType_t prvPrintSensorDataCommand(char *pcWriteBuffer, size_t xWriteBufferLen
   if (!sensorAdapter->printData(pcWriteBuffer, xWriteBufferLen)) {
     snprintf(pcWriteBuffer, xWriteBufferLen, "Failed to print the settings, write buffer passed is not long enough.\r\n");
   }
-
-  return pdFALSE;
-}
-
-BaseType_t prvToggleLEDEnableCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
-                                const char *pcCommandString) {
-
-  bool debug_val = ledController->toggleEnable();
-  snprintf(pcWriteBuffer, xWriteBufferLen, "LED control is now %s\r\n", debug_val ? "enabled" : "disabled");
 
   return pdFALSE;
 }
