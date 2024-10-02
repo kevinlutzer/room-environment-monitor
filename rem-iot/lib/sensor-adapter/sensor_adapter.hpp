@@ -51,6 +51,7 @@ public:
 private:
   // Different service providers
   PM1006K *pm1006k;
+
   Adafruit_BME280 *bme280;
   Terminal *terminal;
 
