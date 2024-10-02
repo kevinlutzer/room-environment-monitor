@@ -6,22 +6,24 @@
 #include "terminal.hpp"
 
 /**
- * @brief WiFiController is a class that is responsible for setting up the WiFi connection and the SNTP connection.
- * Other then in setup, this class's methods are not useful, so it should be deleted soon after use.
+ * @brief WiFiController is a class that is responsible for setting up the WiFi
+ * connection and the SNTP connection. Other then in setup, this class's methods
+ * are not useful, so it should be deleted soon after use.
  */
 class WiFiController {
 
-    public:
-        WiFiController(WiFiClass *wifi, Terminal * terminal, SettingsManager * settingsManager);
+public:
+  WiFiController(WiFiClass *wifi, Terminal *terminal,
+                 SettingsManager *settingsManager);
 
-        bool setupWiFi();
-        void setupSNTP();
-        bool verifyClockSync();
+  bool setupWiFi();
+  void setupSNTP();
+  bool verifyClockSync();
 
-    private:
-        WiFiClass *wifi;
-        Terminal * terminal;
-        SettingsManager * settingsManager;
+private:
+  WiFiClass *wifi;
+  Terminal *terminal;
+  SettingsManager *settingsManager;
 };
 
 #endif

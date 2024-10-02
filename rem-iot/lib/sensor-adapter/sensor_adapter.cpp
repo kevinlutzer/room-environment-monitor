@@ -18,21 +18,18 @@ SensorAdapter::SensorAdapter(PM1006K *pm1006k, Adafruit_BME280 *bme280,
   this->terminal = terminal;
 }
 
-bool SensorAdapter::printData(char * buf, size_t buf_len) {
-    if (buf_len < SENSOR_PRINT_LEN) {
-        return false;
-    } 
-    
-    snprintf(buf, buf_len,
-        "\r\npm1_0: %d\r\npm2_5: %d\r\npm10: %d\r\ntemperature: %f\r\npressure: %f\r\nhumidity: %f\r\n", 
-        this->pm1_0,
-        this->pm2_5,
-        this->pm10,
-        this->temperature,
-        this->pressure,
-        this->humidity);
+bool SensorAdapter::printData(char *buf, size_t buf_len) {
+  if (buf_len < SENSOR_PRINT_LEN) {
+    return false;
+  }
 
-    return true;
+  snprintf(buf, buf_len,
+           "\r\npm1_0: %d\r\npm2_5: %d\r\npm10: %d\r\ntemperature: "
+           "%f\r\npressure: %f\r\nhumidity: %f\r\n",
+           this->pm1_0, this->pm2_5, this->pm10, this->temperature,
+           this->pressure, this->humidity);
+
+  return true;
 }
 
 bool SensorAdapter::loadData() {
@@ -58,26 +55,14 @@ bool SensorAdapter::loadData() {
   return success;
 }
 
-int SensorAdapter::getPM2_5() {
-  return this->pm2_5;
-}
+int SensorAdapter::getPM2_5() { return this->pm2_5; }
 
-int SensorAdapter::getPM1_0() {
-  return this->pm1_0;
-}
+int SensorAdapter::getPM1_0() { return this->pm1_0; }
 
-int SensorAdapter::getPM10() {
-  return this->pm10;
-}
+int SensorAdapter::getPM10() { return this->pm10; }
 
-float SensorAdapter::getTemperature() {
-  return this->temperature;
-}
+float SensorAdapter::getTemperature() { return this->temperature; }
 
-float SensorAdapter::getPressure() {
-  return this->pressure;
-}
+float SensorAdapter::getPressure() { return this->pressure; }
 
-float SensorAdapter::getHumidity() {
-  return this->humidity;
-}
+float SensorAdapter::getHumidity() { return this->humidity; }

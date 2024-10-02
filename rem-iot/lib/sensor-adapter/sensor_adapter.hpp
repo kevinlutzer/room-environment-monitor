@@ -11,7 +11,8 @@
 #include "settings_manager.hpp"
 #include "terminal.hpp"
 
-// The amount of characters needed for each of the settings, their names, and some formating character (4)
+// The amount of characters needed for each of the settings, their names, and
+// some formating character (4)
 #define SENSOR_PRINT_LEN 73 + 3 * sizeof(int) + 3 * sizeof(double)
 
 /**
@@ -31,21 +32,21 @@ public:
    */
   bool loadData();
 
-  /** 
-   * @brief Print the latest sensor data to the buffer. The buffer must be at least
-   * SENSOR_PRINT_LEN in length.
+  /**
+   * @brief Print the latest sensor data to the buffer. The buffer must be at
+   * least SENSOR_PRINT_LEN in length.
    * @return bool True if the `buf_len` is long enough, false otherwise.
    */
   bool printData(char *buf, size_t buf_len);
 
   // Getters for the instances local data
   int getPM2_5();
-  int getPM1_0(); 
-  int getPM10(); 
+  int getPM1_0();
+  int getPM10();
 
-  float getTemperature(); 
-  float getPressure(); 
-  float getHumidity(); 
+  float getTemperature();
+  float getPressure();
+  float getHumidity();
 
 private:
   // Different service providers
