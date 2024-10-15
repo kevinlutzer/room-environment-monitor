@@ -7,8 +7,13 @@ MQTTMsg::MQTTMsg(const char *topic, const char *deviceId, const char *id) {
   // Just copy the data so we can keep the MQTTMsg isolated from pointers
   // in the settings manager and settings objects.
   memcpy(this->topic, topic, TOPIC_LEN);
+  this->topic[TOPIC_LEN] = '\0';
+
   memcpy(this->deviceId, deviceId, DEVICE_ID_LEN);
+  this->deviceId[DEVICE_ID_LEN] = '\0';
+
   memcpy(this->id, id, ID_LEN);
+  this->id[ID_LEN] = '\0';
 
   // Note that internally within JsonDocument, memory is allocated. We don't
   // need ie to preallocate memory
