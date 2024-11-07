@@ -182,6 +182,10 @@ void setup() {
     terminal->debugln("Failed to load settings");
   }
 
+  // Add tasks related to settings since settings manager is instantiated
+  FreeRTOS_CLIRegisterCommand(&xUpdateSettingCommand);
+  FreeRTOS_CLIRegisterCommand(&xPrintSettingsCommand);
+
   // Setup network utilities including the network connection,
   // sntp, and the mqtt client
   setupWiFi();
@@ -214,8 +218,6 @@ void setup() {
   uuidGenerator->seed(rn);
 
   // Remainder of the commands that depend on providers instantiated above
-  FreeRTOS_CLIRegisterCommand(&xUpdateSettingCommand);
-  FreeRTOS_CLIRegisterCommand(&xPrintSettingsCommand);
   FreeRTOS_CLIRegisterCommand(&xWiFIStatusCommand);
   FreeRTOS_CLIRegisterCommand(&xPrintSensorDataCommand);
 
