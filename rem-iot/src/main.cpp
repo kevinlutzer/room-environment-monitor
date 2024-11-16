@@ -211,11 +211,12 @@ void setup() {
   sensorAdapter = new SensorAdapter(pm1006k, bme280, terminal);
 
   // Create UUID Generator used for generating unique ids
-  randomSeed(analogRead(A0) || analogRead(A1) || analogRead(A2));
+  randomSeed(analogRead(A0) | analogRead(A1) | analogRead(A2));
   uint32_t rn = random();
 
   uuidGenerator = new UUID();
   uuidGenerator->seed(rn);
+  uuidGenerator->setRandomMode(); // This is important for the UUID to be unique between rebootsq
 
   // Remainder of the commands that depend on providers instantiated above
   FreeRTOS_CLIRegisterCommand(&xWiFIStatusCommand);
