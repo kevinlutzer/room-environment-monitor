@@ -24,7 +24,13 @@ void WiFiController::setupSNTP() {
   // Setup timing config for NTP. This needs to be done before
   // DHCP address is given to the ESP32C3.
   sntp_servermode_dhcp(1); // (optional)
+
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer1, ntpServer2);
+
+  // Set the time zone to be Toronto's.
+  // Ref: https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv
+  setenv("TZ", "EST5EDT,M3.2.0,M11.1.0", 1);
+  tzset();
 }
 
 bool WiFiController::verifyClockSync() {

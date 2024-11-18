@@ -14,11 +14,17 @@ public:
   LEDController(Adafruit_NeoPixel *neoPixel, Terminal *terminal);
 
   /**
+   * @brief Clears the LEDs by setting the colour to 0. This is used primarily
+   * when we want to shut off the indicator at night and in the early morning
+   */
+  void clear();
+
+  /**
    * @brief Updates the LEDs (NeoPixels) based on the PM1.0, PM2.5, and PM10
    * values. The colours are green, yellow, and red and are computed based on if
    * **any** one of PM_X values are in the.
    */
-  void update(double pm1_0, double pm2_5, double pm10);
+  void updateFromPM(double pm1_0, double pm2_5, double pm10);
 
 private:
   // Providers

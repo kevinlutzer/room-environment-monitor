@@ -26,7 +26,12 @@ void LEDController::setColour(uint32_t colour) {
   }
 }
 
-void LEDController::update(double pm1_0, double pm2_5, double pm10) {
+void LEDController::clear() {
+  // To clear the LEDs just the color to be (uint32_t)0
+  this->setColour(0);
+}
+
+void LEDController::updateFromPM(double pm1_0, double pm2_5, double pm10) {
 
   // Take mutex and return if we get a timeout condition
   if (xSemaphoreTake(this->mutex, LED_MUTEX_TIMEOUT) != pdTRUE) {
