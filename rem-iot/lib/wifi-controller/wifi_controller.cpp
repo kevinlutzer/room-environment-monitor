@@ -28,7 +28,7 @@ void WiFiController::setupSNTP() {
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer1, ntpServer2);
 
   // Set the time zone to be Toronto's.
-  // Ref: https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv
+  // Ref: https://github.com/esp8266/Arduino/blob/master/cores/esp8266/TZ.h
   setenv("TZ", "EST5EDT,M3.2.0,M11.1.0", 1);
   tzset();
 }
