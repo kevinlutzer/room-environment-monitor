@@ -165,10 +165,26 @@ void LEDUpdateTask(void *parameter) {
     double pm1_0 = providers->sensorAdapter->getPM1_0();
     double pm10 = providers->sensorAdapter->getPM10();
 
-    providers->ledController->update(pm2_5, pm1_0, pm10);
+    struct tm currentTime;
+    if (!getLocalTime(&currentTime)) {
+      providers->terminal->debugln("Failed to get current time");
+      goto delayInLoop;
+    }
 
-    // Update the LED panel based on the latest sensor data
-    providers->terminal->debugln("Updating LED panel");
+    // Check if the current time is between 6am and 8pm
+    if (currentTime.tm_hour < 6 || currentTime.tm_hour > 20) {
+      providers->terminal->debugf("Turning off LED panel because it is between "
+                                  "8pm and 6am, hour is: %d\n",
+                                  currentTime.tm_hour);
+      providers->ledController->clear();
+      goto delayInLoop;
+    }
+
+    // Just update based on the PM values now if we are in the time range
+    providers->ledController->updateFromPM(pm2_5, pm1_0, pm10);
+    providers->terminal->debugln("Updating LED panel based on the PM values");
+
+  delayInLoop:
     delay(LED_UPDATE_RATE);
   }
 }
