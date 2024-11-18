@@ -217,7 +217,7 @@ void setup() {
   uuidGenerator = new UUID();
   uuidGenerator->seed(rn);
   uuidGenerator->setRandomMode(); // This is important for the UUID to be unique
-                                  // between rebootsq
+                                  // between reboots
 
   // Remainder of the commands that depend on providers instantiated above
   FreeRTOS_CLIRegisterCommand(&xWiFIStatusCommand);
