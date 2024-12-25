@@ -27,3 +27,4 @@ pcb/_autosave-room_environment_monitor.kicad_pcb
 # Arduino
 .cache/
 bin/
+fp-info-cache

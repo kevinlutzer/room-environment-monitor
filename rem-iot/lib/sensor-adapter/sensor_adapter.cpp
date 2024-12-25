@@ -11,10 +11,13 @@
 #include "settings_manager.hpp"
 #include "terminal.hpp"
 
-SensorAdapter::SensorAdapter(PM1006K *pm1006k, Adafruit_BME280 *bme280,
-                             Terminal *terminal) {
+SensorAdapter::SensorAdapter(PM1006K *pm1006k, Adafruit_BME280 *bme280, Adafruit_SGP40 * sgp, Terminal *terminal) {
+  // Sensors
   this->pm1006k = pm1006k;
   this->bme280 = bme280;
+  this->sgp40 = sgp40;
+
+  // Terminal
   this->terminal = terminal;
 }
 
@@ -51,6 +54,11 @@ bool SensorAdapter::loadData() {
   this->temperature = this->bme280->readTemperature();
   this->humidity = this->bme280->readHumidity();
   this->pressure = this->bme280->readPressure();
+
+  // Load sensor data from the 
+  #ifdef HAS_SGP40
+    
+  #endif
 
   return success;
 }

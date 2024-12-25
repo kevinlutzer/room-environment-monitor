@@ -4,6 +4,8 @@
 #include "Adafruit_BME280.h"
 #include "PM1006K.h"
 #include "PubSubClient.h"
+#include "Adafruit_SGP40.h"
+
 #include "UUID.h"
 #include "WiFi.h"
 #include "time.h"
@@ -22,7 +24,7 @@
  *  */
 class SensorAdapter {
 public:
-  SensorAdapter(PM1006K *pm1006k, Adafruit_BME280 *bme280, Terminal *terminal);
+  SensorAdapter(PM1006K *pm1006k, Adafruit_BME280 *bme280, Adafruit_SGP40 * sgp, Terminal *terminal);
 
   /**
    * @brief Calls each of the sensor libraries to grab the latest data. The data
@@ -54,6 +56,7 @@ private:
 
   Adafruit_BME280 *bme280;
   Terminal *terminal;
+  Adafruit_SGP40 *sgp40;
 
   // Latest data values
   int pm2_5 = -1;
