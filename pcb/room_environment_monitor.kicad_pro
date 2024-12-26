@@ -499,7 +499,7 @@
       "idf": "",
       "netlist": "",
       "plot": "",
-      "pos_files": "bom/",
+      "pos_files": "",
       "specctra_dsn": "",
       "step": "",
       "svg": "",
@@ -509,7 +509,7 @@
   },
   "schematic": {
     "annotate_start_num": 0,
-    "bom_export_filename": "bom/room_environment_monitor_v5_bom.csv",
+    "bom_export_filename": "",
     "bom_fmt_presets": [],
     "bom_fmt_settings": {
       "field_delimiter": ",",
@@ -568,8 +568,26 @@
         },
         {
           "group_by": false,
+          "label": "DFN",
+          "name": "DFN",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "DNP",
+          "name": "DNP",
+          "show": false
+        },
+        {
+          "group_by": false,
           "label": "LCSC",
           "name": "LCSC",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "MPN",
+          "name": "MPN",
           "show": false
         },
         {
@@ -588,24 +606,6 @@
           "group_by": false,
           "label": "Description",
           "name": "Description",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "DNP",
-          "name": "DNP",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "DFN",
-          "name": "DFN",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "MPN",
-          "name": "MPN",
           "show": false
         }
       ],

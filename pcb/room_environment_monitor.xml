@@ -2,7 +2,7 @@
 <export version="E">
   <design>
     <source>/Users/kevinlutzer/Projects/room-environment-monitor/pcb/room_environment_monitor.kicad_sch</source>
-    <date>2024-12-23T18:57:02-0600</date>
+    <date>2024-12-25T16:24:59-0600</date>
     <tool>Eeschema 8.0.7</tool>
     <sheet number="1" name="/" tstamps="/">
       <title_block>
@@ -46,11 +46,15 @@
       <value>0u1</value>
       <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
       <fields>
+        <field name="MPN">C1590</field>
+        <field name="LCSC"/>
         <field name="Footprint">Capacitor_SMD:C_0603_1608Metric</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="MPN" value="C1590"/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
       <property name="ki_keywords" value="capacitor cap"/>
@@ -62,13 +66,15 @@
       <value>0u1</value>
       <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
       <fields>
-        <field name="LCSC">C1590</field>
+        <field name="DNP">C1590</field>
+        <field name="LCSC"/>
         <field name="Footprint">Capacitor_SMD:C_0603_1608Metric</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
-      <property name="LCSC" value="C1590"/>
+      <property name="DNP" value="C1590"/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
       <property name="ki_keywords" value="capacitor cap"/>
@@ -79,15 +85,17 @@
     <comp ref="C6">
       <value>1u</value>
       <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
-      <datasheet>https://www.lcsc.com/datasheet/lcsc_datasheet_2209191700_Samsung-Electro-Mechanics-CL10A105KO8NNNC_C1592.pdf</datasheet>
+      <datasheet>https://www.DNP.com/datasheet/DNP_datasheet_2209191700_Samsung-Electro-Mechanics-CL10A105KO8NNNC_C1592.pdf</datasheet>
       <fields>
-        <field name="LCSC">C1592</field>
+        <field name="DNP">C1592</field>
+        <field name="LCSC"/>
         <field name="Footprint">Capacitor_SMD:C_0603_1608Metric</field>
-        <field name="Datasheet">https://www.lcsc.com/datasheet/lcsc_datasheet_2209191700_Samsung-Electro-Mechanics-CL10A105KO8NNNC_C1592.pdf</field>
+        <field name="Datasheet">https://www.DNP.com/datasheet/DNP_datasheet_2209191700_Samsung-Electro-Mechanics-CL10A105KO8NNNC_C1592.pdf</field>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
-      <property name="LCSC" value="C1592"/>
+      <property name="DNP" value="C1592"/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
       <property name="ki_keywords" value="capacitor cap"/>
@@ -99,13 +107,15 @@
       <value>0u1</value>
       <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
       <fields>
-        <field name="LCSC">C1590</field>
+        <field name="DNP">C1590</field>
+        <field name="LCSC"/>
         <field name="Footprint">Capacitor_SMD:C_0603_1608Metric</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
-      <property name="LCSC" value="C1590"/>
+      <property name="DNP" value="C1590"/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
       <property name="ki_keywords" value="capacitor cap"/>
@@ -116,15 +126,17 @@
     <comp ref="C10">
       <value>1u</value>
       <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
-      <datasheet>https://www.lcsc.com/datasheet/lcsc_datasheet_2209191700_Samsung-Electro-Mechanics-CL10A105KO8NNNC_C1592.pdf</datasheet>
+      <datasheet>https://www.DNP.com/datasheet/DNP_datasheet_2209191700_Samsung-Electro-Mechanics-CL10A105KO8NNNC_C1592.pdf</datasheet>
       <fields>
-        <field name="LCSC">C1592</field>
+        <field name="DNP">C1592</field>
+        <field name="LCSC"/>
         <field name="Footprint">Capacitor_SMD:C_0603_1608Metric</field>
-        <field name="Datasheet">https://www.lcsc.com/datasheet/lcsc_datasheet_2209191700_Samsung-Electro-Mechanics-CL10A105KO8NNNC_C1592.pdf</field>
+        <field name="Datasheet">https://www.DNP.com/datasheet/DNP_datasheet_2209191700_Samsung-Electro-Mechanics-CL10A105KO8NNNC_C1592.pdf</field>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
-      <property name="LCSC" value="C1592"/>
+      <property name="DNP" value="C1592"/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
       <property name="ki_keywords" value="capacitor cap"/>
@@ -135,15 +147,19 @@
     <comp ref="C11">
       <value>1u</value>
       <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
-      <datasheet>https://www.lcsc.com/datasheet/lcsc_datasheet_2209191700_Samsung-Electro-Mechanics-CL10A105KO8NNNC_C1592.pdf</datasheet>
+      <datasheet>https://www.DNP.com/datasheet/DNP_datasheet_2209191700_Samsung-Electro-Mechanics-CL10A105KO8NNNC_C1592.pdf</datasheet>
       <fields>
-        <field name="LCSC">C1592</field>
+        <field name="DNP">C1592</field>
+        <field name="DFN"/>
+        <field name="LCSC"/>
         <field name="Footprint">Capacitor_SMD:C_0603_1608Metric</field>
-        <field name="Datasheet">https://www.lcsc.com/datasheet/lcsc_datasheet_2209191700_Samsung-Electro-Mechanics-CL10A105KO8NNNC_C1592.pdf</field>
+        <field name="Datasheet">https://www.DNP.com/datasheet/DNP_datasheet_2209191700_Samsung-Electro-Mechanics-CL10A105KO8NNNC_C1592.pdf</field>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
-      <property name="LCSC" value="C1592"/>
+      <property name="DNP" value="C1592"/>
+      <property name="DFN" value=""/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
       <property name="ki_keywords" value="capacitor cap"/>
@@ -154,15 +170,17 @@
     <comp ref="D1">
       <value>CDBMS160</value>
       <footprint>Diode_SMD:D_SOD-123F</footprint>
-      <datasheet>https://wmsc.lcsc.com/wmsc/upload/file/pdf/v2/lcsc/2312271638_Comchip-CDBMS160-HF_C7100383.pdf</datasheet>
+      <datasheet>https://wmsc.DNP.com/wmsc/upload/file/pdf/v2/DNP/2312271638_Comchip-CDBMS160-HF_C7100383.pdf</datasheet>
       <fields>
-        <field name="LCSC">C7100383</field>
+        <field name="DNP">C7100383</field>
+        <field name="LCSC"/>
         <field name="Footprint">Diode_SMD:D_SOD-123F</field>
-        <field name="Datasheet">https://wmsc.lcsc.com/wmsc/upload/file/pdf/v2/lcsc/2312271638_Comchip-CDBMS160-HF_C7100383.pdf</field>
+        <field name="Datasheet">https://wmsc.DNP.com/wmsc/upload/file/pdf/v2/DNP/2312271638_Comchip-CDBMS160-HF_C7100383.pdf</field>
         <field name="Description"/>
       </fields>
       <libsource lib="Diode" part="MBR1020VL" description="20V, 1A, 340 mV, Schottky Diode Rectifier, SOD-123F"/>
-      <property name="LCSC" value="C7100383"/>
+      <property name="DNP" value="C7100383"/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
       <property name="ki_keywords" value="forward voltage diode"/>
@@ -174,11 +192,15 @@
       <value>LED</value>
       <footprint>LED_SMD:LED_0603_1608Metric</footprint>
       <fields>
+        <field name="DNP">C2288</field>
+        <field name="LCSC"/>
         <field name="Footprint">LED_SMD:LED_0603_1608Metric</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="LED" description="Light emitting diode"/>
+      <property name="DNP" value="C2288"/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
       <property name="ki_keywords" value="LED diode"/>
@@ -186,139 +208,21 @@
       <sheetpath names="/" tstamps="/"/>
       <tstamps>328a28f6-7387-46f8-9516-87271b3af821</tstamps>
     </comp>
-    <comp ref="D3">
-      <value>SK6812MINI</value>
-      <footprint>LED_SMD:LED_SK6812MINI_PLCC4_3.5x3.5mm_P1.75mm</footprint>
-      <datasheet>https://cdn-shop.adafruit.com/product-files/2686/SK6812MINI_REV.01-1-2.pdf</datasheet>
-      <fields>
-        <field name="Footprint">LED_SMD:LED_SK6812MINI_PLCC4_3.5x3.5mm_P1.75mm</field>
-        <field name="Datasheet">https://cdn-shop.adafruit.com/product-files/2686/SK6812MINI_REV.01-1-2.pdf</field>
-        <field name="Description"/>
-      </fields>
-      <libsource lib="LED" part="SK6812MINI" description="RGB LED with integrated controller"/>
-      <property name="Sheetname" value="Root"/>
-      <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
-      <property name="ki_keywords" value="RGB LED NeoPixel Mini addressable"/>
-      <property name="ki_fp_filters" value="LED*SK6812MINI*PLCC*3.5x3.5mm*P1.75mm*"/>
-      <sheetpath names="/" tstamps="/"/>
-      <tstamps>a070cf1c-89e2-47ce-ad82-25d61f6cb24c</tstamps>
-    </comp>
-    <comp ref="D4">
-      <value>SK6812MINI</value>
-      <footprint>LED_SMD:LED_SK6812MINI_PLCC4_3.5x3.5mm_P1.75mm</footprint>
-      <datasheet>https://cdn-shop.adafruit.com/product-files/2686/SK6812MINI_REV.01-1-2.pdf</datasheet>
-      <fields>
-        <field name="Footprint">LED_SMD:LED_SK6812MINI_PLCC4_3.5x3.5mm_P1.75mm</field>
-        <field name="Datasheet">https://cdn-shop.adafruit.com/product-files/2686/SK6812MINI_REV.01-1-2.pdf</field>
-        <field name="Description"/>
-      </fields>
-      <libsource lib="LED" part="SK6812MINI" description="RGB LED with integrated controller"/>
-      <property name="Sheetname" value="Root"/>
-      <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
-      <property name="ki_keywords" value="RGB LED NeoPixel Mini addressable"/>
-      <property name="ki_fp_filters" value="LED*SK6812MINI*PLCC*3.5x3.5mm*P1.75mm*"/>
-      <sheetpath names="/" tstamps="/"/>
-      <tstamps>140e4010-e81a-405c-a470-056d6aa241b1</tstamps>
-    </comp>
-    <comp ref="D5">
-      <value>SK6812MINI</value>
-      <footprint>LED_SMD:LED_SK6812MINI_PLCC4_3.5x3.5mm_P1.75mm</footprint>
-      <datasheet>https://cdn-shop.adafruit.com/product-files/2686/SK6812MINI_REV.01-1-2.pdf</datasheet>
-      <fields>
-        <field name="Footprint">LED_SMD:LED_SK6812MINI_PLCC4_3.5x3.5mm_P1.75mm</field>
-        <field name="Datasheet">https://cdn-shop.adafruit.com/product-files/2686/SK6812MINI_REV.01-1-2.pdf</field>
-        <field name="Description"/>
-      </fields>
-      <libsource lib="LED" part="SK6812MINI" description="RGB LED with integrated controller"/>
-      <property name="Sheetname" value="Root"/>
-      <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
-      <property name="ki_keywords" value="RGB LED NeoPixel Mini addressable"/>
-      <property name="ki_fp_filters" value="LED*SK6812MINI*PLCC*3.5x3.5mm*P1.75mm*"/>
-      <sheetpath names="/" tstamps="/"/>
-      <tstamps>1906e005-0e9b-4666-be4b-978b2869a65d</tstamps>
-    </comp>
-    <comp ref="D7">
-      <value>ESD9X3</value>
-      <footprint>Diode_SMD:D_SOD-923</footprint>
-      <datasheet>https://www.onsemi.com/pdf/datasheet/esd9x3.3st5g-d.pdf</datasheet>
-      <fields>
-        <field name="Sim.Device">D</field>
-        <field name="Sim.Pins">1=K 2=A</field>
-        <field name="LCSC">C130456</field>
-        <field name="Footprint">Diode_SMD:D_SOD-923</field>
-        <field name="Datasheet">https://www.onsemi.com/pdf/datasheet/esd9x3.3st5g-d.pdf</field>
-        <field name="Description"/>
-      </fields>
-      <libsource lib="Kevin_Lutzer_Lbr" part="ESD9X5" description="50V 1A General Purpose Rectifier Diode, DO-41"/>
-      <property name="Sim.Device" value="D"/>
-      <property name="Sim.Pins" value="1=K 2=A"/>
-      <property name="LCSC" value="C130456"/>
-      <property name="Sheetname" value="Root"/>
-      <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
-      <property name="ki_keywords" value="diode"/>
-      <property name="ki_fp_filters" value="D*DO?41*"/>
-      <sheetpath names="/" tstamps="/"/>
-      <tstamps>4fbe7440-0af0-4d3e-b237-a56fab86ca31</tstamps>
-    </comp>
-    <comp ref="H1">
-      <value>MountingHole</value>
-      <footprint>MountingHole:MountingHole_2.2mm_M2_DIN965</footprint>
-      <fields>
-        <field name="Footprint">MountingHole:MountingHole_2.2mm_M2_DIN965</field>
-        <field name="Datasheet"/>
-        <field name="Description"/>
-      </fields>
-      <libsource lib="Mechanical" part="MountingHole" description="Mounting Hole without connection"/>
-      <property name="Sheetname" value="Root"/>
-      <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
-      <property name="ki_keywords" value="mounting hole"/>
-      <property name="ki_fp_filters" value="MountingHole*"/>
-      <sheetpath names="/" tstamps="/"/>
-      <tstamps>11a7d113-bb49-4506-8a43-8a37c6258990</tstamps>
-    </comp>
-    <comp ref="H2">
-      <value>MountingHole</value>
-      <footprint>MountingHole:MountingHole_2.2mm_M2_DIN965</footprint>
-      <fields>
-        <field name="Footprint">MountingHole:MountingHole_2.2mm_M2_DIN965</field>
-        <field name="Datasheet"/>
-        <field name="Description"/>
-      </fields>
-      <libsource lib="Mechanical" part="MountingHole" description="Mounting Hole without connection"/>
-      <property name="Sheetname" value="Root"/>
-      <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
-      <property name="ki_keywords" value="mounting hole"/>
-      <property name="ki_fp_filters" value="MountingHole*"/>
-      <sheetpath names="/" tstamps="/"/>
-      <tstamps>04d3a9d5-938b-4070-a786-fbb364b4cfa3</tstamps>
-    </comp>
-    <comp ref="H3">
-      <value>MountingHole</value>
-      <footprint>MountingHole:MountingHole_2.2mm_M2_DIN965</footprint>
-      <fields>
-        <field name="Footprint">MountingHole:MountingHole_2.2mm_M2_DIN965</field>
-        <field name="Datasheet"/>
-        <field name="Description"/>
-      </fields>
-      <libsource lib="Mechanical" part="MountingHole" description="Mounting Hole without connection"/>
-      <property name="Sheetname" value="Root"/>
-      <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
-      <property name="ki_keywords" value="mounting hole"/>
-      <property name="ki_fp_filters" value="MountingHole*"/>
-      <sheetpath names="/" tstamps="/"/>
-      <tstamps>cb2747b7-2c4e-4588-a6fd-d85bda9b0193</tstamps>
-    </comp>
     <comp ref="J1">
       <value>Conn_01x02_Pin</value>
       <footprint>Connector_Molex:Molex_PicoBlade_53398-0271_1x02-1MP_P1.25mm_Vertical</footprint>
       <fields>
-        <field name="LCSC">C122410</field>
+        <field name="DNP">C122410</field>
+        <field name="DFN"/>
+        <field name="LCSC"/>
         <field name="Footprint">Connector_Molex:Molex_PicoBlade_53398-0271_1x02-1MP_P1.25mm_Vertical</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Connector" part="Conn_01x02_Pin" description="Generic connector, single row, 01x02, script generated"/>
-      <property name="LCSC" value="C122410"/>
+      <property name="DNP" value="C122410"/>
+      <property name="DFN" value=""/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
       <property name="ki_keywords" value="connector"/>
@@ -326,69 +230,39 @@
       <sheetpath names="/" tstamps="/"/>
       <tstamps>4d990b8a-dee2-478c-9d7f-84d1e80cb005</tstamps>
     </comp>
-    <comp ref="J3">
-      <value>Conn_01x06_Socket</value>
-      <footprint>Connector_JST:JST_SH_SM06B-SRSS-TB_1x06-1MP_P1.00mm_Horizontal</footprint>
-      <fields>
-        <field name="Footprint">Connector_JST:JST_SH_SM06B-SRSS-TB_1x06-1MP_P1.00mm_Horizontal</field>
-        <field name="Datasheet"/>
-        <field name="Description"/>
-      </fields>
-      <libsource lib="Connector" part="Conn_01x06_Socket" description="Generic connector, single row, 01x06, script generated"/>
-      <property name="Sheetname" value="Root"/>
-      <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
-      <property name="ki_keywords" value="connector"/>
-      <property name="ki_fp_filters" value="Connector*:*_1x??_*"/>
-      <sheetpath names="/" tstamps="/"/>
-      <tstamps>1ab1f96e-f617-4bda-bc5f-2c70fa5a7a93</tstamps>
-    </comp>
-    <comp ref="P1">
-      <value>USB_C_Plug_USB2.0</value>
-      <footprint>Kevin_Lutzer_Lbr:CONN6_USB4130-GF-C_GCT</footprint>
-      <datasheet>https://www.usb.org/sites/default/files/documents/usb_type-c.zip</datasheet>
-      <fields>
-        <field name="Footprint">Kevin_Lutzer_Lbr:CONN6_USB4130-GF-C_GCT</field>
-        <field name="Datasheet">https://www.usb.org/sites/default/files/documents/usb_type-c.zip</field>
-        <field name="Description"/>
-      </fields>
-      <libsource lib="Connector" part="USB_C_Plug_USB2.0" description="USB 2.0-only Type-C Plug connector"/>
-      <property name="Sheetname" value="Root"/>
-      <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
-      <property name="ki_keywords" value="usb universal serial bus type-C USB2.0"/>
-      <property name="ki_fp_filters" value="USB*C*Plug*"/>
-      <sheetpath names="/" tstamps="/"/>
-      <tstamps>cfacf693-6d84-4932-9e71-28879006e6a5</tstamps>
-    </comp>
-    <comp ref="Q3">
+    <comp ref="Q2">
       <value>BSS138</value>
       <footprint>Package_TO_SOT_SMD:SOT-23</footprint>
-      <datasheet>https://www.lcsc.com/datasheet/lcsc_datasheet_1811121616_onsemi-BSS138_C52895.pdf</datasheet>
+      <datasheet>https://www.onsemi.com/pub/Collateral/BSS138-D.PDF</datasheet>
+      <description>50V Vds, 0.22A Id, N-Channel MOSFET, SOT-23</description>
       <fields>
-        <field name="LCSC">C52895</field>
+        <field name="DNP">C52895</field>
         <field name="Footprint">Package_TO_SOT_SMD:SOT-23</field>
-        <field name="Datasheet">https://www.lcsc.com/datasheet/lcsc_datasheet_1811121616_onsemi-BSS138_C52895.pdf</field>
-        <field name="Description"/>
+        <field name="Datasheet">https://www.onsemi.com/pub/Collateral/BSS138-D.PDF</field>
+        <field name="Description">50V Vds, 0.22A Id, N-Channel MOSFET, SOT-23</field>
       </fields>
       <libsource lib="Transistor_FET" part="BSS138" description="50V Vds, 0.22A Id, N-Channel MOSFET, SOT-23"/>
-      <property name="LCSC" value="C52895"/>
+      <property name="DNP" value="C52895"/>
       <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
       <property name="ki_keywords" value="N-Channel MOSFET"/>
       <property name="ki_fp_filters" value="SOT?23*"/>
       <sheetpath names="/" tstamps="/"/>
-      <tstamps>31ac7c12-daa8-4b2c-b95c-f0e553dabb3a</tstamps>
+      <tstamps>363fde79-1ef9-485a-9de2-5d7728726278</tstamps>
     </comp>
     <comp ref="R1">
       <value>10k</value>
       <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
       <fields>
-        <field name="LCSC">C15401</field>
+        <field name="DNP">C15401</field>
+        <field name="LCSC"/>
         <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="R_Small_US" description="Resistor, small US symbol"/>
-      <property name="LCSC" value="C15401"/>
+      <property name="DNP" value="C15401"/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
       <property name="ki_keywords" value="r resistor"/>
@@ -400,13 +274,17 @@
       <value>220</value>
       <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
       <fields>
-        <field name="LCSC">C1226</field>
+        <field name="DNP">C1226</field>
+        <field name="DFN"/>
+        <field name="LCSC"/>
         <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="R_Small_US" description="Resistor, small US symbol"/>
-      <property name="LCSC" value="C1226"/>
+      <property name="DNP" value="C1226"/>
+      <property name="DFN" value=""/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
       <property name="ki_keywords" value="r resistor"/>
@@ -418,13 +296,17 @@
       <value>0</value>
       <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
       <fields>
-        <field name="LCSC">C15402</field>
+        <field name="DNP">C15402</field>
+        <field name="DFN"/>
+        <field name="LCSC"/>
         <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="R_Small_US" description="Resistor, small US symbol"/>
-      <property name="LCSC" value="C15402"/>
+      <property name="DNP" value="C15402"/>
+      <property name="DFN" value=""/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
       <property name="ki_keywords" value="r resistor"/>
@@ -436,13 +318,17 @@
       <value>0</value>
       <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
       <fields>
-        <field name="LCSC">C15402</field>
+        <field name="DNP">C15402</field>
+        <field name="DFN"/>
+        <field name="LCSC"/>
         <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="R_Small_US" description="Resistor, small US symbol"/>
-      <property name="LCSC" value="C15402"/>
+      <property name="DNP" value="C15402"/>
+      <property name="DFN" value=""/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
       <property name="ki_keywords" value="r resistor"/>
@@ -454,11 +340,15 @@
       <value>10k</value>
       <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
       <fields>
+        <field name="DNP">C15401</field>
+        <field name="LCSC"/>
         <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="R_Small_US" description="Resistor, small US symbol"/>
+      <property name="DNP" value="C15401"/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
       <property name="ki_keywords" value="r resistor"/>
@@ -470,13 +360,17 @@
       <value>5.1k</value>
       <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
       <fields>
-        <field name="LCSC">C14677</field>
+        <field name="DNP">C14677</field>
+        <field name="DFN"/>
+        <field name="LCSC"/>
         <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="R_Small_US" description="Resistor, small US symbol"/>
-      <property name="LCSC" value="C14677"/>
+      <property name="DNP" value="C14677"/>
+      <property name="DFN" value=""/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
       <property name="ki_keywords" value="r resistor"/>
@@ -488,13 +382,17 @@
       <value>10k</value>
       <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
       <fields>
-        <field name="LCSC">C15401</field>
+        <field name="DNP">C15401</field>
+        <field name="DFN"/>
+        <field name="LCSC"/>
         <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="R_Small_US" description="Resistor, small US symbol"/>
-      <property name="LCSC" value="C15401"/>
+      <property name="DNP" value="C15401"/>
+      <property name="DFN" value=""/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
       <property name="ki_keywords" value="r resistor"/>
@@ -506,13 +404,17 @@
       <value>5.1k</value>
       <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
       <fields>
-        <field name="LCSC">C14677</field>
+        <field name="DNP">C14677</field>
+        <field name="DFN"/>
+        <field name="LCSC"/>
         <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="R_Small_US" description="Resistor, small US symbol"/>
-      <property name="LCSC" value="C14677"/>
+      <property name="DNP" value="C14677"/>
+      <property name="DFN" value=""/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
       <property name="ki_keywords" value="r resistor"/>
@@ -524,43 +426,30 @@
       <value>SW_SPST</value>
       <footprint>Button_Switch_SMD:SW_Push_1P1T_NO_CK_KMR2</footprint>
       <fields>
-        <field name="LCSC">C72443</field>
+        <field name="DNP">C72443</field>
+        <field name="LCSC"/>
         <field name="Footprint">Button_Switch_SMD:SW_Push_1P1T_NO_CK_KMR2</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Switch" part="SW_SPST" description="Single Pole Single Throw (SPST) switch"/>
-      <property name="LCSC" value="C72443"/>
+      <property name="DNP" value="C72443"/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
       <property name="ki_keywords" value="switch lever"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamps>678801a5-dd60-4319-8408-37bef4ac66bc</tstamps>
     </comp>
-    <comp ref="TP4">
-      <value>TestPoint</value>
-      <footprint>TestPoint:TestPoint_Pad_D1.0mm</footprint>
-      <fields>
-        <field name="Footprint">TestPoint:TestPoint_Pad_D1.0mm</field>
-        <field name="Datasheet"/>
-        <field name="Description"/>
-      </fields>
-      <libsource lib="Connector" part="TestPoint" description="test point"/>
-      <property name="Sheetname" value="Root"/>
-      <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
-      <property name="ki_keywords" value="test point tp"/>
-      <property name="ki_fp_filters" value="Pin* Test*"/>
-      <sheetpath names="/" tstamps="/"/>
-      <tstamps>1bb1dca2-5e2a-4bb8-a281-ece647798b71</tstamps>
-    </comp>
     <comp ref="U1">
       <value>ATECC608A-MAHDA</value>
       <footprint>Package_DFN_QFN:DFN-8-1EP_3x2mm_P0.5mm_EP1.3x1.5mm</footprint>
       <datasheet>http://ww1.microchip.com/downloads/en/DeviceDoc/ATECC608A-CryptoAuthentication-Device-Summary-Data-Sheet-DS40001977B.pdf</datasheet>
+      <description>Cryptographic Co-Processor with Secure Hardware-based 16 Key Storage, ECDSA and ECDH support, I2C, UDFN-8</description>
       <fields>
         <field name="Footprint">Package_DFN_QFN:DFN-8-1EP_3x2mm_P0.5mm_EP1.3x1.5mm</field>
         <field name="Datasheet">http://ww1.microchip.com/downloads/en/DeviceDoc/ATECC608A-CryptoAuthentication-Device-Summary-Data-Sheet-DS40001977B.pdf</field>
-        <field name="Description"/>
+        <field name="Description">Cryptographic Co-Processor with Secure Hardware-based 16 Key Storage, ECDSA and ECDH support, I2C, UDFN-8</field>
       </fields>
       <libsource lib="Security" part="ATECC608A-MAHDA" description="Cryptographic Co-Processor with Secure Hardware-based 16 Key Storage, ECDSA and ECDH support, I2C, UDFN-8"/>
       <property name="Sheetname" value="Root"/>
@@ -568,20 +457,22 @@
       <property name="ki_keywords" value="Cryptographic coprocessor"/>
       <property name="ki_fp_filters" value="DFN*1EP*3x2mm*P0.5mm*"/>
       <sheetpath names="/" tstamps="/"/>
-      <tstamps>47c89d07-8771-4424-b574-849531a88d7d</tstamps>
+      <tstamps>0161075d-f5ac-41a5-84c2-726b829f9e9f</tstamps>
     </comp>
     <comp ref="U2">
       <value>ESP32-C3-MINI-1</value>
       <footprint>PCM_Espressif:ESP32-C3-MINI-1</footprint>
       <datasheet>https://www.espressif.com/sites/default/files/documentation/esp32-c3-mini-1_datasheet_en.pdf</datasheet>
       <fields>
-        <field name="LCSC">C2838502</field>
+        <field name="DNP">C2838502</field>
+        <field name="LCSC"/>
         <field name="Footprint">PCM_Espressif:ESP32-C3-MINI-1</field>
         <field name="Datasheet">https://www.espressif.com/sites/default/files/documentation/esp32-c3-mini-1_datasheet_en.pdf</field>
         <field name="Description"/>
       </fields>
       <libsource lib="PCM_Espressif" part="ESP32-C3-MINI-1" description="ESP32-C3-MINI-1 family is an ultra-low-power MCU-based SoC solution that supports 2.4 GHz Wi-Fi and Bluetooth®Low Energy (Bluetooth LE)."/>
-      <property name="LCSC" value="C2838502"/>
+      <property name="DNP" value="C2838502"/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
       <property name="ki_keywords" value="esp32-c3"/>
@@ -593,13 +484,17 @@
       <footprint>Package_TO_SOT_SMD:SOT-23-5</footprint>
       <datasheet>https://www.diodes.com/assets/Datasheets/AP2112.pdf</datasheet>
       <fields>
-        <field name="LCSC">C51118</field>
+        <field name="DNP">C51118</field>
+        <field name="DFN"/>
+        <field name="LCSC"/>
         <field name="Footprint">Package_TO_SOT_SMD:SOT-23-5</field>
         <field name="Datasheet">https://www.diodes.com/assets/Datasheets/AP2112.pdf</field>
         <field name="Description"/>
       </fields>
       <libsource lib="Regulator_Linear" part="AP2112K-3.3" description="600mA low dropout linear regulator, with enable pin, 3.8V-6V input voltage range, 3.3V fixed positive output, SOT-23-5"/>
-      <property name="LCSC" value="C51118"/>
+      <property name="DNP" value="C51118"/>
+      <property name="DFN" value=""/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="room_environment_monitor.kicad_sch"/>
       <property name="ki_keywords" value="linear regulator ldo fixed positive"/>
@@ -611,11 +506,15 @@
       <value>0u1</value>
       <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
       <fields>
+        <field name="DNP">C1590</field>
+        <field name="LCSC"/>
         <field name="Footprint">Capacitor_SMD:C_0603_1608Metric</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="DNP" value="C1590"/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Sensors"/>
       <property name="Sheetfile" value="sensors.kicad_sch"/>
       <property name="ki_keywords" value="capacitor cap"/>
@@ -627,13 +526,15 @@
       <value>0u1</value>
       <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
       <fields>
-        <field name="LCSC">C1590</field>
+        <field name="DNP">C1590</field>
+        <field name="LCSC"/>
         <field name="Footprint">Capacitor_SMD:C_0603_1608Metric</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
-      <property name="LCSC" value="C1590"/>
+      <property name="DNP" value="C1590"/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Sensors"/>
       <property name="Sheetfile" value="sensors.kicad_sch"/>
       <property name="ki_keywords" value="capacitor cap"/>
@@ -645,13 +546,15 @@
       <value>0u1</value>
       <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
       <fields>
-        <field name="LCSC">C1590</field>
+        <field name="DNP">C1590</field>
+        <field name="LCSC"/>
         <field name="Footprint">Capacitor_SMD:C_0603_1608Metric</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
-      <property name="LCSC" value="C1590"/>
+      <property name="DNP" value="C1590"/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Sensors"/>
       <property name="Sheetfile" value="sensors.kicad_sch"/>
       <property name="ki_keywords" value="capacitor cap"/>
@@ -664,13 +567,15 @@
       <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
       <datasheet>https://www.lcsc.com/datasheet/lcsc_datasheet_2209191700_Samsung-Electro-Mechanics-CL10A105KO8NNNC_C1592.pdf</datasheet>
       <fields>
-        <field name="LCSC">C1592</field>
+        <field name="DNP">C1592</field>
+        <field name="LCSC"/>
         <field name="Footprint">Capacitor_SMD:C_0603_1608Metric</field>
         <field name="Datasheet">https://www.lcsc.com/datasheet/lcsc_datasheet_2209191700_Samsung-Electro-Mechanics-CL10A105KO8NNNC_C1592.pdf</field>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
-      <property name="LCSC" value="C1592"/>
+      <property name="DNP" value="C1592"/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Sensors"/>
       <property name="Sheetfile" value="sensors.kicad_sch"/>
       <property name="ki_keywords" value="capacitor cap"/>
@@ -682,11 +587,15 @@
       <value>Conn_01x04_Pin</value>
       <footprint>Kevin_Lutzer_Lbr:CONN_B4B-ZR-SM4-TF_JST</footprint>
       <fields>
+        <field name="DNP">C265083</field>
+        <field name="LCSC"/>
         <field name="Footprint">Kevin_Lutzer_Lbr:CONN_B4B-ZR-SM4-TF_JST</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Connector" part="Conn_01x04_Pin" description="Generic connector, single row, 01x04, script generated"/>
+      <property name="DNP" value="C265083"/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Sensors"/>
       <property name="Sheetfile" value="sensors.kicad_sch"/>
       <property name="ki_keywords" value="connector"/>
@@ -697,33 +606,36 @@
     <comp ref="Q1">
       <value>BSS138</value>
       <footprint>Package_TO_SOT_SMD:SOT-23</footprint>
-      <datasheet>https://www.lcsc.com/datasheet/lcsc_datasheet_1811121616_onsemi-BSS138_C52895.pdf</datasheet>
+      <datasheet>https://www.onsemi.com/pub/Collateral/BSS138-D.PDF</datasheet>
+      <description>50V Vds, 0.22A Id, N-Channel MOSFET, SOT-23</description>
       <fields>
-        <field name="LCSC">C52895</field>
+        <field name="DNP">C52895</field>
         <field name="Footprint">Package_TO_SOT_SMD:SOT-23</field>
-        <field name="Datasheet">https://www.lcsc.com/datasheet/lcsc_datasheet_1811121616_onsemi-BSS138_C52895.pdf</field>
-        <field name="Description"/>
+        <field name="Datasheet">https://www.onsemi.com/pub/Collateral/BSS138-D.PDF</field>
+        <field name="Description">50V Vds, 0.22A Id, N-Channel MOSFET, SOT-23</field>
       </fields>
       <libsource lib="Transistor_FET" part="BSS138" description="50V Vds, 0.22A Id, N-Channel MOSFET, SOT-23"/>
-      <property name="LCSC" value="C52895"/>
+      <property name="DNP" value="C52895"/>
       <property name="Sheetname" value="Sensors"/>
       <property name="Sheetfile" value="sensors.kicad_sch"/>
       <property name="ki_keywords" value="N-Channel MOSFET"/>
       <property name="ki_fp_filters" value="SOT?23*"/>
       <sheetpath names="/Sensors/" tstamps="/789efca6-28c5-460e-8523-846d22f060e4/"/>
-      <tstamps>6e383df4-ddd3-4bf0-a05d-5efdbabd6bb5</tstamps>
+      <tstamps>52814135-d6cd-47c1-9d7d-4a8f7423e7c8</tstamps>
     </comp>
     <comp ref="R3">
       <value>10k</value>
       <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
       <fields>
-        <field name="LCSC">C15401</field>
+        <field name="DNP">C15401</field>
+        <field name="LCSC"/>
         <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="R_Small_US" description="Resistor, small US symbol"/>
-      <property name="LCSC" value="C15401"/>
+      <property name="DNP" value="C15401"/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Sensors"/>
       <property name="Sheetfile" value="sensors.kicad_sch"/>
       <property name="ki_keywords" value="r resistor"/>
@@ -735,11 +647,13 @@
       <value>4.7</value>
       <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
       <fields>
+        <field name="DNP">C23164</field>
         <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="R_Small_US" description="Resistor, small US symbol"/>
+      <property name="DNP" value="C23164"/>
       <property name="Sheetname" value="Sensors"/>
       <property name="Sheetfile" value="sensors.kicad_sch"/>
       <property name="ki_keywords" value="r resistor"/>
@@ -751,11 +665,15 @@
       <value>0</value>
       <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
       <fields>
+        <field name="DNP">C15402</field>
+        <field name="LCSC"/>
         <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="R_Small_US" description="Resistor, small US symbol"/>
+      <property name="DNP" value="C15402"/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Sensors"/>
       <property name="Sheetfile" value="sensors.kicad_sch"/>
       <property name="ki_keywords" value="r resistor"/>
@@ -767,11 +685,15 @@
       <value>0</value>
       <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
       <fields>
+        <field name="DNP">C15402</field>
+        <field name="LCSC"/>
         <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="R_Small_US" description="Resistor, small US symbol"/>
+      <property name="DNP" value="C15402"/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Sensors"/>
       <property name="Sheetfile" value="sensors.kicad_sch"/>
       <property name="ki_keywords" value="r resistor"/>
@@ -783,13 +705,15 @@
       <value>2k2</value>
       <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
       <fields>
-        <field name="LCSC">C4190</field>
+        <field name="DNP">C4190</field>
+        <field name="LCSC"/>
         <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="R_Small_US" description="Resistor, small US symbol"/>
-      <property name="LCSC" value="C4190"/>
+      <property name="DNP" value="C4190"/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Sensors"/>
       <property name="Sheetfile" value="sensors.kicad_sch"/>
       <property name="ki_keywords" value="r resistor"/>
@@ -801,13 +725,15 @@
       <value>2k2</value>
       <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
       <fields>
-        <field name="LCSC">C4190</field>
+        <field name="DNP">C4190</field>
+        <field name="LCSC"/>
         <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="R_Small_US" description="Resistor, small US symbol"/>
-      <property name="LCSC" value="C4190"/>
+      <property name="DNP" value="C4190"/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Sensors"/>
       <property name="Sheetfile" value="sensors.kicad_sch"/>
       <property name="ki_keywords" value="r resistor"/>
@@ -819,13 +745,15 @@
       <value>10k</value>
       <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
       <fields>
-        <field name="LCSC">C15401</field>
+        <field name="DNP">C15401</field>
+        <field name="LCSC"/>
         <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="R_Small_US" description="Resistor, small US symbol"/>
-      <property name="LCSC" value="C15401"/>
+      <property name="DNP" value="C15401"/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Sensors"/>
       <property name="Sheetfile" value="sensors.kicad_sch"/>
       <property name="ki_keywords" value="r resistor"/>
@@ -837,13 +765,17 @@
       <value>10k</value>
       <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
       <fields>
-        <field name="LCSC">C15401</field>
+        <field name="DNP">C15401</field>
+        <field name="DFN"/>
+        <field name="LCSC"/>
         <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
         <field name="Datasheet"/>
         <field name="Description"/>
       </fields>
       <libsource lib="Device" part="R_Small_US" description="Resistor, small US symbol"/>
-      <property name="LCSC" value="C15401"/>
+      <property name="DNP" value="C15401"/>
+      <property name="DFN" value=""/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Sensors"/>
       <property name="Sheetfile" value="sensors.kicad_sch"/>
       <property name="ki_keywords" value="r resistor"/>
@@ -852,30 +784,34 @@
       <tstamps>1ea00870-4fbb-47c4-b6f8-964801b433a7</tstamps>
     </comp>
     <comp ref="U3">
-      <value>SGP30-2.5K</value>
-      <footprint>Kevin_Lutzer_Lbr:SGP30-2.5K_SEN</footprint>
-      <datasheet>https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/2578/SGP30%20Datasheet.pdf</datasheet>
+      <value>SGP40</value>
+      <footprint>Kevin_Lutzer_Lbr:SGP30-2.5K_SEN-M</footprint>
+      <datasheet>https://sensirion.com/media/documents/296373BB/6203C5DF/Sensirion_Gas_Sensors_Datasheet_SGP40.pdf</datasheet>
       <fields>
-        <field name="Footprint">Kevin_Lutzer_Lbr:SGP30-2.5K_SEN</field>
-        <field name="Datasheet">https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/2578/SGP30%20Datasheet.pdf</field>
+        <field name="Footprint">Kevin_Lutzer_Lbr:SGP30-2.5K_SEN-M</field>
+        <field name="Datasheet">https://sensirion.com/media/documents/296373BB/6203C5DF/Sensirion_Gas_Sensors_Datasheet_SGP40.pdf</field>
         <field name="Description"/>
       </fields>
-      <libsource lib="Kevin_Lutzer_Lbr" part="SGP30-2.5K" description=""/>
+      <libsource lib="Kevin_Lutzer_Lbr" part="SGP40" description=""/>
       <property name="Sheetname" value="Sensors"/>
       <property name="Sheetfile" value="sensors.kicad_sch"/>
       <sheetpath names="/Sensors/" tstamps="/789efca6-28c5-460e-8523-846d22f060e4/"/>
-      <tstamps>b6c39d4b-6051-4240-9438-a3af6263685b</tstamps>
+      <tstamps>7367fa5f-2e0d-4ee3-8f98-b6bd58b6e979</tstamps>
     </comp>
     <comp ref="U4">
       <value>BME280</value>
       <footprint>Package_LGA:Bosch_LGA-8_2.5x2.5mm_P0.65mm_ClockwisePinNumbering</footprint>
       <datasheet>https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme280-ds002.pdf</datasheet>
       <fields>
+        <field name="DNP">C92489</field>
+        <field name="LCSC"/>
         <field name="Footprint">Package_LGA:Bosch_LGA-8_2.5x2.5mm_P0.65mm_ClockwisePinNumbering</field>
         <field name="Datasheet">https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme280-ds002.pdf</field>
         <field name="Description"/>
       </fields>
       <libsource lib="Sensor" part="BME280" description="3-in-1 sensor, humidity, pressure, temperature, I2C and SPI interface, 1.71-3.6V, LGA-8"/>
+      <property name="DNP" value="C92489"/>
+      <property name="LCSC" value=""/>
       <property name="Sheetname" value="Sensors"/>
       <property name="Sheetfile" value="sensors.kicad_sch"/>
       <property name="ki_keywords" value="Bosch pressure humidity temperature environment environmental measurement digital"/>
@@ -1101,23 +1037,23 @@
         <pin num="2" name="A" type="passive"/>
       </pins>
     </libpart>
-    <libpart lib="Kevin_Lutzer_Lbr" part="SGP30-2.5K">
-      <docs>https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/2578/SGP30%20Datasheet.pdf</docs>
+    <libpart lib="Kevin_Lutzer_Lbr" part="SGP40">
+      <docs>https://sensirion.com/media/documents/296373BB/6203C5DF/Sensirion_Gas_Sensors_Datasheet_SGP40.pdf</docs>
       <fields>
         <field name="Reference">U</field>
-        <field name="Value">SGP30-2.5K</field>
+        <field name="Value">SGP40</field>
         <field name="Footprint">Kevin_Lutzer_Lbr:SGP30-2.5K_SEN-M</field>
-        <field name="Datasheet">https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/2578/SGP30%20Datasheet.pdf</field>
+        <field name="Datasheet">https://sensirion.com/media/documents/296373BB/6203C5DF/Sensirion_Gas_Sensors_Datasheet_SGP40.pdf</field>
         <field name="Description"/>
       </fields>
       <pins>
         <pin num="1" name="VDD" type="power_in"/>
         <pin num="2" name="VSS" type="power_in"/>
         <pin num="3" name="SDA" type="bidirectional"/>
-        <pin num="4" name="R" type="input"/>
+        <pin num="4" name="N/A" type="input"/>
         <pin num="5" name="VDDH" type="power_in"/>
         <pin num="6" name="SCL" type="input"/>
-        <pin num="7" name="PAD" type="power_in"/>
+        <pin num="7" name="PAD" type="input"/>
       </pins>
     </libpart>
     <libpart lib="LED" part="SK6812MINI">
@@ -1335,6 +1271,9 @@
     <library logical="Diode">
       <uri>/Applications/KiCad/KiCad.app/Contents/SharedSupport/symbols//Diode.kicad_sym</uri>
     </library>
+    <library logical="Kevin_Lutzer_Lbr">
+      <uri>/Users/kevinlutzer/Projects/Kevin-Lutzer-Kicad-Lbr/Kevin_Lutzer_Lbr.kicad_sym</uri>
+    </library>
     <library logical="LED">
       <uri>/Applications/KiCad/KiCad.app/Contents/SharedSupport/symbols//LED.kicad_sym</uri>
     </library>
@@ -1378,11 +1317,9 @@
       <node ref="R3" pin="1" pintype="passive"/>
       <node ref="R4" pin="1" pintype="passive"/>
       <node ref="R7" pin="1" pintype="passive"/>
-      <node ref="TP4" pin="1" pinfunction="1" pintype="passive"/>
       <node ref="U1" pin="8" pinfunction="VCC" pintype="power_in"/>
       <node ref="U2" pin="3" pinfunction="3V3" pintype="power_in"/>
       <node ref="U3" pin="5" pinfunction="VDDH" pintype="power_in"/>
-      <node ref="U4" pin="2" pinfunction="CSB" pintype="input"/>
       <node ref="U4" pin="6" pinfunction="VDDIO" pintype="power_in"/>
       <node ref="U4" pin="8" pinfunction="VDD" pintype="power_in"/>
       <node ref="U5" pin="5" pinfunction="VOUT" pintype="power_out"/>
@@ -1391,17 +1328,8 @@
       <node ref="C10" pin="1" pintype="passive"/>
       <node ref="C7" pin="1" pintype="passive"/>
       <node ref="D1" pin="1" pinfunction="K" pintype="passive"/>
-      <node ref="D3" pin="4" pinfunction="VDD" pintype="power_in"/>
-      <node ref="D4" pin="4" pinfunction="VDD" pintype="power_in"/>
-      <node ref="D5" pin="4" pinfunction="VDD" pintype="power_in"/>
-      <node ref="D7" pin="1" pinfunction="K" pintype="passive"/>
       <node ref="J1" pin="2" pinfunction="Pin_2" pintype="passive"/>
       <node ref="J2" pin="3" pinfunction="Pin_3" pintype="passive"/>
-      <node ref="J3" pin="1" pinfunction="Pin_1" pintype="passive"/>
-      <node ref="P1" pin="A4" pinfunction="VBUS" pintype="passive"/>
-      <node ref="P1" pin="A9" pinfunction="VBUS" pintype="passive"/>
-      <node ref="P1" pin="B4" pinfunction="VBUS" pintype="passive"/>
-      <node ref="P1" pin="B9" pinfunction="VBUS" pintype="passive"/>
       <node ref="R13" pin="1" pintype="passive"/>
       <node ref="U5" pin="1" pinfunction="VIN" pintype="power_in"/>
       <node ref="U5" pin="3" pinfunction="EN" pintype="input"/>
@@ -1412,19 +1340,17 @@
       <node ref="U3" pin="1" pinfunction="VDD" pintype="power_in"/>
     </net>
     <net code="4" name="BOOT">
-      <node ref="J3" pin="4" pinfunction="Pin_4" pintype="passive"/>
       <node ref="R7" pin="2" pintype="passive"/>
       <node ref="U2" pin="23" pinfunction="GPIO9" pintype="bidirectional"/>
     </net>
     <net code="5" name="EN">
       <node ref="C1" pin="1" pintype="passive"/>
-      <node ref="J3" pin="3" pinfunction="Pin_3" pintype="passive"/>
       <node ref="R1" pin="2" pintype="passive"/>
       <node ref="SW1" pin="2" pinfunction="B" pintype="passive"/>
       <node ref="U2" pin="8" pinfunction="EN/CHIP_PU" pintype="input"/>
     </net>
     <net code="6" name="FAN">
-      <node ref="Q3" pin="1" pinfunction="G" pintype="input"/>
+      <node ref="Q2" pin="1" pinfunction="G" pintype="input"/>
       <node ref="U2" pin="16" pinfunction="GPIO10" pintype="bidirectional"/>
     </net>
     <net code="7" name="GND">
@@ -1439,18 +1365,8 @@
       <node ref="C7" pin="2" pintype="passive"/>
       <node ref="C8" pin="2" pintype="passive"/>
       <node ref="D2" pin="1" pinfunction="K" pintype="passive"/>
-      <node ref="D3" pin="2" pinfunction="VSS" pintype="power_in"/>
-      <node ref="D4" pin="2" pinfunction="VSS" pintype="power_in"/>
-      <node ref="D5" pin="2" pinfunction="VSS" pintype="power_in"/>
-      <node ref="D7" pin="2" pinfunction="A" pintype="passive"/>
       <node ref="J2" pin="4" pinfunction="Pin_4" pintype="passive"/>
-      <node ref="J3" pin="2" pinfunction="Pin_2" pintype="passive"/>
-      <node ref="P1" pin="A1" pinfunction="GND" pintype="passive"/>
-      <node ref="P1" pin="A12" pinfunction="GND" pintype="passive"/>
-      <node ref="P1" pin="B1" pinfunction="GND" pintype="passive"/>
-      <node ref="P1" pin="B12" pinfunction="GND" pintype="passive"/>
-      <node ref="P1" pin="S1" pinfunction="SHIELD" pintype="passive"/>
-      <node ref="Q3" pin="2" pinfunction="S" pintype="passive"/>
+      <node ref="Q2" pin="2" pinfunction="S" pintype="passive"/>
       <node ref="R15" pin="2" pintype="passive"/>
       <node ref="R20" pin="2" pintype="passive"/>
       <node ref="SW1" pin="1" pinfunction="A" pintype="passive"/>
@@ -1479,9 +1395,10 @@
       <node ref="U2" pin="52" pinfunction="GND" pintype="passive"/>
       <node ref="U2" pin="53" pinfunction="GND" pintype="passive"/>
       <node ref="U3" pin="2" pinfunction="VSS" pintype="power_in"/>
-      <node ref="U3" pin="4" pinfunction="R" pintype="input"/>
-      <node ref="U3" pin="7" pinfunction="PAD" pintype="power_in"/>
+      <node ref="U3" pin="4" pinfunction="N/A" pintype="input"/>
+      <node ref="U3" pin="7" pinfunction="PAD" pintype="input"/>
       <node ref="U4" pin="1" pinfunction="GND" pintype="power_in"/>
+      <node ref="U4" pin="2" pinfunction="CSB" pintype="input"/>
       <node ref="U4" pin="7" pinfunction="GND" pintype="power_in"/>
       <node ref="U5" pin="2" pinfunction="GND" pintype="power_in"/>
     </net>
@@ -1500,26 +1417,17 @@
       <node ref="U4" pin="3" pinfunction="SDI" pintype="bidirectional"/>
     </net>
     <net code="10" name="NEOPIXEL">
-      <node ref="D3" pin="3" pinfunction="DIN" pintype="input"/>
       <node ref="R16" pin="2" pintype="passive"/>
       <node ref="U2" pin="22" pinfunction="GPIO8" pintype="bidirectional"/>
     </net>
     <net code="11" name="Net-(D1-A)">
       <node ref="D1" pin="2" pinfunction="A" pintype="passive"/>
       <node ref="J1" pin="1" pinfunction="Pin_1" pintype="passive"/>
-      <node ref="Q3" pin="3" pinfunction="D" pintype="passive"/>
+      <node ref="Q2" pin="3" pinfunction="D" pintype="passive"/>
     </net>
     <net code="12" name="Net-(D2-A)">
       <node ref="D2" pin="2" pinfunction="A" pintype="passive"/>
       <node ref="R2" pin="2" pintype="passive"/>
-    </net>
-    <net code="13" name="Net-(D3-DOUT)">
-      <node ref="D3" pin="1" pinfunction="DOUT" pintype="output"/>
-      <node ref="D4" pin="3" pinfunction="DIN" pintype="input"/>
-    </net>
-    <net code="14" name="Net-(D4-DOUT)">
-      <node ref="D4" pin="1" pinfunction="DOUT" pintype="output"/>
-      <node ref="D5" pin="3" pinfunction="DIN" pintype="input"/>
     </net>
     <net code="15" name="Net-(J2-Pin_1)">
       <node ref="J2" pin="1" pinfunction="Pin_1" pintype="passive"/>
@@ -1530,19 +1438,15 @@
       <node ref="R9" pin="1" pintype="passive"/>
     </net>
     <net code="17" name="Net-(J3-Pin_5)">
-      <node ref="J3" pin="5" pinfunction="Pin_5" pintype="passive"/>
       <node ref="R6" pin="2" pintype="passive"/>
     </net>
     <net code="18" name="Net-(J3-Pin_6)">
-      <node ref="J3" pin="6" pinfunction="Pin_6" pintype="passive"/>
       <node ref="R5" pin="2" pintype="passive"/>
     </net>
     <net code="19" name="Net-(P1-CC)">
-      <node ref="P1" pin="A5" pinfunction="CC" pintype="bidirectional"/>
       <node ref="R20" pin="1" pintype="passive"/>
     </net>
     <net code="20" name="Net-(P1-VCONN)">
-      <node ref="P1" pin="B5" pinfunction="VCONN" pintype="bidirectional"/>
       <node ref="R15" pin="1" pintype="passive"/>
     </net>
     <net code="21" name="Net-(U4-SDO)">
@@ -1573,15 +1477,6 @@
     <net code="27" name="UART_TX">
       <node ref="R5" pin="1" pintype="passive"/>
       <node ref="U2" pin="31" pinfunction="GPIO21/U0TXD" pintype="bidirectional"/>
-    </net>
-    <net code="28" name="unconnected-(D5-DOUT-Pad1)">
-      <node ref="D5" pin="1" pinfunction="DOUT" pintype="output+no_connect"/>
-    </net>
-    <net code="29" name="unconnected-(P1-D+-PadA6)">
-      <node ref="P1" pin="A6" pinfunction="D+" pintype="bidirectional+no_connect"/>
-    </net>
-    <net code="30" name="unconnected-(P1-D--PadA7)">
-      <node ref="P1" pin="A7" pinfunction="D-" pintype="bidirectional+no_connect"/>
     </net>
     <net code="31" name="unconnected-(U1-NC-Pad1)">
       <node ref="U1" pin="1" pinfunction="NC" pintype="no_connect"/>
