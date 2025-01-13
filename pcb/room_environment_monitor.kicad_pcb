@@ -8523,45 +8523,6 @@
 				)
 			)
 		)
-		(property "DFN" ""
-			(at 0 0 90)
-			(unlocked yes)
-			(layer "F.Fab")
-			(hide yes)
-			(uuid "657f0c49-4bf2-49a9-9f96-47c8a27c8246")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(property "LCSC" ""
-			(at 0 0 90)
-			(unlocked yes)
-			(layer "F.Fab")
-			(hide yes)
-			(uuid "45565d88-422e-4256-b28a-594b1fa76ca3")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(property "MPN" ""
-			(at 0 0 90)
-			(unlocked yes)
-			(layer "F.Fab")
-			(hide yes)
-			(uuid "cef7df84-c55a-4904-8de6-86aa15fe5410")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
 		(property ki_fp_filters "Connector*:*_1x??_*")
 		(path "/4d990b8a-dee2-478c-9d7f-84d1e80cb005")
 		(sheetname "Root")
@@ -10174,32 +10135,6 @@
 				)
 			)
 		)
-		(property "LCSC" ""
-			(at 0 0 180)
-			(unlocked yes)
-			(layer "F.Fab")
-			(hide yes)
-			(uuid "28f63e41-cd7e-440b-80ad-d56765c05d68")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(property "MPN" ""
-			(at 0 0 180)
-			(unlocked yes)
-			(layer "F.Fab")
-			(hide yes)
-			(uuid "3adb7efd-bfd6-43af-ad15-1eae79e8e545")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
 		(path "/678801a5-dd60-4319-8408-37bef4ac66bc")
 		(sheetname "Root")
 		(sheetfile "room_environment_monitor.kicad_sch")
@@ -11104,7 +11039,7 @@
 		(path "/789efca6-28c5-460e-8523-846d22f060e4/245b2634-bdd0-423b-8dbe-5c9c523fe38f")
 		(sheetname "Sensors")
 		(sheetfile "sensors.kicad_sch")
-		(attr exclude_from_pos_files)
+		(attr exclude_from_pos_files exclude_from_bom dnp)
 		(fp_circle
 			(center 0 0)
 			(end 0 0.7)
@@ -13142,7 +13077,7 @@
 		(path "/789efca6-28c5-460e-8523-846d22f060e4/ce6a4cae-d2d9-4c9b-801a-139bb2200782")
 		(sheetname "Sensors")
 		(sheetfile "sensors.kicad_sch")
-		(attr exclude_from_pos_files)
+		(attr exclude_from_pos_files exclude_from_bom dnp)
 		(fp_circle
 			(center 0 0)
 			(end 0 0.7)
@@ -14875,7 +14810,7 @@
 			)
 		)
 		(property "Footprint" "Kevin_Lutzer_Lbr:CONN6_USB4130-GF-C_GCT"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "af524075-7c81-4524-9e01-95ef859bd3b7")
@@ -14887,7 +14822,7 @@
 			)
 		)
 		(property "Datasheet" "https://www.usb.org/sites/default/files/documents/usb_type-c.zip"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "0af3dc7f-df33-42e2-b629-134199dc8236")
@@ -14899,7 +14834,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "98c9efdf-ebed-4be6-895f-9441523fa76a")

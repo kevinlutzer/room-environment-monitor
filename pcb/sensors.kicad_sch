@@ -4116,9 +4116,9 @@
 		(at 118.11 63.5 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(uuid "245b2634-bdd0-423b-8dbe-5c9c523fe38f")
 		(property "Reference" "TP6"
 			(at 121.285 59.055 0)
@@ -4846,24 +4846,6 @@
 			)
 		)
 		(property "DNP" "C265083"
-			(at 92.71 137.16 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "LCSC" ""
-			(at 92.71 137.16 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" ""
 			(at 92.71 137.16 0)
 			(effects
 				(font
@@ -6067,9 +6049,9 @@
 		(at 118.11 68.58 180)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(uuid "ce6a4cae-d2d9-4c9b-801a-139bb2200782")
 		(property "Reference" "TP5"
 			(at 114.935 73.025 0)

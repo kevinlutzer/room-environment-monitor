@@ -54,10 +54,17 @@ bool SensorAdapter::loadData() {
   this->humidity = this->bme280->readHumidity();
   this->pressure = this->bme280->readPressure();
 
+<<<<<<< Updated upstream
   // Get the VOC index from the SGP40 from the temperature and humidity data
   // fetched from the BME280 sensor
   this->vocIndex =
       this->sgp40->measureVocIndex(this->temperature, this->humidity);
+=======
+  // Load sensor data from the 
+  #ifdef HAS_SGP40
+    this->sgp40->
+  #endif
+>>>>>>> Stashed changes
 
   return success;
 }
