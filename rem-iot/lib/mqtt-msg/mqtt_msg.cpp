@@ -48,3 +48,7 @@ void MQTTMsg::setField(const char *field, double value) {
 void MQTTMsg::setField(const char *field, uint32_t value) {
   this->doc[field] = value;
 }
+
+void MQTTMsg::setField(const char *field, int32_t value) {
+  this->doc[field] = value;
+}
