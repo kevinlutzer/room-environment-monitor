@@ -2,6 +2,7 @@
 
 #include "Adafruit_BME280.h"
 #include "Adafruit_NeoPixel.h"
+#include "Adafruit_SGP40.h"
 #include "EEPROM.h"
 #include "PM1006K.h"
 #include "PubSubClient.h"
@@ -31,6 +32,7 @@ SensorAdapter *sensorAdapter;
 SettingsManager *settingsManager;
 PM1006K *pm1006k;
 Adafruit_BME280 *bme280;
+Adafruit_SGP40 *sgp40;
 Adafruit_NeoPixel *neoPixel;
 WiFiClient espClient;
 Terminal *terminal;
@@ -198,7 +200,15 @@ void setup() {
   // Setup I2C and BME280 Driver
   Wire.begin(I2C_SDA, I2C_SCL);
   bme280 = new Adafruit_BME280();
-  bme280->begin(BME280_ADDRESS, &Wire);
+  if (!bme280->begin(BME280_ADDRESS, &Wire)) {
+    terminal->debugln("Failed to setup BME280");
+  }
+
+  // Setup the SGP40 Driver
+  sgp40 = new Adafruit_SGP40();
+  if (!sgp40->begin(&Wire)) {
+    terminal->debugln("Failed to setup SGP40");
+  }
 
   // Setup the neopixel controller and clear the pixels
   neoPixel =
@@ -208,7 +218,7 @@ void setup() {
   ledController = new LEDController(neoPixel, terminal);
 
   // Setup Controller
-  sensorAdapter = new SensorAdapter(pm1006k, bme280, terminal);
+  sensorAdapter = new SensorAdapter(pm1006k, bme280, sgp40, terminal);
 
   // Create UUID Generator used for generating unique ids
   randomSeed(analogRead(A0) | analogRead(A1) | analogRead(A2));

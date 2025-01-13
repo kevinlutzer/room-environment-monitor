@@ -41,6 +41,7 @@ public:
   void setField(const char *field, float value);
   void setField(const char *field, double value);
   void setField(const char *field, uint32_t value);
+  void setField(const char *field, int32_t value);
 
   /**
    * @brief a reference to the topic string that the message will be published

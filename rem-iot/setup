@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # TODO FIX THIS @kevinlutzer
-LIBS=("Adafruit_BME280" "Adafruit NeoPixel" "Arduino PM1006K" "PubSubClient", "UUID")
+LIBS=("Adafruit_BME280" "Adafruit NeoPixel" "Arduino PM1006K" "PubSubClient", "UUID", "Adafruit_SGP40")
 
 # Verify arduino cli installer
 echo "Checking if Arduino CLI is installed..."

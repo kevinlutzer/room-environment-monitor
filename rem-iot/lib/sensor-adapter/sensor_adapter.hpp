@@ -2,6 +2,7 @@
 #define _REM_CONTROLLER_H
 
 #include "Adafruit_BME280.h"
+#include "Adafruit_SGP40.h"
 #include "PM1006K.h"
 #include "PubSubClient.h"
 #include "UUID.h"
@@ -22,7 +23,8 @@
  *  */
 class SensorAdapter {
 public:
-  SensorAdapter(PM1006K *pm1006k, Adafruit_BME280 *bme280, Terminal *terminal);
+  SensorAdapter(PM1006K *pm1006k, Adafruit_BME280 *bme280,
+                Adafruit_SGP40 *sgp40, Terminal *terminal);
 
   /**
    * @brief Calls each of the sensor libraries to grab the latest data. The data
@@ -47,11 +49,13 @@ public:
   float getTemperature();
   float getPressure();
   float getHumidity();
+  int32_t getVocIndex();
 
 private:
   // Different service providers
   PM1006K *pm1006k;
 
+  Adafruit_SGP40 *sgp40;
   Adafruit_BME280 *bme280;
   Terminal *terminal;
 
@@ -63,6 +67,8 @@ private:
   float temperature = 0;
   float pressure = 0;
   float humidity = 0;
+
+  int32_t vocIndex = -1;
 };
 
 #endif

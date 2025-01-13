@@ -16,6 +16,9 @@ void applySensorData(MQTTMsg *mqttMsg, SensorAdapter *sensorAdapter) {
   mqttMsg->setField("temperature", sensorAdapter->getTemperature());
   mqttMsg->setField("humidity", sensorAdapter->getHumidity());
   mqttMsg->setField("pressure", sensorAdapter->getPressure());
+
+  // Apply SGP40 voc index
+  mqttMsg->setField("vocIndex", sensorAdapter->getVocIndex());
 }
 
 void QueueDataTask(void *parameter) {
