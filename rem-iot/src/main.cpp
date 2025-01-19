@@ -1,7 +1,6 @@
 #include "stdlib.h"
 
 #include "Adafruit_BME280.h"
-#include "Adafruit_SGP40.h"
 #include "Adafruit_NeoPixel.h"
 #include "Adafruit_SGP40.h"
 #include "EEPROM.h"
@@ -198,8 +197,11 @@ void setup() {
   Serial1.begin(PM1006K::BAUD_RATE, SERIAL_8N1, PM1006K_RX_PIN, PM1006K_TX_PIN);
   pm1006k = new PM1006K(&Serial1);
 
-  // Setup I2C and BME280 Driver
+  // Setup I2C
   Wire.begin(I2C_SDA, I2C_SCL);
+  Wire.setClock(10000);
+
+  // Setup BME280 Driver
   bme280 = new Adafruit_BME280();
   if (!bme280->begin(BME280_ADDRESS, &Wire)) {
     terminal->debugln("Failed to setup BME280");
@@ -214,8 +216,6 @@ void setup() {
   // Setup SGP40 Driver
   sgp40 = new Adafruit_SGP40();
   sgp40->begin(&Wire);
-  
-  raw = sgp40.measureRaw();
 
   // Setup the neopixel controller and clear the pixels
   neoPixel =
