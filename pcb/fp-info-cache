@@ -1,4 +1,4 @@
-24489854421398496
+24530739331737772
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -64371,6 +64371,174 @@ solder jumper open
 0
 5
 3
+Kevin_Lutzer_Lbr
+629004113921
+
+
+0
+6
+6
+Kevin_Lutzer_Lbr
+Adafruit_CP210XN_Friend
+
+
+0
+16
+16
+Kevin_Lutzer_Lbr
+BNC_Molex_731000105_Horizontal
+dual independently isolated BNC plug (https://www.amphenolrf.com/downloads/dl/file/id/2980/product/644/031_6575_customer_drawing.pdf)
+Dual BNC Amphenol Horizontal
+0
+3
+2
+Kevin_Lutzer_Lbr
+CONN6_USB4130-GF-C_GCT
+
+USB4130-GF-C 
+0
+8
+7
+Kevin_Lutzer_Lbr
+CONN_B4B-ZR-SM4-TF_JST
+
+B4B-ZR-SM4-TF LFSN 
+0
+6
+6
+Kevin_Lutzer_Lbr
+Crystal_SMD_HC49-US
+SMD Crystal HC-49-SD http://cdn-reichelt.de/documents/datenblatt/B400/xxx-HC49-SMD.pdf, 11.4x4.7mm^2 package
+SMD SMT crystal
+0
+2
+2
+Kevin_Lutzer_Lbr
+Diode-TO-277B
+TO-227B https://media.digikey.com/pdf/Data%20Sheets/Littelfuse%20PDFs/DST2050S.pdf
+TO-277B
+0
+9
+2
+Kevin_Lutzer_Lbr
+JST_PH_B3B-PH-SM4-TB_1x03-1MP_P1.50mm_Vertical
+JST PH series connector, B3B-PH-SM4-TB (http://www.jst-mfg.com/product/pdf/eng/ePH.pdf), generated with kicad-footprint-generator
+connector JST PH side entry
+0
+5
+4
+Kevin_Lutzer_Lbr
+JST_PH_B3B-PH-SM4-TB_1x03-1MP_P1.500mm_Vertical
+JST PH series connector, B3B-PH-SM4-TB (http://www.jst-mfg.com/product/pdf/eng/ePH.pdf), generated with kicad-footprint-generator
+connector JST PH side entry
+0
+5
+4
+Kevin_Lutzer_Lbr
+JST_PH_B4B-PH-SM4-TB_1x04-1MP_P1.50mm_Vertical
+JST PH series connector, B4B-PH-SM4-TB (http://www.jst-mfg.com/product/pdf/eng/ePH.pdf), generated with kicad-footprint-generator
+connector JST PH side entry
+0
+6
+5
+Kevin_Lutzer_Lbr
+LED_SK6805_EC15_1.5x1.5mm
+http://www.newstar-ledstrip.com/product/20181119172602110.pdf
+LED RGB NeoPixel
+0
+4
+4
+Kevin_Lutzer_Lbr
+L_Wurth_74404043033A
+Semi-Shielded High Saturation Power Inductor, body 4x4mm, https://www.we-online.com/catalog/en/WE-LQSH#/articles/WE-LQSH-4020
+SMT
+0
+2
+2
+Kevin_Lutzer_Lbr
+L_Wurth_WE-LQSH-4025
+Semi-Shielded High Saturation Power Inductor, body 4x4mm, https://www.we-online.com/catalog/en/WE-LQSH#/articles/WE-LQSH-4020
+SMT
+0
+2
+2
+Kevin_Lutzer_Lbr
+R-667799
+
+
+0
+5
+3
+Kevin_Lutzer_Lbr
+RF4463F30
+
+
+0
+16
+16
+Kevin_Lutzer_Lbr
+RP2040-QFN-56
+QFN, 56 Pin (http://www.cypress.com/file/416486/download#page=40), generated with kicad-footprint-generator ipc_dfn_qfn_generator.py
+QFN DFN_QFN
+0
+70
+57
+Kevin_Lutzer_Lbr
+RPi_Pico_SMD_TH
+Through hole straight pin header, 2x20, 2.54mm pitch, double rows
+Through hole pin header THT 2x20 2.54mm double row
+0
+86
+43
+Kevin_Lutzer_Lbr
+R_RFC1109
+
+
+0
+2
+2
+Kevin_Lutzer_Lbr
+SGP30-2.5K_SEN
+
+SGP30-2.5K 
+0
+7
+7
+Kevin_Lutzer_Lbr
+SGP30-2.5K_SEN-L
+
+SGP30-2.5K 
+0
+7
+7
+Kevin_Lutzer_Lbr
+SGP30-2.5K_SEN-M
+
+SGP30-2.5K 
+0
+7
+7
+Kevin_Lutzer_Lbr
+USB3_A_Plug_Wuerth_629004113921_Horizontal
+USB3 type A Plug, Horizontal, http://katalog.we-online.de/em/datasheet/692112030100.pdf
+usb A plug horizontal
+0
+6
+5
+Kevin_Lutzer_Lbr
+USB_A_PCB
+Card-edge USB A connector.{return}{return}For boards designed to be plugged directly into a USB slot. If possible, ensure that your PCB is about 2.4mm thick to fit snugly.
+
+0
+4
+4
+Kevin_Lutzer_Lbr
+WC-PD13C050A
+
+
+0
+7
+7
 LED_SMD
 LED-APA102-2020
 http://www.led-color.com/upload/201604/APA102-2020%20SMD%20LED.pdf
