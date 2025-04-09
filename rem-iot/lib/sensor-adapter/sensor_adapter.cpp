@@ -55,8 +55,8 @@ bool SensorAdapter::loadData() {
   this->pressure = this->bme280->readPressure();
 
   // Get the VOC index from the SGP40 from the temperature and humidity data
-  // fetched from the BME280 sensor. Both of these numbers need to 
-  // be floats, the temperature needs to be in celsius and the humidity 
+  // fetched from the BME280 sensor. Both of these numbers need to
+  // be floats, the temperature needs to be in celsius and the humidity
   // needs to be in % rH.
   this->vocIndex =
       this->sgp40->measureVocIndex(this->temperature, this->humidity);

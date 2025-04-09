@@ -65,7 +65,7 @@ private:
   int pm1_0 = -1;
   int pm10 = -1;
 
-  // Temperature, Pressure and Humidity comes from the BME280 sensor 
+  // Temperature, Pressure and Humidity comes from the BME280 sensor
   float temperature = 0;
   float pressure = 0;
   float humidity = 0;
