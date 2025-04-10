@@ -47,7 +47,7 @@ bootstrap:
 # Build the Docker image used for CI-CD
 build-cicd-image:
     #!/bin/bash
-    docker build -t kevinlutzer/rem-iot-cicd:latest -f docker/Dockerfile.cicd .
+    docker build --platform=linux/amd64 -t kevinlutzer/rem-iot-cicd:latest -f docker/Dockerfile.cicd .
 
 # Push CI-CD Docker image to Docker Hub
 push-cicd-image:

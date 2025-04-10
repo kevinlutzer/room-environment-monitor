@@ -5,6 +5,7 @@
 #include "Adafruit_SGP40.h"
 #include "PM1006K.h"
 #include "PubSubClient.h"
+
 #include "UUID.h"
 #include "WiFi.h"
 #include "time.h"
@@ -59,15 +60,17 @@ private:
   Adafruit_BME280 *bme280;
   Terminal *terminal;
 
-  // Latest data values
+  // Particulate matter sensors come from the PM1006K sensor
   int pm2_5 = -1;
   int pm1_0 = -1;
   int pm10 = -1;
 
+  // Temperature, Pressure and Humidity comes from the BME280 sensor
   float temperature = 0;
   float pressure = 0;
   float humidity = 0;
 
+  // VOC index comes from the SGP40/30 sensor
   int32_t vocIndex = -1;
 };
 
