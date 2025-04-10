@@ -185,7 +185,7 @@ void setup() {
   }
 
   // Add tasks related to settings since settings manager is instantiated
-  FreeRTOS_CLIRegiterCommand(&xUpdateSettingCommand);
+  FreeRTOS_CLIRegisterCommand(&xUpdateSettingCommand);
   FreeRTOS_CLIRegisterCommand(&xPrintSettingsCommand);
 
   // Setup network utilities including the network connection,

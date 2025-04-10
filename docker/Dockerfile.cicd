@@ -10,6 +10,7 @@ RUN apt-get update && \
     apt-get install -y \
     python3 \
     python3-pip \
+    python3-venv \
     python3-dev \
     clang \
     clang-format \
@@ -20,3 +21,5 @@ RUN apt-get update && \
 # Install all of the needed dependencies to build the rem-iot
 RUN just bootstrap
 
+# Platformio
+RUN export PATH=$PATH:/var/root/.platformio/penv/bin/platformio

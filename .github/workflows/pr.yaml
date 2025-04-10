@@ -15,7 +15,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run a command inside the container
+      - name: Build the firmware with PlatformIO
         run: |
-          platformio run
-          echo "Running inside custom Docker container"
+          /root/.platformio/penv/bin/platformio run
