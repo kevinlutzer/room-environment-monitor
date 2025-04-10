@@ -14,6 +14,7 @@ RUN apt-get update && \
     clang \
     clang-format \
     curl \
+    tree \
     just
 
 # Install all of the needed dependencies to build the rem-iot
