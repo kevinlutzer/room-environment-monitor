@@ -17,4 +17,8 @@ jobs:
 
       - name: Run a command inside the container
         run: |
+          sudo apt-get update -y && sudo apt-get install -y tree
+          tree .
+
+          platformio run
           echo "Running inside custom Docker container"
