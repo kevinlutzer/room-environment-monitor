@@ -17,4 +17,5 @@ jobs:
 
       - name: Build the firmware with PlatformIO
         run: |
+          cd rem-iot
           /root/.platformio/penv/bin/platformio run
