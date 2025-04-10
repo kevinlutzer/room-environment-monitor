@@ -1,0 +1,20 @@
+name: Builds the Room Environment Firmware and Lints it When a PR is Made
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main 
+
+jobs:
+  custom-image-job:
+    runs-on: ubuntu-latest
+    container:
+      image: kevinlutzer/rem-iot-cicd:latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run a command inside the container
+        run: |
+          echo "Running inside custom Docker container"
