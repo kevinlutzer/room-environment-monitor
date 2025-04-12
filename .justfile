@@ -12,7 +12,7 @@ lint:
 # Setup Arduino-CLI, libs, and platformio as well as all needed Arduino-CLI libs
 bootstrap:
     #!/bin/bash
-    LIBS=("Adafruit BME280" "Adafruit NeoPixel" "PM1006K" "PubSubClient" "UUID" "Adafruit SGP40 Sensor" "ArduinoJson" "Adafruit BME280 Library")
+    LIBS=("Adafruit NeoPixel" "PM1006K" "PubSubClient" "UUID" "Adafruit SGP40 Sensor" "ArduinoJson" "Adafruit BME280 Library")
 
     # Verify current user is root
     if [[ $EUID -ne 0 ]]; then
@@ -43,13 +43,3 @@ bootstrap:
     for key in "${LIBS[@]}"; do
         arduino-cli lib install "$key"
     done
-
-# Build the Docker image used for CI-CD
-build-cicd-image:
-    #!/bin/bash
-    docker build --platform=linux/amd64 -t kevinlutzer/rem-iot-cicd:latest -f docker/Dockerfile.cicd .
-
-# Push CI-CD Docker image to Docker Hub
-push-cicd-image:
-    #!/bin/bash
-    docker push kevinlutzer/rem-iot-cicd:latest
