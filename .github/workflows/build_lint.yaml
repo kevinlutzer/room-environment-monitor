@@ -42,17 +42,6 @@ jobs:
             ~/.platformio/.cache
           key: ${{ runner.os }}-pio
 
-      - name: Install Arduino CLI
-        uses: arduino/setup-arduino-cli@v2
-
-      - name: Setup Just
-        uses: extractions/setup-just@v3
-        with:
-          just-version: '1.40.0'
-
-      - name: Setup Arduino CLI Deps
-        run: just install_libs
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -64,3 +53,20 @@ jobs:
       - name: Build PlatformIO Project
         working-directory: rem-iot
         run: platformio run
+
+      - uses: actions/checkout@v4
+      - uses: cpp-linter/cpp-linter-action@main
+        id: linter
+        continue-on-error: true
+        # env:
+        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          style: file
+          files-changed-only: false
+          thread-comments: false
+
+      - name: Fail fast?!
+        if: steps.linter.outputs.checks-failed != 0
+        run: |
+          echo "some linter checks failed. ${{ steps.linter.outputs.checks-failed }}"
+          exit 1
