@@ -21,12 +21,26 @@ jobs:
             ~/.cache/pip
             ~/.platformio/.cache
           key: ${{ runner.os }}-pio
-      - uses: actions/setup-python@v5
+
+      - name: Install Arduino CLI
+        uses: arduino/setup-arduino-cli@v2
+
+      - name: Setup Just
+        uses: extractions/setup-just@v3
+        with:
+          just-version: '1.40.0'
+
+      - name: Setup Arduino CLI Deps
+        run: just install_libs
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio
 
       - name: Build PlatformIO Project
         working-directory: rem-iot
-        run: pio run
+        run: platformio run
