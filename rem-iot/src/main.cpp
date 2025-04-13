@@ -180,7 +180,7 @@ void setup() {
 
   // Setup settings manager and load settings from eeprom
   settingsManager = new SettingsManager(terminal, &EEPROM);
-  if (!settingsManager->loadSettings()) {
+  if ((!settingsManager->loadSettings())) {
     terminal->debugln("Failed to load settings");
   }
 
