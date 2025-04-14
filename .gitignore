@@ -20,9 +20,12 @@ pcb/_autosave-room_environment_monitor.kicad_pcb
 *.kicad_pcb-bak
 *.sch-bak
 
-# VSCODExY
+# VSCODE
 .DS_Store
 .idea
+
+# PIO
+.pio*
 
 # Arduino
 .cache/
