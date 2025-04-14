@@ -10,6 +10,27 @@ on:
       - main
 
 jobs:
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Clang Format
+        run: sudo apt-get install clang-format
+
+      - name: Lint C++ Code
+        working-directory: firmware
+        run: |
+          # Find all .cpp and .h files, excluding those with "soap" in the name, and format them
+          # The -n flag makes it a dry run, so no changes are made
+          # The --verbose flag provides detailed output
+          find . \
+            -path './.pio' -prune -o \
+            \( \( -name \*.cpp -o -name \*.h \) -a ! -iname \*soap\* \) \
+            -print0 | xargs -0 -n 1 clang-format --Werror -n --verbose
+
   build:
     runs-on: ubuntu-latest
 
@@ -22,17 +43,6 @@ jobs:
             ~/.platformio/.cache
           key: ${{ runner.os }}-pio
 
-      - name: Install Arduino CLI
-        uses: arduino/setup-arduino-cli@v2
-
-      - name: Setup Just
-        uses: extractions/setup-just@v3
-        with:
-          just-version: '1.40.0'
-
-      - name: Setup Arduino CLI Deps
-        run: just install_libs
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -42,5 +52,5 @@ jobs:
         run: pip install --upgrade platformio
 
       - name: Build PlatformIO Project
-        working-directory: rem-iot
+        working-directory: firmware
         run: platformio run

@@ -1,4 +1,3 @@
-
 # certs and key files
 auth-files
 certs*
@@ -14,16 +13,21 @@ server/*.pyc
 pcb/room_environment_monitor-backups/
 pcb/\#auto_saved_files\#
 pcb/room_environment_monitor/room_environment_monitor-backups/
+pcb/production/backups
 *-bak
 *.lck
 pcb/_autosave-room_environment_monitor.kicad_pcb
 *.kicad_pcb-bak
 *.sch-bak
 
-# VSCODExY
+# VSCODE
 .DS_Store
 .idea
+
+# PIO
+.pio/
 
 # Arduino
 .cache/
 bin/
+fp-info-cache

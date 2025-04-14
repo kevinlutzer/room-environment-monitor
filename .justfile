@@ -7,7 +7,11 @@ set shell := ["bash", "-cu"]
 lint:
     #!/bin/bash
 
-    find . -iname '*.hpp' -o -iname '*.cpp' | xargs clang-format -i
+    # Lint everything except the .pio directory
+    find . \
+    -path './.pio' -prune -o \
+    \( \( -name \*.cpp -o -name \*.h \) -a ! -iname \*soap\* \) \
+    -print0 | xargs -0 -n 1 clang-format -i --verbose
 
 # Installs Arduino libraries needed for the firmware
 install_libs:
