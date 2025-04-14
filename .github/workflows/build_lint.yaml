@@ -21,7 +21,7 @@ jobs:
         run: sudo apt-get install clang-format
 
       - name: Lint C++ Code
-        working-directory: rem-iot
+        working-directory: firmware
         run: |
           # Find all .cpp and .h files, excluding those with "soap" in the name, and format them
           # The -n flag makes it a dry run, so no changes are made
