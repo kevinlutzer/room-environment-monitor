@@ -7,7 +7,11 @@ set shell := ["bash", "-cu"]
 lint:
     #!/bin/bash
 
-    find . -iname '*.hpp' -o -iname '*.cpp' | xargs clang-format -i
+    # Lint everything except the .pio directory
+    find . \
+    -path './.pio' -prune -o \
+    \( \( -name \*.cpp -o -name \*.h \) -a ! -iname \*soap\* \) \
+    -print0 | xargs -0 -n 1 clang-format -i --verbose
 
 # Installs Arduino libraries needed for the firmware
 install_libs:
@@ -22,10 +26,6 @@ install_libs:
 
 _install_deps:
     #!/bin/bash
-<<<<<<< HEAD
-    LIBS=("Adafruit NeoPixel" "PM1006K" "PubSubClient" "UUID" "Adafruit SGP40 Sensor" "ArduinoJson" "Adafruit BME280 Library")
-=======
->>>>>>> kevinlutzer/main
 
     # Verify current user is root
     if [[ $EUID -ne 0 ]]; then
@@ -52,13 +52,5 @@ _install_deps:
 
     echo "Platform IO is installed"
 
-<<<<<<< HEAD
-    # Install arduino libs
-    echo "Install Arduino CLI libs..."
-    for key in "${LIBS[@]}"; do
-        arduino-cli lib install "$key"
-    done
-=======
 # Setup Arduino-CLI, libs, and platformio as well as all needed Arduino-CLI libs
 bootstrap: _install_deps install_libs
->>>>>>> kevinlutzer/main

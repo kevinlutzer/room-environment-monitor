@@ -171,7 +171,9 @@ void setup() {
   setupTerminal();
 
   // Setup EEPROM
-  int count = 0;
+  int count = 0; //
+
+  //
   while (count < 5 && !EEPROM.begin(EEPROM_SIZE)) {
     terminal->debugln("Failed to setup EEPROM, retrying...");
     count++;
