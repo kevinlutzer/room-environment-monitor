@@ -1,0 +1,53 @@
+name: Builds the Room Environment Firmware and Lints it When a PR is Made
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+
+jobs:
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Clang Format
+        run: sudo apt-get install clang-format
+
+      - name: Lint C++ Code
+        working-directory: rem-iot
+        run: |
+          # Find all .cpp and .h files, excluding those with "soap" in the name, and format them
+          # The -n flag makes it a dry run, so no changes are made
+          # The --verbose flag provides detailed output
+          find . \( \( -name \*.cpp -o -name \*.h \) -a ! -iname \*soap\* \) -print0 | xargs -0 -n 1 clang-format --Werror -n --verbose
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.platformio/.cache
+          key: ${{ runner.os }}-pio
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install PlatformIO Core
+        run: pip install --upgrade platformio
+
+      - name: Build PlatformIO Project
+        working-directory: rem-iot
+        run: platformio run
