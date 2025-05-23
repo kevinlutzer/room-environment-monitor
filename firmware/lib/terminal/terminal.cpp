@@ -106,9 +106,9 @@ memcleanup:
 
 void Terminal::debug(const char *str) { this->debugf("%s", str); }
 
-void Terminal::debugln(const char *str) { this->debugf("%s\n", str); }
+void Terminal::debugln(const char *str) { this->debugf("%s\r\n", str); }
 
-void Terminal::debugln(String str) { this->debugf("%s\n", str.c_str()); }
+void Terminal::debugln(String str) { this->debugf("%s\r\n", str.c_str()); }
 
 void Terminal::debug(String str) { this->debugf("%s", str.c_str()); }
 
