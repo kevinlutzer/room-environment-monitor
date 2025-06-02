@@ -11,7 +11,7 @@
 #define DATA_SAMPLE_RATE 60000
 #define STATUS_SAMPLE_RATE 120000
 #define TERMINAL_SAMPLE_RATE 10
-#define LED_UPDATE_RATE 2000
+#define LED_UPDATE_RATE 60000
 
 // How long to wait for message in queue to be received before a timeout
 #define MSG_QUEUE_TIMEOUT pdMS_TO_TICKS(10) // 10ms

@@ -44,6 +44,8 @@ void QueueDataTask(void *parameter) {
 
     applySensorData(msg, providers->sensorAdapter);
 
+    providers->terminal->debugf("Queing message with id %s /r/n", msg->getId());
+
     if (xQueueSend(msgQueue, (void *)&msg, MSG_QUEUE_TIMEOUT) ==
         errQUEUE_FULL) {
       providers->terminal->debugln("Msg queue is full");
@@ -67,7 +69,7 @@ void applyStatusInformation(MQTTMsg *mqttMsg, REMTaskProviders *providers,
   }
 
   mqttMsg->setField("uptime", uptime);
-  mqttMsg->setField("rssi", WiFi.RSSI());
+  // mqttMsg->setField("rssi", WiFi.RSSI());
 }
 
 void QueueStatusTask(void *parameter) {
@@ -128,8 +130,14 @@ void PublishMQTTMsg(void *parameter) {
     // note that this doesn't actually block.
 
     if (xQueueReceive(msgQueue, (void *)&msg, portMAX_DELAY) == pdTRUE) {
-      if (!providers->pubSubClient->publish(msg->getTopic(),
-                                            msg->getDocStr())) {
+      providers->terminal->debugf("Received message from queue with ID: %s\r\n",
+                                  msg->getId());
+
+      // Serialize the message to a buffer
+      char output[MAX_DOC_SIZE];
+      msg->serialize(output);
+
+      if (!providers->pubSubClient->publish(msg->getTopic(), output)) {
         providers->terminal->debugln("Failed to publish message");
       } else {
         providers->terminal->debugln("Published message");
@@ -177,7 +185,7 @@ void LEDUpdateTask(void *parameter) {
     // Check if the current time is between 6am and 8pm
     if (currentTime.tm_hour < 6 || currentTime.tm_hour > 20) {
       providers->terminal->debugf("Turning off LED panel because it is between "
-                                  "8pm and 6am, hour is: %d\n",
+                                  "8pm and 6am, hour is: %d\r\n",
                                   currentTime.tm_hour);
       providers->ledController->clear();
       goto delayInLoop;
