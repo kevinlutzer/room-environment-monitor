@@ -69,7 +69,7 @@ void applyStatusInformation(MQTTMsg *mqttMsg, REMTaskProviders *providers,
   }
 
   mqttMsg->setField("uptime", uptime);
-  // mqttMsg->setField("rssi", WiFi.RSSI());
+  mqttMsg->setField("rssi", WiFi.RSSI());
 }
 
 void QueueStatusTask(void *parameter) {
