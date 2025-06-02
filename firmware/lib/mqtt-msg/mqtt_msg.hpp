@@ -2,21 +2,23 @@
 #define _MQTT_MSG_HPP
 
 // This is the maximum length that a topic string could be
-#define TOPIC_LEN 40
+#define TOPIC_LEN 41
 
 // This should be the same length as the settings len
 // use in the Settings class
-#define DEVICE_ID_LEN 40
+#define DEVICE_ID_LEN 37
 
 // Expect that the id of a MQTT msg is a 36 characters long
 // uuid v4 char string
-#define ID_LEN 36
+#define ID_LEN 37
+
+// Max Size of Document. Measured a few messages at 86 bytes.
+// If we increase the amount of fields this value should
+// be increased
+#define MAX_DOC_SIZE 200
 
 #include "Arduino.h"
 #include "ArduinoJson.h"
-
-// Number of bytes to allocate for the json document
-#define JSON_DOC_SIZE 256
 
 /**
  * @brief MQTTMsg is a class that is used to create a message that can be
@@ -50,11 +52,16 @@ public:
   const char *getTopic();
 
   /**
-   * @brief a reference to the json document as a char string. Note that this
-   * data is just stored in the stack so it must be copied into heap memory for
-   * long term use
+   * @brief a reference to the id of the message
    */
-  const char *getDocStr();
+  const char *getId();
+
+  /**
+   * @brief Serialize the JsonDocument to a char array
+   * 
+   * @return size_t the number of bytes written to the output buffer
+   */
+  size_t serialize(char *output);
 
 private:
   char topic[TOPIC_LEN];

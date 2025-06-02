@@ -171,9 +171,7 @@ void setup() {
   setupTerminal();
 
   // Setup EEPROM
-  int count = 0; //
-
-  //
+  int count = 0;
   while (count < 5 && !EEPROM.begin(EEPROM_SIZE)) {
     terminal->debugln("Failed to setup EEPROM, retrying...");
     count++;
@@ -230,10 +228,8 @@ void setup() {
   sensorAdapter = new SensorAdapter(pm1006k, bme280, sgp40, terminal);
 
   // Create UUID Generator used for generating unique ids
-  randomSeed(analogRead(A0) | analogRead(A1) | analogRead(A2));
-  uint32_t rn = random();
-
   uuidGenerator = new UUID();
+  uint32_t rn = esp_random();
   uuidGenerator->seed(rn);
   uuidGenerator->setRandomMode(); // This is important for the UUID to be unique
                                   // between reboots

@@ -14,8 +14,7 @@ LEDController::LEDController(Adafruit_NeoPixel *neoPixel, Terminal *terminal) {
   // brightness on medium. Max brightness is 255. Brightness will take effect on
   // the next call to setColour
   this->neoPixel->setBrightness(127);
-  this->colour = Adafruit_NeoPixel::Color(0, 255, 0);
-  this->setColour(this->colour);
+  this->setColour(0);
 }
 
 void LEDController::setColour(uint32_t colour) {

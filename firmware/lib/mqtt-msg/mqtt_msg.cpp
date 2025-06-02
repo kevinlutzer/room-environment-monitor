@@ -4,16 +4,15 @@
 
 MQTTMsg::MQTTMsg(const char *topic, const char *deviceId, const char *id) {
 
+  this->topic[TOPIC_LEN - 1] = '\0';
+  this->deviceId[DEVICE_ID_LEN - 1] = '\0';
+  this->id[ID_LEN - 1] = '\0';
+
   // Just copy the data so we can keep the MQTTMsg isolated from pointers
   // in the settings manager and settings objects.
-  memcpy(this->topic, topic, TOPIC_LEN);
-  this->topic[TOPIC_LEN] = '\0';
-
-  memcpy(this->deviceId, deviceId, DEVICE_ID_LEN);
-  this->deviceId[DEVICE_ID_LEN] = '\0';
-
-  memcpy(this->id, id, ID_LEN);
-  this->id[ID_LEN] = '\0';
+  strcpy(this->topic, topic);
+  strcpy(this->deviceId, deviceId);
+  strcpy(this->id, id);
 
   // Note that internally within JsonDocument, memory is allocated. We don't
   // need ie to preallocate memory
@@ -25,9 +24,9 @@ MQTTMsg::MQTTMsg(const char *topic, const char *deviceId, const char *id) {
   this->doc["deviceId"] = this->deviceId;
 }
 
-const char *MQTTMsg::getTopic() { return this->topic; }
+const char *MQTTMsg::getId() { return this->id; }
 
-const char *MQTTMsg::getDocStr() { return this->doc.as<String>().c_str(); }
+const char *MQTTMsg::getTopic() { return this->topic; }
 
 void MQTTMsg::setField(const char *field, const char *value) {
   this->doc[field] = value;
@@ -51,4 +50,9 @@ void MQTTMsg::setField(const char *field, uint32_t value) {
 
 void MQTTMsg::setField(const char *field, int32_t value) {
   this->doc[field] = value;
+}
+
+size_t MQTTMsg::serialize(char *output) {
+  // Serialize the JsonDocument to a char array
+  return serializeJson(this->doc, output, MAX_DOC_SIZE);
 }
