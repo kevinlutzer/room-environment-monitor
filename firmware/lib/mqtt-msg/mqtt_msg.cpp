@@ -7,7 +7,7 @@ MQTTMsg::MQTTMsg(const char *topic, const char *deviceId, const char *id) {
   this->topic[TOPIC_LEN - 1] = '\0';
   this->deviceId[DEVICE_ID_LEN - 1] = '\0';
   this->id[ID_LEN - 1] = '\0';
-  
+
   // Just copy the data so we can keep the MQTTMsg isolated from pointers
   // in the settings manager and settings objects.
   strcpy(this->topic, topic);
