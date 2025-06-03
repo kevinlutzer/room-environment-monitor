@@ -8,10 +8,10 @@
 #include "settings_manager.hpp"
 #include "terminal.hpp"
 
-#define DATA_SAMPLE_RATE 6000
-#define STATUS_SAMPLE_RATE 12000
+#define DATA_SAMPLE_RATE 60000
+#define STATUS_SAMPLE_RATE 120000
 #define TERMINAL_SAMPLE_RATE 10
-#define LED_UPDATE_RATE 6000
+#define LED_UPDATE_RATE 60000 
 
 // #define DEBUG_MEMORY_CHECK true
 
