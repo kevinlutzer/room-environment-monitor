@@ -18,7 +18,7 @@
 #include "terminal.hpp"
 #include "wifi_controller.hpp"
 
-#define INIT_DEBUG true
+#define INIT_DEBUG false
 
 #define PUBLISH_DATA_STACK 2048
 #define PUBLISH_STATUS_STACK 4096
@@ -253,6 +253,12 @@ void setup() {
 
   xTaskCreate(LEDUpdateTask, "LED Update Task", PUBLISH_DATA_STACK, providers,
               1, NULL);
+
+#ifdef DEBUG_MEMORY_CHECK
+  xTaskCreate(MemoryCheck, "Memory Check Task", PUBLISH_DATA_STACK, providers,
+              1, NULL);
+
+#endif
 
   terminal->debugln("Started tasks...");
 }

@@ -8,10 +8,12 @@
 #include "settings_manager.hpp"
 #include "terminal.hpp"
 
-#define DATA_SAMPLE_RATE 60000
-#define STATUS_SAMPLE_RATE 120000
+#define DATA_SAMPLE_RATE 6000
+#define STATUS_SAMPLE_RATE 12000
 #define TERMINAL_SAMPLE_RATE 10
-#define LED_UPDATE_RATE 60000
+#define LED_UPDATE_RATE 6000
+
+// #define DEBUG_MEMORY_CHECK true
 
 // How long to wait for message in queue to be received before a timeout
 #define MSG_QUEUE_TIMEOUT pdMS_TO_TICKS(10) // 10ms
@@ -74,5 +76,13 @@ void TerminalTask(void *paramater);
  * quality is moderate, and red means the air quality is bad.
  */
 void LEDUpdateTask(void *parameter);
+
+/**
+ * @brief MemoryCheck is a task that checks the free memory and prints it to the
+ * terminal.
+ */
+#ifdef DEBUG_MEMORY_CHECK
+void MemoryCheck(void *parameter);
+#endif // DEBUG_MEMORY_CHECK
 
 #endif

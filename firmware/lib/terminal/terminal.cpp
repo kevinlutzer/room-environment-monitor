@@ -100,6 +100,8 @@ memcleanup:
     free(temp);
   }
 
+  free(write_buf);
+
   // xSemaphoreGive( this->txMutex );
   return len;
 }
