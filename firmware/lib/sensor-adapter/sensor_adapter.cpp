@@ -40,7 +40,7 @@ bool SensorAdapter::loadData() {
   // Manually call the pm1006k to take a measurement
   if (!this->pm1006k->takeMeasurement()) {
     this->terminal->debugln("Failed to take measurement");
-    success = false;
+    // success = false;
   }
 
   // Apply PM1006K data to the class instance, it may be invalid

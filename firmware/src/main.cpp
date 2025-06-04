@@ -18,7 +18,7 @@
 #include "terminal.hpp"
 #include "wifi_controller.hpp"
 
-#define INIT_DEBUG true
+#define INIT_DEBUG false
 
 #define PUBLISH_DATA_STACK 2048
 #define PUBLISH_STATUS_STACK 4096
@@ -143,6 +143,7 @@ void setupPubSubClient() {
 
   while (!pubSubClient->connected()) {
     terminal->debugln("Failed to connect to MQTT server, retrying...");
+    pubSubClient->connect("arduinoClient");
     delay(1000);
   }
 }
@@ -254,6 +255,12 @@ void setup() {
   xTaskCreate(LEDUpdateTask, "LED Update Task", PUBLISH_DATA_STACK, providers,
               1, NULL);
 
+#ifdef DEBUG_MEMORY_CHECK
+  xTaskCreate(MemoryCheck, "Memory Check Task", PUBLISH_DATA_STACK, providers,
+              1, NULL);
+
+#endif
+
   terminal->debugln("Started tasks...");
 }
 
@@ -332,12 +339,13 @@ BaseType_t prvWiFiStatusCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
   String ip = WiFi.localIP().toString();
 
   if (!ip.length()) {
-    snprintf(pcWriteBuffer, xWriteBufferLen, "WiFi status: %d \r\nIP: N/A \r\n",
-             status);
+    snprintf(pcWriteBuffer, xWriteBufferLen,
+             "WiFi status: %d \r\nIP: N/A \r\nWifi Status: N/A\r\n", status);
   } else {
     const char *ipCStr = ip.c_str();
-    snprintf(pcWriteBuffer, xWriteBufferLen, "WiFi status: %d \r\nIP: %s\r\n",
-             status, ipCStr);
+    snprintf(pcWriteBuffer, xWriteBufferLen,
+             "WiFi status: %d \r\nIP: %s\r\nWifi Status: %d\r\n", status,
+             ipCStr, pubSubClient->connected());
   }
 
   return pdFALSE;

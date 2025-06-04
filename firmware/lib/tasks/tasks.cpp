@@ -57,16 +57,9 @@ void QueueDataTask(void *parameter) {
   }
 }
 
-void applyStatusInformation(MQTTMsg *mqttMsg, REMTaskProviders *providers,
-                            struct tm *startTime) {
+void applyStatusInformation(MQTTMsg *mqttMsg, REMTaskProviders *providers) {
   struct tm currentTime;
-  double uptime = 0;
-
-  if (!getLocalTime(&currentTime)) {
-    providers->terminal->debugln("Failed to get current time");
-  } else {
-    uptime = mktime(&currentTime) - mktime(startTime);
-  }
+  double uptime = esp_timer_get_time() / 1000; // Convert to milliseconds
 
   mqttMsg->setField("uptime", uptime);
   mqttMsg->setField("rssi", WiFi.RSSI());
@@ -74,21 +67,6 @@ void applyStatusInformation(MQTTMsg *mqttMsg, REMTaskProviders *providers,
 
 void QueueStatusTask(void *parameter) {
   REMTaskProviders *providers = (REMTaskProviders *)parameter;
-  struct tm *startTime;
-
-  // We can't do very much here if malloc fails, which is shouldn't since this
-  // is done during system initialization.
-  startTime = (struct tm *)malloc(sizeof(struct tm));
-  if (startTime == NULL) {
-    providers->terminal->debugln("Failed to allocate memory for start time");
-  }
-
-  // Make sure we get a proper start time, if we don't we won't be able to sent
-  // that info via the status topic
-  while (!getLocalTime(startTime)) {
-    providers->terminal->debugln("Failed to get start time, retrying...");
-    delay(1000);
-  }
 
   // Start the status tasks loop
   while (true) {
@@ -112,7 +90,7 @@ void QueueStatusTask(void *parameter) {
       continue;
     }
 
-    applyStatusInformation(msg, providers, startTime);
+    applyStatusInformation(msg, providers);
 
     providers->terminal->debugln("Queued status");
 
@@ -136,6 +114,14 @@ void PublishMQTTMsg(void *parameter) {
       // Serialize the message to a buffer
       char output[MAX_DOC_SIZE];
       msg->serialize(output);
+
+      // Check if the pubsub client is connected, if not, try to connect
+      while (!providers->pubSubClient->connected()) {
+        providers->terminal->debugln(
+            "Failed to connect to MQTT server, retrying...");
+        providers->pubSubClient->connect("arduinoClient");
+        delay(1000);
+      }
 
       if (!providers->pubSubClient->publish(msg->getTopic(), output)) {
         providers->terminal->debugln("Failed to publish message");
@@ -199,3 +185,30 @@ void LEDUpdateTask(void *parameter) {
     delay(LED_UPDATE_RATE);
   }
 }
+
+#ifdef DEBUG_MEMORY_CHECK
+
+void MemoryCheck(void *parameter) {
+  REMTaskProviders *providers = (REMTaskProviders *)parameter;
+
+  while (true) {
+    // Total free heap
+    providers->terminal->debugf("Free heap: %u bytes\n", ESP.getFreeHeap());
+
+    // Largest block of memory that can be allocated
+    providers->terminal->debugf(
+        "Largest free block: %u bytes\n",
+        heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
+
+    // Minimum free heap ever recorded (good for checking overflows)
+    providers->terminal->debugf("Minimum free heap: %u bytes\n",
+                                ESP.getMinFreeHeap());
+
+    // Print the free heap size every 10 seconds
+    providers->terminal->debugf("Free heap size: %d bytes\r\n",
+                                esp_get_free_heap_size());
+    delay(1000);
+  }
+}
+
+#endif // DEBUG_MEMORY_CHECK
