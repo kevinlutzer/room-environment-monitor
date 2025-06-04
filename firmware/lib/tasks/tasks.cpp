@@ -117,7 +117,8 @@ void PublishMQTTMsg(void *parameter) {
 
       // Check if the pubsub client is connected, if not, try to connect
       while (!providers->pubSubClient->connected()) {
-        providers->terminal->debugln("Failed to connect to MQTT server, retrying...");
+        providers->terminal->debugln(
+            "Failed to connect to MQTT server, retrying...");
         providers->pubSubClient->connect("arduinoClient");
         delay(1000);
       }
