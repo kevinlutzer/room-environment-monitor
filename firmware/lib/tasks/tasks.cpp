@@ -115,6 +115,13 @@ void PublishMQTTMsg(void *parameter) {
       char output[MAX_DOC_SIZE];
       msg->serialize(output);
 
+      // Check if the pubsub client is connected, if not, try to connect
+      while (!providers->pubSubClient->connected()) {
+        providers->terminal->debugln("Failed to connect to MQTT server, retrying...");
+        providers->pubSubClient->connect("arduinoClient");
+        delay(1000);
+      }
+
       if (!providers->pubSubClient->publish(msg->getTopic(), output)) {
         providers->terminal->debugln("Failed to publish message");
       } else {

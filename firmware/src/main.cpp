@@ -143,6 +143,7 @@ void setupPubSubClient() {
 
   while (!pubSubClient->connected()) {
     terminal->debugln("Failed to connect to MQTT server, retrying...");
+    pubSubClient->connect("arduinoClient");
     delay(1000);
   }
 }
@@ -338,12 +339,12 @@ BaseType_t prvWiFiStatusCommand(char *pcWriteBuffer, size_t xWriteBufferLen,
   String ip = WiFi.localIP().toString();
 
   if (!ip.length()) {
-    snprintf(pcWriteBuffer, xWriteBufferLen, "WiFi status: %d \r\nIP: N/A \r\n",
+    snprintf(pcWriteBuffer, xWriteBufferLen, "WiFi status: %d \r\nIP: N/A \r\nWifi Status: N/A\r\n",
              status);
   } else {
     const char *ipCStr = ip.c_str();
-    snprintf(pcWriteBuffer, xWriteBufferLen, "WiFi status: %d \r\nIP: %s\r\n",
-             status, ipCStr);
+    snprintf(pcWriteBuffer, xWriteBufferLen, "WiFi status: %d \r\nIP: %s\r\nWifi Status: %d\r\n",
+             status, ipCStr, pubSubClient->connected());
   }
 
   return pdFALSE;
