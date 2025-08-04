@@ -862,7 +862,7 @@
 					(justify right)
 				)
 			)
-			(property "Footprint" ""
+			(property "Footprint" "Kevin_Lutzer_Lbr:CONN6_USB4130-GF-C_GCT"
 				(at 3.81 0 0)
 				(effects
 					(font
@@ -10635,7 +10635,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "USB 2.0-only Type-C Plug connector"
 			(at 26.67 165.1 0)
 			(effects
 				(font
@@ -11142,72 +11142,6 @@
 			(project "room_environment_monitor"
 				(path "/44f2386d-4dcf-411b-99dd-82c40d92c146"
 					(reference "TP1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_name "+5V_1")
-		(lib_id "power:+5V")
-		(at 236.22 137.16 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "fcf6ee10-5444-414f-8bc6-0a8ea93aebcc")
-		(property "Reference" "#PWR037"
-			(at 236.22 140.97 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+5V"
-			(at 239.268 135.636 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 236.22 137.16 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 236.22 137.16 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+5V\""
-			(at 236.22 137.16 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "f3da80ad-edd1-41be-af33-2b4e53ac2277")
-		)
-		(instances
-			(project "room_environment_monitor"
-				(path "/44f2386d-4dcf-411b-99dd-82c40d92c146"
-					(reference "#PWR037")
 					(unit 1)
 				)
 			)
