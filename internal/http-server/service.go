@@ -3,6 +3,7 @@ package httpserver
 import (
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/http"
 
 	"github.com/kml183/room-environment-monitor/internal/config"
@@ -17,6 +18,11 @@ type Message struct {
 type DataMessage struct {
 	Message string              `json:"message"`
 	Data    *sensors.SensorData `json:"data"`
+}
+
+type MacAddressMessage struct {
+	Message    string `json:"message"`
+	MacAddress string `json:"mac_address"`
 }
 
 type HttpServerService interface {
@@ -45,6 +51,7 @@ func NewHTTPService(logger config.LoggerService, sensors sensors.SensorsService,
 	mux.HandleFunc("/publish-sensor-data-snapshot", s.publishSensorDataSnapshotHandler)
 	mux.HandleFunc("/publish-device-status", s.publishDeviceStatusHandler)
 	mux.HandleFunc("/subscribe-iot-config", s.subscribeToIOTCoreConfigHandler)
+	mux.HandleFunc("/get-mac-address", s.getMacAddressHandler)
 
 	s.mux = mux
 	return s
@@ -118,6 +125,33 @@ func (s *httpService) subscribeToIOTCoreConfigHandler(wr http.ResponseWriter, r 
 	s.setStringResponse(wr, "subscribed to the iot config", 200)
 }
 
+func (s *httpService) getMacAddressHandler(wr http.ResponseWriter, r *http.Request) {
+	s.logger.StdOut("http: calling handler getMacAddressHandler\n")
+
+	macAddress, err := getEth0MacAddress()
+	if err != nil {
+		s.logger.StdErr("http: %v\n", err.Error())
+		s.setStringResponse(wr, "could't get MAC address for eth0", 500)
+		return
+	}
+
+	s.setMacAddressResponse(wr, macAddress, 200)
+}
+
+// getEth0MacAddress returns the MAC address of the eth0 interface
+func getEth0MacAddress() (string, error) {
+	iface, err := net.InterfaceByName("eth0")
+	if err != nil {
+		return "", fmt.Errorf("failed to get eth0 interface: %w", err)
+	}
+
+	if iface.HardwareAddr == nil {
+		return "", fmt.Errorf("eth0 interface has no hardware address")
+	}
+
+	return iface.HardwareAddr.String(), nil
+}
+
 func (s *httpService) setStringResponse(wr http.ResponseWriter, message string, statusCode int) {
 	msg := &Message{Message: message}
 	b, _ := json.Marshal(msg)
@@ -145,5 +179,24 @@ func (s *httpService) setDataResponse(wr http.ResponseWriter, data *sensors.Sens
 	wr.Write(b)
 	wr.WriteHeader(statusCode)
 	wr.Header().Set("Content-Type", "application/json")
+	return
+}
+
+func (s *httpService) setMacAddressResponse(wr http.ResponseWriter, macAddress string, statusCode int) {
+	msg := &MacAddressMessage{
+		Message:    "successfully fetched MAC address for eth0",
+		MacAddress: macAddress,
+	}
+
+	b, err := json.Marshal(msg)
+	if err != nil {
+		s.logger.StdErr("Request - failed to marshal the MAC address data %v\n", err.Error())
+		s.setStringResponse(wr, "can't marshal the MAC address data", 500)
+		return
+	}
+
+	wr.Header().Set("Content-Type", "application/json")
+	wr.WriteHeader(statusCode)
+	wr.Write(b)
 	return
 }
