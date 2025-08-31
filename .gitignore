@@ -5,6 +5,9 @@ certs*
 main
 api_key.txt
 
+# binaries
+room-environment-monitor
+
 # compiled pi files
 *.pyc
 iot/*.pyc
