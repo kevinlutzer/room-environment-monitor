@@ -56,6 +56,10 @@ public:
   char data_topic[SETTING_LEN];
   char status_topic[SETTING_LEN];
 
+  // Initialized status, if false that means that we don't have required information
+  // like the SSID, password or MQTT server. We must get that over API first
+  bool initialized;
+
   /**
    * @brief serialize takes all of the settings data like the password, ssid,
    * etc and aligns the values into a uint8_t buffer.

@@ -3,6 +3,7 @@
 Settings::Settings() {
   memset(this->ssid, 0x00, SETTING_LEN);
   memset(this->password, 0x00, SETTING_LEN);
+  memset(this->initialized, false);
 }
 
 /**
@@ -35,6 +36,12 @@ void Settings::serialize(uint8_t *buf, int len) {
 
   // Copy the status topic
   memcpy(buf + offset, this->status_topic, SETTING_LEN);
+  offset += SETTING_LEN;
+
+  // Copy the initialized status
+  memcpy(buf + offset, &this->initialized, sizeof(this->initialized));
+
+
 }
 
 void Settings::deserialize(uint8_t *buf, int len) {

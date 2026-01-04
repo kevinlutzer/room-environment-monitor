@@ -17,6 +17,7 @@
 #include "tasks.hpp"
 #include "terminal.hpp"
 #include "wifi_controller.hpp"
+#include "initialization_server.hpp"
 
 #define INIT_DEBUG false
 
@@ -132,6 +133,27 @@ void setupTerminal() {
 }
 
 /**
+ * Setup
+ */
+
+void setupSettingsManager() {
+    // Setup EEPROM
+  int count = 0;
+  while (count < 5 && !EEPROM.begin(EEPROM_SIZE)) {
+    terminal->debugln("Failed to setup EEPROM, retrying...");
+    count++;
+    delay(1000);
+  }
+
+  // Setup settings manager and load settings from eeprom
+  settingsManager = new SettingsManager(terminal, &EEPROM);
+  if ((!settingsManager->loadSettings())) {
+    terminal->debugln("Failed to load settings");
+  }
+
+}
+
+/**
  * Initializes the pubsub client which internally creates a MQTT connection to
  * the server. The server connected too is determeind by the mqtt server
  * setting.
@@ -171,19 +193,6 @@ void setup() {
 
   setupTerminal();
 
-  // Setup EEPROM
-  int count = 0;
-  while (count < 5 && !EEPROM.begin(EEPROM_SIZE)) {
-    terminal->debugln("Failed to setup EEPROM, retrying...");
-    count++;
-    delay(1000);
-  }
-
-  // Setup settings manager and load settings from eeprom
-  settingsManager = new SettingsManager(terminal, &EEPROM);
-  if ((!settingsManager->loadSettings())) {
-    terminal->debugln("Failed to load settings");
-  }
 
   // Add tasks related to settings since settings manager is instantiated
   FreeRTOS_CLIRegisterCommand(&xUpdateSettingCommand);
