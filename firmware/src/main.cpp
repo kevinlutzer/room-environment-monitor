@@ -214,10 +214,6 @@ void setup() {
     terminal->debugln("Failed to setup SGP40");
   }
 
-  // Setup SGP40 Driver
-  sgp40 = new Adafruit_SGP40();
-  sgp40->begin(&Wire);
-
   // Setup the neopixel controller and clear the pixels
   neoPixel =
       new Adafruit_NeoPixel(NUM_NEOPIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
