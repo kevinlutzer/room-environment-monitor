@@ -487,108 +487,6 @@
 				)
 			)
 		)
-		(symbol "Connector:TestPoint"
-			(pin_numbers hide)
-			(pin_names
-				(offset 0.762) hide)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "TP"
-				(at 0 6.858 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "TestPoint"
-				(at 0 5.08 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 5.08 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "~"
-				(at 5.08 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "test point"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "test point tp"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "Pin* Test*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "TestPoint_0_1"
-				(circle
-					(center 0 3.302)
-					(radius 0.762)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "TestPoint_1_1"
-				(pin passive line
-					(at 0 0 90)
-					(length 2.54)
-					(name "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-		)
 		(symbol "Device:C_Small"
 			(pin_numbers hide)
 			(pin_names
@@ -1852,18 +1750,6 @@
 		(uuid "38b065ad-659d-4ab0-b850-3ce9cbcbfa3c")
 	)
 	(junction
-		(at 118.11 63.5)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "3d579834-de4c-4099-a9df-1314b6ca0f30")
-	)
-	(junction
-		(at 118.11 68.58)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "4774f413-eb86-4b73-a71b-a3155c4befb5")
-	)
-	(junction
 		(at 29.21 138.43)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -1880,12 +1766,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "6c667c08-059b-400f-880f-033a95c72b6d")
-	)
-	(junction
-		(at 102.87 137.16)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "6ddb0f0d-874e-4205-8e1c-4457f3abe3d6")
 	)
 	(junction
 		(at 46.99 96.52)
@@ -1910,12 +1790,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "db66381d-857e-47c8-9235-fd19f15ac5ee")
-	)
-	(junction
-		(at 102.87 134.62)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "f82de730-9ab6-4f5c-b9a9-8fb2ef56d02f")
 	)
 	(junction
 		(at 43.18 125.73)
@@ -2085,7 +1959,7 @@
 	)
 	(wire
 		(pts
-			(xy 97.79 137.16) (xy 102.87 137.16)
+			(xy 97.79 137.16) (xy 105.41 137.16)
 		)
 		(stroke
 			(width 0)
@@ -2305,7 +2179,7 @@
 	)
 	(wire
 		(pts
-			(xy 118.11 68.58) (xy 123.19 68.58)
+			(xy 96.52 68.58) (xy 123.19 68.58)
 		)
 		(stroke
 			(width 0)
@@ -2465,17 +2339,7 @@
 	)
 	(wire
 		(pts
-			(xy 102.87 63.5) (xy 118.11 63.5)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "934aaa8e-f249-49b1-9bd4-56fdb70e76f8")
-	)
-	(wire
-		(pts
-			(xy 102.87 134.62) (xy 105.41 134.62)
+			(xy 97.79 134.62) (xy 105.41 134.62)
 		)
 		(stroke
 			(width 0)
@@ -2522,16 +2386,6 @@
 			(type default)
 		)
 		(uuid "a42a35ed-47d8-4644-8afd-bc8eb83fa08d")
-	)
-	(wire
-		(pts
-			(xy 97.79 134.62) (xy 102.87 134.62)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a6084272-d551-47a9-ab90-9202e3065599")
 	)
 	(polyline
 		(pts
@@ -2793,16 +2647,6 @@
 		)
 		(uuid "dd9cb6f8-07cd-4678-98cc-4d7bcc9ca64f")
 	)
-	(wire
-		(pts
-			(xy 96.52 68.58) (xy 118.11 68.58)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "e0185f0f-01f9-4fc9-88d7-821a745c6d8b")
-	)
 	(polyline
 		(pts
 			(xy 135.89 153.035) (xy 135.89 118.11)
@@ -2895,7 +2739,7 @@
 	)
 	(wire
 		(pts
-			(xy 118.11 63.5) (xy 123.19 63.5)
+			(xy 102.87 63.5) (xy 123.19 63.5)
 		)
 		(stroke
 			(width 0)
@@ -2942,16 +2786,6 @@
 			(type default)
 		)
 		(uuid "fa090c2a-fd52-4388-b463-ff059cf38db4")
-	)
-	(wire
-		(pts
-			(xy 102.87 137.16) (xy 105.41 137.16)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "fdde6729-c36f-48fa-96b4-bdb95daf180a")
 	)
 	(text "PM1006 Level Shifter\n"
 		(exclude_from_sim no)
@@ -4112,98 +3946,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 118.11 63.5 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp yes)
-		(uuid "245b2634-bdd0-423b-8dbe-5c9c523fe38f")
-		(property "Reference" "TP6"
-			(at 121.285 59.055 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 122.555 55.245 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
-			(at 123.19 63.5 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 123.19 63.5 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 118.11 63.5 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "DFN" ""
-			(at 118.11 63.5 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "LCSC" ""
-			(at 118.11 63.5 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" ""
-			(at 118.11 63.5 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "74871279-a4d7-4df9-be15-2265f89fd9ef")
-		)
-		(instances
-			(project "room_environment_monitor"
-				(path "/44f2386d-4dcf-411b-99dd-82c40d92c146/789efca6-28c5-460e-8523-846d22f060e4"
-					(reference "TP6")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:C_Small")
 		(at 24.13 78.74 0)
 		(unit 1)
@@ -5304,98 +5046,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 102.87 137.16 180)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp yes)
-		(uuid "81941083-4f60-4868-8ef8-a31c169f103a")
-		(property "Reference" "TP3"
-			(at 106.045 140.97 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 106.68 142.875 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
-			(at 97.79 137.16 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 97.79 137.16 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 102.87 137.16 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "DFN" ""
-			(at 102.87 137.16 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "LCSC" ""
-			(at 102.87 137.16 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" ""
-			(at 102.87 137.16 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "49ebb9b4-a097-43eb-9ca2-53dd4a55a731")
-		)
-		(instances
-			(project "room_environment_monitor"
-				(path "/44f2386d-4dcf-411b-99dd-82c40d92c146/789efca6-28c5-460e-8523-846d22f060e4"
-					(reference "TP3")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_name "GND_1")
 		(lib_id "power:GND")
 		(at 44.45 99.06 0)
@@ -5553,98 +5203,6 @@
 			(project "room_environment_monitor"
 				(path "/44f2386d-4dcf-411b-99dd-82c40d92c146/789efca6-28c5-460e-8523-846d22f060e4"
 					(reference "R14")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 102.87 134.62 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp yes)
-		(uuid "967fc967-40ab-4bca-ba99-748241441895")
-		(property "Reference" "TP2"
-			(at 106.045 130.175 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 107.315 126.365 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
-			(at 107.95 134.62 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 107.95 134.62 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 102.87 134.62 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "DFN" ""
-			(at 102.87 134.62 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "LCSC" ""
-			(at 102.87 134.62 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" ""
-			(at 102.87 134.62 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "7a154334-8d9d-4b6f-8993-aead9b246e15")
-		)
-		(instances
-			(project "room_environment_monitor"
-				(path "/44f2386d-4dcf-411b-99dd-82c40d92c146/789efca6-28c5-460e-8523-846d22f060e4"
-					(reference "TP2")
 					(unit 1)
 				)
 			)
@@ -6039,98 +5597,6 @@
 			(project "room_environment_monitor"
 				(path "/44f2386d-4dcf-411b-99dd-82c40d92c146/789efca6-28c5-460e-8523-846d22f060e4"
 					(reference "#PWR051")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 118.11 68.58 180)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp yes)
-		(uuid "ce6a4cae-d2d9-4c9b-801a-139bb2200782")
-		(property "Reference" "TP5"
-			(at 114.935 73.025 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 113.665 76.835 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
-			(at 113.03 68.58 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 113.03 68.58 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 118.11 68.58 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "DFN" ""
-			(at 118.11 68.58 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "LCSC" ""
-			(at 118.11 68.58 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" ""
-			(at 118.11 68.58 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "5667be22-e8a8-4bf6-829b-1fcabe9f1701")
-		)
-		(instances
-			(project "room_environment_monitor"
-				(path "/44f2386d-4dcf-411b-99dd-82c40d92c146/789efca6-28c5-460e-8523-846d22f060e4"
-					(reference "TP5")
 					(unit 1)
 				)
 			)
